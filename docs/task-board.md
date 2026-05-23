@@ -2,7 +2,7 @@
 
 ## 当前阶段
 
-Sprint 12：阶段 2 验证执行器准备
+Sprint 12：阶段 2 Agent Protocol Foundation
 
 ## 状态说明
 
@@ -140,3 +140,14 @@ Sprint 12：阶段 2 验证执行器准备
 | S11-004 | CI 增加 editable install 路径 | Done | `.github/workflows/ci.yml` |
 | S11-005 | roadmap 标记阶段 1 完成并顺延 verify-runner | Done | `docs/development-roadmap.md` |
 | S11-006 | Sprint 11 独立审计 | Done | `docs/audits/audit-011-stage-1-finalization.md` |
+
+## Sprint 12
+
+| ID | 任务 | 状态 | 产出 |
+| --- | --- | --- | --- |
+| S12-001 | 创建 Agent Protocol Foundation 计划 | Done | `docs/plans/plan-012-agent-protocol-foundation.md` |
+| S12-002 | 将阶段 2 插入为 Agent Protocol 基础 | Done | `docs/阶段规划.md`, `docs/development-roadmap.md` |
+| S12-003 | 定义 Agent Protocol 基线 | Done | `docs/architecture/agent-protocol.md` |
+| S12-004 | 同步 task-board 当前阶段 | Done | `docs/task-board.md` |
+| S12-005 | plan-012 验证与独立审计 | Done | `docs/audits/audit-012-agent-protocol-foundation.md` |
+| S12-006 | 启动 JSON 输出与结构化错误计划 | Todo | `plan-013-json-output-and-errors` |

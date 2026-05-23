@@ -5,8 +5,9 @@
 ## Reading Order
 
 1. `attractors/`：当前系统应长期收敛到的稳定结构。
-2. `policies/`：跨模块规则和治理策略。
-3. `templates/`：架构文档模板。
+2. `agent-protocol.md`：AI Agent 可程序化读写 ABH 的协议基线。
+3. `policies/`：跨模块规则和治理策略。
+4. `templates/`：架构文档模板。
 
 ## Authority
 

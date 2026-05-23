@@ -149,11 +149,11 @@
 
 ## 4. 当前执行焦点
 
-当前准备进入 Sprint 12。
+当前处于 Sprint 12。
 
-阶段 1 已完成，下一轮建议进入新增的阶段 2，只追求一个结果：把当前面向人类阅读的 CLI 输出升级为 Agent 可程序化调用的协议基础，让 Claude、Cursor 等 Agent 能稳定读取 ABH 的计划、审计、记忆、漂移和路线状态。
+`plan-012-agent-protocol-foundation` 已关闭，阶段 2 的协议基线已经建立。当前焦点进入 Agent Protocol 的第一个实现计划：把核心只读命令从自然文本输出扩展为稳定的机器可解析 JSON 输出，并定义结构化错误格式。
 
-建议计划：`plan-012-agent-protocol-foundation`。
+建议计划：`plan-013-json-output-and-errors`。
 
 ## 5. 长期阶段线
 
@@ -180,7 +180,8 @@
 
 建议后续计划：
 
-- `plan-012-agent-protocol-foundation`：建立 JSON 输出模式、Agent tool schema 和只读 MCP Server 第一版。
+- `plan-012-agent-protocol-foundation`：已完成，建立 Agent Protocol 基线、阶段路线和只读 MCP 分阶段策略。
+- `plan-013-json-output-and-errors`：实现核心读命令 JSON 输出和结构化错误。
 
 ### 阶段 2：Agent Protocol 基础
 
@@ -196,11 +197,13 @@
 - 新增只读 MCP Server 第一版，让 Claude、Cursor 等 Agent 能读取计划、审计、记忆、漂移和当前路线。
 - MCP 写操作后置，只在读协议和工具 schema 稳定后开放，并继续遵守现有 ABH 门禁。
 
+协议基线：`docs/architecture/agent-protocol.md`。
+
 建议版本：v0.2。
 
 建议后续计划：
 
-- `plan-012-agent-protocol-foundation`
+- `plan-012-agent-protocol-foundation`（已完成）
 - `plan-013-json-output-and-errors`
 - `plan-014-readonly-mcp-server`
 

@@ -1,0 +1,14 @@
+{
+  "schema_version": "1",
+  "id": "ver-2f23b145ced9",
+  "plan_id": "plan-012-agent-protocol-foundation",
+  "command": "python3 -m unittest tests/test_cli.py -v && python3 -m abh doctor && python3 -m abh plan list && rg -n 'plan-012-agent-protocol-foundation|Agent Protocol' docs/development-roadmap.md docs/阶段规划.md docs/task-board.md docs/architecture/agent-protocol.md && git diff --check",
+  "result": "pass",
+  "artifacts": [
+    "docs/architecture/agent-protocol.md",
+    "docs/development-roadmap.md",
+    "docs/task-board.md"
+  ],
+  "failed_checks": [],
+  "created_at": "2026-05-23T16:01:45.837394+00:00"
+}
