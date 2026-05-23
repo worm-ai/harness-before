@@ -1,0 +1,13 @@
+{
+  "schema_version": "1",
+  "id": "ver-f31c39b5d6c8",
+  "plan_id": "plan-011-stage-1-finalization",
+  "command": "python3 -m abh plan list",
+  "result": "pass",
+  "artifacts": [
+    ".abh/plans",
+    "docs/plans"
+  ],
+  "failed_checks": [],
+  "created_at": "2026-05-23T14:08:29.751091+00:00"
+}

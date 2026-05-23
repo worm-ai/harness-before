@@ -1,0 +1,12 @@
+{
+  "schema_version": "1",
+  "id": "ver-f1cbb9241fa4",
+  "plan_id": "plan-010-core-governance-hardening",
+  "command": "python3 -m unittest tests/test_cli.py -v",
+  "result": "pass",
+  "artifacts": [
+    "tests/test_cli.py"
+  ],
+  "failed_checks": [],
+  "created_at": "2026-05-23T12:49:29.834244+00:00"
+}

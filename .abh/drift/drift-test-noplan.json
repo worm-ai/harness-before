@@ -1,0 +1,21 @@
+{
+  "schema_version": "1",
+  "id": "drift-test-noplan",
+  "source": "/tmp/test_drift_source.txt",
+  "findings": [
+    {
+      "type": "dependency_drift",
+      "evidence": "matched keywords: dependency, database, remote",
+      "recommendation": "Review plan non-goals and dependency rules before accepting the new dependency."
+    }
+  ],
+  "evidence": [
+    "/tmp/test_drift_source.txt"
+  ],
+  "follow_ups": [
+    "Review plan non-goals and dependency rules before accepting the new dependency."
+  ],
+  "created_at": "2026-05-22T16:31:33.773829+00:00",
+  "updated_at": "2026-05-22T16:31:33.774121+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/drift/drift-test-noplan.md"
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": "1",
+  "id": "drift-test-007c",
+  "source": "/tmp/test_drift4.txt",
+  "findings": [
+    {
+      "type": "boundary_drift",
+      "evidence": "plan non-goal violation: '不重构存储层' matched keywords ['重构存储层']",
+      "recommendation": "Review plan 'plan-007-sprint-7-dogfood' non-goal: 不重构存储层. Consider updating plan or source."
+    }
+  ],
+  "evidence": [
+    "/tmp/test_drift4.txt"
+  ],
+  "follow_ups": [
+    "Review plan 'plan-007-sprint-7-dogfood' non-goal: 不重构存储层. Consider updating plan or source."
+  ],
+  "created_at": "2026-05-22T16:32:17.248757+00:00",
+  "updated_at": "2026-05-22T16:32:17.248951+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/drift/drift-test-007c.md"
+}

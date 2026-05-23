@@ -1,0 +1,52 @@
+{
+  "schema_version": "1",
+  "id": "plan-011-stage-1-finalization",
+  "title": "Stage 1 Governance Finalization",
+  "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+  "baseline": "docs/development-roadmap.md",
+  "owner": "platform",
+  "status": "closed",
+  "goals": [
+    "迁移历史 .abh JSON 对象补齐 schema_version",
+    "增强 abh doctor 检查 schema_version 和 doc_path 基础一致性",
+    "补齐 CI editable install 步骤提升发布路径可靠性",
+    "更新 roadmap/task-board 标记阶段 1 完成并顺延 verify-runner 到下一计划"
+  ],
+  "non_goals": [
+    "不实现 verify run",
+    "不重构 core.py 模块拆分",
+    "不发布 PyPI"
+  ],
+  "exit_criteria": [
+    "所有 .abh 核心 JSON 对象包含 schema_version",
+    "abh doctor 能发现缺失 schema_version 的 JSON 对象",
+    "CI workflow 包含 python3 -m pip install -e .",
+    "roadmap 显示阶段 1 完成且下一计划进入阶段 2 verify runner"
+  ],
+  "validation_checklist": [
+    "python3 -m unittest tests/test_cli.py -v",
+    "python3 -m abh doctor",
+    "python3 -m abh plan list"
+  ],
+  "closure_evidence": [
+    "docs/plans/plan-011-stage-1-finalization.md",
+    "abh/core.py",
+    "tests/test_cli.py",
+    ".github/workflows/ci.yml",
+    "docs/development-roadmap.md",
+    "docs/task-board.md",
+    "audit-011-stage-1-finalization"
+  ],
+  "verification_runs": [
+    "ver-3cee2d5ffe61",
+    "ver-3429dd7422bb",
+    "ver-f31c39b5d6c8",
+    "ver-9077c3ae82df"
+  ],
+  "audit_ids": [
+    "audit-011-stage-1-finalization"
+  ],
+  "created_at": "2026-05-23T14:05:12.869653+00:00",
+  "updated_at": "2026-05-23T14:14:23.933745+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-011-stage-1-finalization.md"
+}

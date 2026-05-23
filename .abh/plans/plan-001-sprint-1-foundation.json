@@ -1,0 +1,65 @@
+{
+  "schema_version": "1",
+  "id": "plan-001-sprint-1-foundation",
+  "title": "Sprint 1 Foundation",
+  "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+  "baseline": "initial docs-only repository",
+  "owner": "platform",
+  "status": "closed",
+  "goals": [
+    "建立正式 docs/architecture/、docs/plans/、docs/audits/、docs/memory/ 结构",
+    "提供 Attractor、Plan、Audit、Memory 四类模板",
+    "定义项目第一个 active attractor",
+    "建立当前 Sprint 的计划文档和审计占位",
+    "让后续开发可以按照固定 plan/audit/memory 流程推进"
+  ],
+  "non_goals": [
+    "不实现 CLI",
+    "不实现状态机代码",
+    "不接入 CI",
+    "不建设 Web UI",
+    "不实现自动漂移分析"
+  ],
+  "exit_criteria": [
+    "docs/architecture/README.md 存在并说明 reading order",
+    "docs/architecture/policies/README.md 存在或已明确预留",
+    "docs/architecture/templates/attractor-template.md 存在",
+    "docs/plans/templates/plan-template.md 存在",
+    "docs/audits/templates/audit-template.md 存在",
+    "docs/memory/templates/memory-template.md 存在",
+    "docs/memory/README.md 与 memory template 使用同一套 taxonomy",
+    "docs/architecture/attractors/abh-core-attractor.md 存在且状态为 active",
+    "docs/audits/audit-001-sprint-1-foundation.md 存在",
+    "docs/task-board.md 中 Sprint 1 任务状态与实际产物一致"
+  ],
+  "validation_checklist": [
+    "检查所有目录和文件是否存在",
+    "检查模板是否包含 metadata、evidence 或等价字段",
+    "检查 active attractor 是否包含 invariants、boundary rules、dependency rules",
+    "检查 plan 是否包含 goals、non-goals、exit criteria、validation checklist、closure evidence",
+    "检查 audit 占位是否引用本 plan"
+  ],
+  "closure_evidence": [
+    "docs/development-roadmap.md",
+    "docs/task-board.md",
+    "docs/architecture/README.md",
+    "docs/architecture/policies/README.md",
+    "docs/architecture/templates/attractor-template.md",
+    "docs/plans/templates/plan-template.md",
+    "docs/audits/templates/audit-template.md",
+    "docs/memory/templates/memory-template.md",
+    "docs/memory/README.md",
+    "docs/architecture/attractors/abh-core-attractor.md",
+    "docs/audits/audit-001-sprint-1-foundation.md",
+    "audit-001-sprint-1-foundation"
+  ],
+  "verification_runs": [
+    "ver-76cceec84f9a"
+  ],
+  "audit_ids": [
+    "audit-001-sprint-1-foundation"
+  ],
+  "created_at": "2026-05-22T16:01:58.009640+00:00",
+  "updated_at": "2026-05-22T16:02:17.155266+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-001-sprint-1-foundation.md"
+}

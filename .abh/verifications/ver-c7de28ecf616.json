@@ -1,0 +1,13 @@
+{
+  "schema_version": "1",
+  "id": "ver-c7de28ecf616",
+  "plan_id": "plan-010-core-governance-hardening",
+  "command": "python3 -m abh doctor",
+  "result": "pass",
+  "artifacts": [
+    ".abh",
+    "docs"
+  ],
+  "failed_checks": [],
+  "created_at": "2026-05-23T12:49:39.197309+00:00"
+}

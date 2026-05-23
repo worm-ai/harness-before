@@ -1,0 +1,25 @@
+{
+  "schema_version": "1",
+  "id": "audit-005-runtime-docs-install",
+  "plan_id": "plan-005-runtime-docs-install",
+  "auditor": "independent-review",
+  "scope": "检查 README 是否覆盖运行环境和示例正确性",
+  "status": "complete",
+  "result": "pass",
+  "rationale": "README 已修正全部示例问题，Python 3.13+、editable install、PYTHONPATH 兜底均已覆盖",
+  "evidence": [
+    "docs/audits/audit-005-runtime-docs-install.md"
+  ],
+  "findings": [
+    {
+      "severity": "Low",
+      "finding": "plan-005 exit-criterion 中提到 pytest 但项目实际使用 unittest",
+      "evidence": "docs/plans/plan-005-runtime-docs-install.md",
+      "recommendation": "已在 README 中统一为 unittest"
+    }
+  ],
+  "follow_ups": [],
+  "created_at": "2026-05-22T16:05:13.949360+00:00",
+  "updated_at": "2026-05-22T16:05:17.753893+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/audits/audit-005-runtime-docs-install.md"
+}

@@ -1,0 +1,13 @@
+{
+  "schema_version": "1",
+  "id": "drift-test-007b",
+  "source": "/tmp/test_drift3.txt",
+  "findings": [],
+  "evidence": [
+    "/tmp/test_drift3.txt"
+  ],
+  "follow_ups": [],
+  "created_at": "2026-05-22T16:31:48.596686+00:00",
+  "updated_at": "2026-05-22T16:31:48.596867+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/drift/drift-test-007b.md"
+}

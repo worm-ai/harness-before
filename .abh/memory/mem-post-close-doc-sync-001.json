@@ -1,0 +1,22 @@
+{
+  "schema_version": "1",
+  "id": "mem-post-close-doc-sync-001",
+  "type": "divergent_pattern",
+  "summary": "计划关闭后当前状态文档同步遗漏",
+  "context": "plan-009-roadmap-phase-alignment 已关闭后，development-roadmap.md 的当前执行焦点仍停留在 plan-009，需要用户提醒后才更新到 Sprint 10 / plan-010。这说明 plan close 之后仍需要一个自动或显式的文档状态同步步骤。",
+  "implication": "后续关闭 plan 时，应自动或门禁式检查 roadmap、task-board、README 等当前状态文档是否需要更新；尤其是当前阶段、当前执行焦点、下一推荐计划这类字段。",
+  "status": "active",
+  "related": [
+    "mem-doc-sync-001",
+    "plan-009-roadmap-phase-alignment"
+  ],
+  "evidence": [
+    "docs/development-roadmap.md",
+    "docs/plans/plan-009-roadmap-phase-alignment.md",
+    "docs/audits/audit-009-roadmap-phase-alignment.md"
+  ],
+  "deprecation_policy": "Mark deprecated when evidence no longer applies.",
+  "created_at": "2026-05-23T09:18:16.656090+00:00",
+  "updated_at": "2026-05-23T09:18:16.656283+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/memory/mem-post-close-doc-sync-001.md"
+}

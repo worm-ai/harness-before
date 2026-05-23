@@ -1,0 +1,14 @@
+{
+  "schema_version": "1",
+  "id": "ver-1ca3994a77f1",
+  "plan_id": "plan-003-sprint-3-audit-memory-close",
+  "command": "python -m unittest tests/test_cli.py",
+  "result": "pass",
+  "artifacts": [
+    "abh/cli.py",
+    "abh/core.py",
+    "abh/models.py"
+  ],
+  "failed_checks": [],
+  "created_at": "2026-05-22T16:03:54.421919+00:00"
+}

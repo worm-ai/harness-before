@@ -1,0 +1,13 @@
+{
+  "schema_version": "1",
+  "id": "ver-d8999fc92f17",
+  "plan_id": "plan-007-zero-dep-install",
+  "command": "python -m unittest tests/test_cli.py",
+  "result": "pass",
+  "artifacts": [
+    "README.md",
+    "pyproject.toml"
+  ],
+  "failed_checks": [],
+  "created_at": "2026-05-23T03:10:55.410387+00:00"
+}

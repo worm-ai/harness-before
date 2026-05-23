@@ -1,0 +1,25 @@
+{
+  "schema_version": "1",
+  "id": "audit-004-sprint-4-route-drift",
+  "plan_id": "plan-004-sprint-4-route-drift",
+  "auditor": "independent-review",
+  "scope": "检查 Sprint 4 route/drift 命令是否达到 exit criteria",
+  "status": "complete",
+  "result": "pass",
+  "rationale": "route 和 drift analyze 命令均可用，四类漂移识别通过测试",
+  "evidence": [
+    "docs/audits/audit-004-sprint-4-route-drift.md"
+  ],
+  "findings": [
+    {
+      "severity": "Low",
+      "finding": "当前 drift 分析仅基于关键词匹配",
+      "evidence": "abh/core.py",
+      "recommendation": "后续可升级到语义分析"
+    }
+  ],
+  "follow_ups": [],
+  "created_at": "2026-05-22T16:04:48.285175+00:00",
+  "updated_at": "2026-05-22T16:04:51.569473+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/audits/audit-004-sprint-4-route-drift.md"
+}

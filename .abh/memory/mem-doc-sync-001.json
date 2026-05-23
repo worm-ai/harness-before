@@ -1,0 +1,18 @@
+{
+  "schema_version": "1",
+  "id": "mem-doc-sync-001",
+  "type": "divergent_pattern",
+  "summary": "代码变更后文档同步反复遗漏",
+  "context": "task-board.md 止于 Sprint 5（当前进度已到 Sprint 7），README 也曾缺失 list 命令和 route/drift 增强说明。每次 Sprint 结束时，文档同步总是滞后于代码变更。",
+  "implication": "每个 Sprint 关闭前必须显式检查 docs/ 下所有文档是否需要同步更新",
+  "status": "active",
+  "related": [],
+  "evidence": [
+    "docs/task-board.md",
+    "docs/plans/plan-007-sprint-7-dogfood.md"
+  ],
+  "deprecation_policy": "Mark deprecated when evidence no longer applies.",
+  "created_at": "2026-05-22T16:45:06.134169+00:00",
+  "updated_at": "2026-05-22T16:45:06.134464+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/memory/mem-doc-sync-001.md"
+}

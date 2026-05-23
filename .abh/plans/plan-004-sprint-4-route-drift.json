@@ -1,0 +1,60 @@
+{
+  "schema_version": "1",
+  "id": "plan-004-sprint-4-route-drift",
+  "title": "Sprint 4 Route Drift",
+  "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+  "baseline": "Sprint 3 audit, close, and memory loop",
+  "owner": "platform",
+  "status": "closed",
+  "goals": [
+    "支持 abh route 根据问题输出建议阅读顺序",
+    "支持 abh drift analyze 识别基础漂移类型",
+    "支持漂移分析结果落盘为 JSON 和 Markdown",
+    "支持漂移发现转成 memory 条目"
+  ],
+  "non_goals": [
+    "不实现复杂语义模型或 LLM 分类",
+    "不实现 CI 自动触发 drift analyze",
+    "不实现 Web UI",
+    "不实现 Sprint 4 范围以外的新能力"
+  ],
+  "exit_criteria": [
+    "abh route 能输出 route name、reading order 和 rationale",
+    "abh drift analyze 能识别 boundary_drift",
+    "abh drift analyze 能识别 dependency_drift",
+    "abh drift analyze 能识别 test_drift",
+    "abh drift analyze 能识别 terminology_drift",
+    "drift report 可写入 .abh/drift/*.json 与 docs/drift/*.md",
+    "drift finding 可通过 --memory-id 转成 divergent_pattern memory",
+    "tests/test_cli.py 可通过"
+  ],
+  "validation_checklist": [
+    "CLI help 展示 route 和 drift",
+    "route 输出建议阅读顺序",
+    "drift analyze 输出四类 drift finding",
+    "drift report 同步写入本地元数据和文档",
+    "drift memory 可被 abh memory search 检索"
+  ],
+  "closure_evidence": [
+    "abh/cli.py",
+    "abh/core.py",
+    "abh/models.py",
+    "abh/storage.py",
+    "tests/test_cli.py",
+    "docs/audits/audit-004-sprint-4-route-drift.md",
+    "Live verification: python3 -m abh --help",
+    "Live verification: python3 -m abh route --question test",
+    "Live verification: isolated drift analyze --memory-id",
+    "Independent review: docs/audits/audit-004-sprint-4-route-drift.md",
+    "audit-004-sprint-4-route-drift"
+  ],
+  "verification_runs": [
+    "ver-afb73c41a0ad"
+  ],
+  "audit_ids": [
+    "audit-004-sprint-4-route-drift"
+  ],
+  "created_at": "2026-05-22T16:04:41.350133+00:00",
+  "updated_at": "2026-05-22T16:04:54.670639+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-004-sprint-4-route-drift.md"
+}

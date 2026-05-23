@@ -1,0 +1,19 @@
+{
+  "schema_version": "1",
+  "id": "mem-audit-template",
+  "type": "divergent_pattern",
+  "summary": "ABH 独立审计子 agent 提示词模版",
+  "context": "通过 audit-007b 验证的独立审计流程：用 agent_open 启动独立子 agent，角色为 explorer，传入结构化的审计 prompt。子 agent 与实现者完全隔离，避免确认偏差。",
+  "implication": "后续所有 audit 均复制本模版，仅替换审计对象、exit criteria 和文件列表",
+  "status": "active",
+  "related": [
+    "mem-independent-audit"
+  ],
+  "evidence": [
+    "docs/audits/audit-007b-zero-dep-install.md"
+  ],
+  "deprecation_policy": "Mark deprecated when evidence no longer applies.",
+  "created_at": "2026-05-23T03:29:39.080431+00:00",
+  "updated_at": "2026-05-23T03:29:39.080761+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/memory/mem-audit-template.md"
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": "1",
+  "id": "mem-dogfood-001",
+  "type": "false_assumption",
+  "summary": "历史手写 Markdown 计划与 abh CLI 管理的数据是两套不相干的东西",
+  "context": "Sprint 1-5 的计划全部用手写 Markdown 创建，未使用 abh plan create，导致 docs/plans/ 与 .abh/plans/ 数据完全脱节。迁移需要逐条重建 verify、audit、close 记录。",
+  "implication": "后续所有计划必须通过 abh plan create 创建，保持 CLI 元数据与文档双写一致",
+  "status": "active",
+  "related": [],
+  "evidence": [
+    "docs/plans/",
+    ".abh/plans/"
+  ],
+  "deprecation_policy": "Mark deprecated when evidence no longer applies.",
+  "created_at": "2026-05-22T16:05:42.124963+00:00",
+  "updated_at": "2026-05-22T16:05:42.125250+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/memory/mem-dogfood-001.md"
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": "1",
+  "id": "audit-007-sprint-7-dogfood",
+  "plan_id": "plan-007-sprint-7-dogfood",
+  "auditor": "independent-review",
+  "scope": "检查 Sprint 7 五个 exit criteria 是否全部达成：plan list、memory list、audit list、route 增强、drift 增强，以及测试是否全覆盖",
+  "status": "complete",
+  "result": "pass",
+  "rationale": "全部五个 exit criteria 已验证通过：plan list / memory list / audit list 三个查询命令可用；route 增强后能注入活跃计划和记忆；drift 增强支持 --plan 参数检测 non-goal 违规。12 个测试全通过，新增 5 个测试覆盖所有新功能。代码变更集中在 core.py（新增 list_plans/list_audits/list_memories + 增强 route_question/analyze_drift）和 cli.py（新增三个 list handler + drift --plan 参数）。",
+  "evidence": [
+    "docs/plans/plan-007-sprint-7-dogfood.md",
+    "tests/test_cli.py",
+    "abh/core.py",
+    "abh/cli.py"
+  ],
+  "findings": [
+    {
+      "severity": "Low",
+      "finding": "route 增强中的记忆匹配可能不精确",
+      "evidence": "abh/core.py",
+      "recommendation": "后续考虑用更语义化的匹配替代分词组匹配"
+    }
+  ],
+  "follow_ups": [],
+  "created_at": "2026-05-22T16:33:45.364348+00:00",
+  "updated_at": "2026-05-22T16:33:56.843019+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/audits/audit-007-sprint-7-dogfood.md"
+}
