@@ -1,0 +1,12 @@
+{
+  "schema_version": "1",
+  "id": "ver-8954af0c8f45",
+  "plan_id": "plan-013-json-output-and-errors",
+  "command": "python3 -m abh doctor",
+  "result": "pass",
+  "artifacts": [
+    "docs/plans/plan-013-json-output-and-errors.md"
+  ],
+  "failed_checks": [],
+  "created_at": "2026-05-24T02:17:36.699462+00:00"
+}

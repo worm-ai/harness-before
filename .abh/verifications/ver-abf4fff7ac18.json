@@ -1,0 +1,13 @@
+{
+  "schema_version": "1",
+  "id": "ver-abf4fff7ac18",
+  "plan_id": "plan-013-json-output-and-errors",
+  "command": "python3 -m abh plan list",
+  "result": "pass",
+  "artifacts": [
+    "docs/development-roadmap.md",
+    "docs/task-board.md"
+  ],
+  "failed_checks": [],
+  "created_at": "2026-05-24T02:17:36.699895+00:00"
+}

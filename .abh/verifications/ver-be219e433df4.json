@@ -1,0 +1,13 @@
+{
+  "schema_version": "1",
+  "id": "ver-be219e433df4",
+  "plan_id": "plan-013-json-output-and-errors",
+  "command": "python3 -m abh plan list --json",
+  "result": "pass",
+  "artifacts": [
+    "README.md",
+    "docs/architecture/agent-protocol.md"
+  ],
+  "failed_checks": [],
+  "created_at": "2026-05-24T02:17:36.770531+00:00"
+}
