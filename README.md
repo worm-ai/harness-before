@@ -183,6 +183,19 @@ abh verify record plan-001 \
 
 验证结果支持 `pass` / `fail` / `partial`。如果结果为 `fail` 或 `partial` 且计划处于 `ready` 或 `running`，计划会自动转入 `blocked` 状态。验证失败的具体项可以通过 `--failed-check` 记录。
 
+### 4.1 执行验证
+
+从阶段 3 开始，`verify` 支持本地执行计划的 validation checklist：
+
+```bash
+abh verify run plan-016-verify-runner
+abh verify run plan-016-verify-runner --json
+```
+
+`verify run` 会按顺序执行计划中的 validation checklist 命令，并把 stdout/stderr 摘要、退出码和耗时写入 verification artifacts。全部命令成功时记录 `pass`；任一命令失败或超时时记录 `fail`，并沿用现有规则阻断 `ready` 或 `running` 计划。
+
+这些 checklist 条目按本地 shell 命令解释执行，适合仓库内受信任的验证命令。当前 MVP 不提供隔离环境、CI runner 或额外确认提示。
+
 ### 5. 发起审计
 
 ```bash
@@ -364,7 +377,7 @@ python3 -m abh.mcp_server
 
 当前仓库已经覆盖计划、验证、审计、关闭、记忆、路由和基础漂移分析。后续计划：
 
-- 推进阶段 3：实现 `abh verify run <plan>`，把验证从人工记录升级为本地执行器
+- 继续推进阶段 3：`plan-016-verify-runner` 已完成，下一步是 `plan-017-plan-update`
 - 提升漂移分析精度：从关键词匹配升级到更高质量的证据提取
 - 增加 `abh report`，展示计划关闭率、审计驳回率和重复漂移情况
 - 支持 Git hook 集成，在提交前自动验证状态一致性

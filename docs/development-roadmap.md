@@ -199,13 +199,28 @@
 
 状态：已完成，对应 `plan-015-controlled-mcp-write-tools`。
 
+### v0.14：Verify Runner MVP
+
+周期：Sprint 13
+
+目标：
+
+- 新增 `abh verify run <plan>`，执行计划 validation checklist 中的本地命令。
+- 保存 stdout/stderr 摘要、退出码、耗时和 artifact。
+- 成功时记录 pass verification，失败或超时时记录 fail verification。
+- 失败时复用现有验证记录规则，阻断 ready/running plan。
+- 支持 `verify run --json`，保留机器可读 envelope。
+- 记录 runner 递归自调用风险 memory。
+
+状态：已完成，对应 `plan-016-verify-runner`。
+
 ## 4. 当前执行焦点
 
-当前处于 Sprint 12 后半段。
+当前处于 Sprint 13。
 
 `plan-015-controlled-mcp-write-tools` 已关闭。阶段 2 Agent Protocol Foundation 已完整完成：核心只读命令具备显式 JSON 输出和结构化错误格式，MCP stdio Server 同时提供只读工具和受控写工具，写工具必须显式 `confirm=true` 并复用现有 ABH 门禁。
 
-当前执行计划：暂无 running plan。下一推荐计划为阶段 3 的 `plan-016-verify-runner`。
+当前执行计划：`plan-016-verify-runner` 已关闭，阶段 3 的 `abh verify run <plan>` MVP 已完成。下一推荐计划为 `plan-017-plan-update`。
 
 当前阶段状态：
 
@@ -213,9 +228,10 @@
 - 已完成：`plan-014-readonly-mcp-server`。
 - 已完成：`plan-015-controlled-mcp-write-tools`。
 - 阶段 2 判定：完成。JSON contract、结构化错误、只读 MCP 和受控 MCP 写工具均已通过 verification 与独立审计。
-- 当前里程碑：v0.2.0 Agent Protocol Foundation。
-- 下一步：打 `v0.2.0` tag 后进入阶段 3 验证执行器。
-- 不进入本里程碑：verify runner、Attractor Registry、Web UI、外部数据库。
+- 当前里程碑：v0.3 Verify Runner 阶段已启动；已完成第一块 `plan-016-verify-runner`。
+- 当前阶段：阶段 3 验证执行器已启动，Verify Runner MVP 已交付。
+- 下一阶段 3 焦点：`plan-017-plan-update`。
+- 不进入当前切片：Attractor Registry、Web UI、外部数据库。
 
 ## 5. 长期阶段线
 
@@ -264,7 +280,7 @@
 - 已完成：`plan-015-controlled-mcp-write-tools` 实现受控 MCP 写工具，并通过验证与独立审计。
 - 当前最小闭环：Agent 已经可以通过 CLI 获取可解析 JSON，通过 MCP 读取 ABH 状态，并在显式确认后调用受控写工具。
 - 阶段 2 判定：完成。
-- 后置项：verify runner、Attractor Registry、报告和发布自动化进入后续阶段。
+- 后置项：verify runner 后续增强、Attractor Registry、报告和发布自动化进入后续阶段。
 
 建议版本：v0.2.0，作为阶段 2 里程碑。
 
@@ -275,17 +291,26 @@
 - `plan-014-readonly-mcp-server`（已完成）
 - `plan-015-controlled-mcp-write-tools`（已完成）
 
-### 阶段 3：从“记录验证”升级到“执行验证”
+### 阶段 3：从“记录验证”升级到“执行验证证据”
 
 周期：1-3 个月
 
-目标：让 `verify` 从人工记录结果升级为本地验证执行器。
+目标：让 `verify` 从人工记录结果升级为本地验证执行器，并把验证从“人或 Agent 声称已通过”推进到“ABH 确实执行过命令并留下可复现、可审计的机器证据”。
+
+可信边界：
+
+- `verify run` 只能证明某个时间、某个 git 状态、某个本地环境下执行过指定命令，并记录了返回结果。
+- `verify run` 不证明功能绝对正确，不保证测试覆盖充分，也不提供防篡改证明。
+- 独立审计仍需判断验证命令是否真实覆盖 exit criteria，不能只因为 verification 为 pass 就关闭 plan。
 
 核心事项：
 
 - 新增 `abh verify run <plan>`，按 plan 的 validation checklist 执行命令。
 - 保存 stdout/stderr 摘要、退出码、耗时和 artifact。
-- 失败时自动把 plan 转入 `blocked`，并生成可审计证据。
+- 记录 git commit、dirty status、cwd、ABH 版本、Python 版本、命令 argv、timeout 和环境变量 allowlist。
+- 为 verification 标注可信等级，例如人工记录、本地执行、隔离目录执行和 CI 执行。
+- 失败时生成可审计证据；是否自动把 plan 转入 `blocked` 需要区分验证失败、环境失败、网络失败和 flaky failure。
+- 当 validation checklist、plan 内容或 git 状态变化后，旧 verification 应能被识别为可能 stale。
 - 支持 `abh plan update`，补充 goals、non-goals、exit criteria、validation checklist 和 closure evidence。
 - 在不破坏现有 CLI 的前提下，逐步拆分 `core.py` 为更小的领域模块，例如 `plans.py`、`audits.py`、`memory.py`、`drift.py`、`routing.py`。
 
@@ -293,7 +318,7 @@
 
 建议后续计划：
 
-- `plan-016-verify-runner`
+- `plan-016-verify-runner`（已完成）
 - `plan-017-plan-update`
 - `plan-018-core-module-split`
 
@@ -387,7 +412,7 @@
 | --- | --- | --- | --- |
 | 阶段 1：恢复权威基线，稳住内核 | `plan-006-stabilize`, `plan-007-zero-dep-install`, `plan-008-roadmap-sync-and-doctor`, `plan-009-roadmap-phase-alignment`, `plan-010-core-governance-hardening`, `plan-011-stage-1-finalization` | 历史计划迁移、安装门槛降低、`abh doctor`、路线图对齐、demo 清理、schema version、历史 schema 迁移、CI、版本策略 | 已完成；内容级 doctor、发布自动化转入后续质量/发布计划 |
 | 阶段 2：Agent Protocol 基础 | `plan-012-agent-protocol-foundation`, `plan-013-json-output-and-errors`, `plan-014-readonly-mcp-server`, `plan-015-controlled-mcp-write-tools` | Agent Protocol 五层基线、阶段路线、核心只读命令 `--json`、统一 JSON envelope、结构化 ABH 错误、只读 MCP stdio Server、受控 MCP 写工具 | 已完成；verify runner 和 Attractor Registry 转入后续阶段 |
-| 阶段 3：验证执行器 | `plan-002-sprint-2-local-plan-loop` | `verify record` 可记录验证结果 | `verify run`、失败自动证据、plan update、模块拆分 |
+| 阶段 3：验证执行器 | `plan-002-sprint-2-local-plan-loop`, `plan-016-verify-runner` | `verify record` 可记录验证结果；`verify run` 可执行 validation checklist、记录机器证据、失败阻断计划并支持 JSON 输出 | plan update、可信等级/环境信息、stale 检测、模块拆分 |
 | 阶段 4：Attractor Registry | `plan-001-sprint-1-foundation` | active attractor 文档和模板 | attractor CLI、版本迁移、active 校验 |
 | 阶段 5：真正独立审计 | `plan-003-sprint-3-audit-memory-close`, `plan-007-zero-dep-install`, `plan-008-roadmap-sync-and-doctor` | audit request/record/close 闭环，人工独立审计流程已 dogfood | audit prompt/bundle、独立上下文字段、关闭门禁 |
 | 阶段 6：漂移与记忆质量提升 | `plan-004-sprint-4-route-drift`, `plan-007-sprint-7-dogfood` | 关键词 drift、route 注入活跃计划和记忆 | severity/confidence、memory 索引、对象图路由、report |
@@ -395,9 +420,11 @@
 
 ## 7. 下一批推荐计划
 
-本节列下一批推荐计划。已关闭的 `plan-012-agent-protocol-foundation`、`plan-013-json-output-and-errors`、`plan-014-readonly-mcp-server` 和 `plan-015-controlled-mcp-write-tools` 归入第 3 章历史执行线与第 6 章阶段映射。
+本节列下一批推荐计划。已关闭的 `plan-012-agent-protocol-foundation`、`plan-013-json-output-and-errors`、`plan-014-readonly-mcp-server`、`plan-015-controlled-mcp-write-tools` 和 `plan-016-verify-runner` 归入第 3 章历史执行线与第 6 章阶段映射。
 
 ### plan-016-verify-runner
+
+状态：已完成。
 
 范围：
 

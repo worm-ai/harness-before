@@ -2,7 +2,7 @@
 
 ## 当前阶段
 
-Sprint 12：阶段 2 Agent Protocol Foundation（已完成，v0.2.0）
+Sprint 13：阶段 3 Verify Runner MVP（已完成）
 
 ## 状态说明
 
@@ -164,3 +164,15 @@ Sprint 12：阶段 2 Agent Protocol Foundation（已完成，v0.2.0）
 | S12-017 | 补充 MCP 写工具 contract 测试 | Done | `tests/test_cli.py` |
 | S12-018 | 同步阶段 2 收尾文档 | Done | `README.md`, `docs/architecture/agent-protocol.md`, `docs/development-roadmap.md`, `docs/task-board.md`, `docs/阶段规划.md` |
 | S12-019 | plan-015 验证与独立审计 | Done | `docs/audits/audit-015-controlled-mcp-write-tools.md` |
+
+## Sprint 13
+
+| ID | 任务 | 状态 | 产出 |
+| --- | --- | --- | --- |
+| S13-001 | 启动 Verify Runner MVP 计划 | Done | `docs/plans/plan-016-verify-runner.md` |
+| S13-002 | 实现 `abh verify run <plan_id>` | Done | `abh/core.py`, `abh/cli.py` |
+| S13-003 | 补充 verify runner TDD 覆盖 | Done | `tests/test_cli.py` |
+| S13-004 | 支持 `verify run --json` 输出 | Done | `abh/cli.py`, `tests/test_cli.py` |
+| S13-005 | 记录 runner 递归 dogfood memory | Done | `docs/memory/mem-verify-runner-recursion-001.md` |
+| S13-006 | 同步阶段 3 启动文档 | Done | `README.md`, `docs/development-roadmap.md`, `docs/task-board.md` |
+| S13-007 | plan-016 验证与独立审计 | Done | `docs/audits/audit-016-verify-runner.md` |
