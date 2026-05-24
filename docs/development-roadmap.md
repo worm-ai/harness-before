@@ -214,13 +214,28 @@
 
 状态：已完成，对应 `plan-016-verify-runner`。
 
+### v0.15：Plan Update MVP
+
+周期：Sprint 13
+
+目标：
+
+- 新增 `abh plan update <plan_id>`，支持通过 CLI 追加计划内容。
+- 支持追加 goals、non-goals、exit criteria、validation checklist 和 closure evidence。
+- 保持 `.abh/plans` JSON 与 `docs/plans` Markdown 双写一致。
+- 重复追加同一内容时自动去重。
+- 提供精确的 `--remove-validation` 修复路径，用于移除不安全或过期的 validation checklist 条目。
+- 记录 plan update dogfood 中发现的递归验证事故和修复记忆。
+
+状态：已完成，对应 `plan-017-plan-update`。
+
 ## 4. 当前执行焦点
 
 当前处于 Sprint 13。
 
 `plan-015-controlled-mcp-write-tools` 已关闭。阶段 2 Agent Protocol Foundation 已完整完成：核心只读命令具备显式 JSON 输出和结构化错误格式，MCP stdio Server 同时提供只读工具和受控写工具，写工具必须显式 `confirm=true` 并复用现有 ABH 门禁。
 
-当前执行计划：`plan-016-verify-runner` 已关闭，阶段 3 的 `abh verify run <plan>` MVP 已完成。下一推荐计划为 `plan-017-plan-update`。
+当前执行计划：`plan-017-plan-update` 已关闭。ABH 现在可以通过 CLI 双写更新计划内容和 validation checklist，并提供精确移除错误 validation checklist 的修复路径。
 
 当前阶段状态：
 
@@ -228,9 +243,9 @@
 - 已完成：`plan-014-readonly-mcp-server`。
 - 已完成：`plan-015-controlled-mcp-write-tools`。
 - 阶段 2 判定：完成。JSON contract、结构化错误、只读 MCP 和受控 MCP 写工具均已通过 verification 与独立审计。
-- 当前里程碑：v0.3 Verify Runner 阶段已启动；已完成第一块 `plan-016-verify-runner`。
-- 当前阶段：阶段 3 验证执行器已启动，Verify Runner MVP 已交付。
-- 下一阶段 3 焦点：`plan-017-plan-update`。
+- 当前里程碑：v0.3 Verify Runner 阶段已启动；已完成 `plan-016-verify-runner` 和 `plan-017-plan-update`。
+- 当前阶段：阶段 3 验证执行器已启动，Verify Runner MVP 与 Plan Update MVP 已交付。
+- 当前阶段 3 焦点：下一步建议切分 `plan-018-core-module-split`，先降低 `core.py` 持续膨胀风险。
 - 不进入当前切片：Attractor Registry、Web UI、外部数据库。
 
 ## 5. 长期阶段线
@@ -319,7 +334,7 @@
 建议后续计划：
 
 - `plan-016-verify-runner`（已完成）
-- `plan-017-plan-update`
+- `plan-017-plan-update`（已完成）
 - `plan-018-core-module-split`
 
 ### 阶段 4：补齐 Attractor Registry
@@ -412,7 +427,7 @@
 | --- | --- | --- | --- |
 | 阶段 1：恢复权威基线，稳住内核 | `plan-006-stabilize`, `plan-007-zero-dep-install`, `plan-008-roadmap-sync-and-doctor`, `plan-009-roadmap-phase-alignment`, `plan-010-core-governance-hardening`, `plan-011-stage-1-finalization` | 历史计划迁移、安装门槛降低、`abh doctor`、路线图对齐、demo 清理、schema version、历史 schema 迁移、CI、版本策略 | 已完成；内容级 doctor、发布自动化转入后续质量/发布计划 |
 | 阶段 2：Agent Protocol 基础 | `plan-012-agent-protocol-foundation`, `plan-013-json-output-and-errors`, `plan-014-readonly-mcp-server`, `plan-015-controlled-mcp-write-tools` | Agent Protocol 五层基线、阶段路线、核心只读命令 `--json`、统一 JSON envelope、结构化 ABH 错误、只读 MCP stdio Server、受控 MCP 写工具 | 已完成；verify runner 和 Attractor Registry 转入后续阶段 |
-| 阶段 3：验证执行器 | `plan-002-sprint-2-local-plan-loop`, `plan-016-verify-runner` | `verify record` 可记录验证结果；`verify run` 可执行 validation checklist、记录机器证据、失败阻断计划并支持 JSON 输出 | plan update、可信等级/环境信息、stale 检测、模块拆分 |
+| 阶段 3：验证执行器 | `plan-002-sprint-2-local-plan-loop`, `plan-016-verify-runner`, `plan-017-plan-update` | `verify record` 可记录验证结果；`verify run` 可执行 validation checklist、记录机器证据、失败阻断计划并支持 JSON 输出；`plan update` 可通过 CLI 双写追加计划字段并精确修复 validation checklist | 可信等级/环境信息、stale 检测、模块拆分 |
 | 阶段 4：Attractor Registry | `plan-001-sprint-1-foundation` | active attractor 文档和模板 | attractor CLI、版本迁移、active 校验 |
 | 阶段 5：真正独立审计 | `plan-003-sprint-3-audit-memory-close`, `plan-007-zero-dep-install`, `plan-008-roadmap-sync-and-doctor` | audit request/record/close 闭环，人工独立审计流程已 dogfood | audit prompt/bundle、独立上下文字段、关闭门禁 |
 | 阶段 6：漂移与记忆质量提升 | `plan-004-sprint-4-route-drift`, `plan-007-sprint-7-dogfood` | 关键词 drift、route 注入活跃计划和记忆 | severity/confidence、memory 索引、对象图路由、report |
@@ -420,7 +435,7 @@
 
 ## 7. 下一批推荐计划
 
-本节列下一批推荐计划。已关闭的 `plan-012-agent-protocol-foundation`、`plan-013-json-output-and-errors`、`plan-014-readonly-mcp-server`、`plan-015-controlled-mcp-write-tools` 和 `plan-016-verify-runner` 归入第 3 章历史执行线与第 6 章阶段映射。
+本节列下一批推荐计划。已关闭的 `plan-012-agent-protocol-foundation`、`plan-013-json-output-and-errors`、`plan-014-readonly-mcp-server`、`plan-015-controlled-mcp-write-tools`、`plan-016-verify-runner` 和 `plan-017-plan-update` 归入第 3 章历史执行线与第 6 章阶段映射。
 
 ### plan-016-verify-runner
 
@@ -440,14 +455,32 @@
 
 ### plan-017-plan-update
 
+状态：已完成。
+
 范围：
 
 - 支持更新 plan 的 goals、non-goals、exit criteria、validation checklist 和 closure evidence。
 - 确保更新后 JSON 与 Markdown 双写一致。
+- 精确移除错误的 validation checklist 条目，用于修复 dogfood 中发现的递归自调用风险。
 
 不做：
 
 - 不引入交互式编辑器。
+
+### plan-018-core-module-split
+
+状态：建议下一步。
+
+范围：
+
+- 在不改变 CLI 行为和数据格式的前提下，把 `core.py` 中已经稳定的领域逻辑拆分为更小模块。
+- 优先拆出 plan、audit、verification、memory、route/drift 等边界清晰的函数组。
+- 保持现有测试全量通过，并用 `abh doctor` 防止双写文档漂移。
+
+不做：
+
+- 不改变 plan 状态机、audit 关闭门禁或 MCP 工具 contract。
+- 不引入新功能，只做结构性减压。
 
 ## 8. 风险控制
 

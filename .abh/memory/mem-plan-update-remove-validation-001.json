@@ -1,0 +1,23 @@
+{
+  "schema_version": "1",
+  "id": "mem-plan-update-remove-validation-001",
+  "type": "divergent_pattern",
+  "summary": "append-only plan update cannot repair unsafe validation checklist entries",
+  "context": "During plan-017 dogfooding, append-only plan update could add evidence and validations but could not remove a recursive verify run checklist entry. The plan became blocked until a narrow --remove-validation capability was added.",
+  "implication": "Plan update needs a constrained repair path for validation checklist entries, while still avoiding broad delete/replace/reorder semantics in the MVP.",
+  "status": "active",
+  "related": [
+    "plan-017-plan-update",
+    "mem-verify-runner-recursion-001"
+  ],
+  "evidence": [
+    "docs/plans/plan-017-plan-update.md",
+    ".abh/verifications/ver-37d33af3d107.json",
+    "abh/cli.py",
+    "abh/core.py"
+  ],
+  "deprecation_policy": "Mark deprecated when evidence no longer applies.",
+  "created_at": "2026-05-24T08:28:20.821800+00:00",
+  "updated_at": "2026-05-24T08:28:20.821994+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/memory/mem-plan-update-remove-validation-001.md"
+}

@@ -9,6 +9,7 @@ from unittest import TestCase
 import os
 
 from abh.cli import main
+from abh.core import is_recursive_verify_command
 from abh.models import AuditRecord, DriftReport, MemoryRecord, PlanRecord, VerificationRun
 from abh.storage import drift_json_path, write_json
 
@@ -104,6 +105,148 @@ class CliTests(TestCase):
         )
         self.assertEqual(code, 0, err)
         self.assertIn("transitioned plan-100-demo -> running", out)
+
+    def test_plan_update_appends_fields_deduplicates_and_syncs_markdown(self) -> None:
+        code, out, err = self.run_cli(
+            "plan",
+            "create",
+            "--id",
+            "plan-106-update",
+            "--title",
+            "Update Plan",
+            "--attractor",
+            "docs/architecture/attractors/abh-core-attractor.md",
+            "--baseline",
+            "baseline",
+            "--goal",
+            "initial goal",
+            "--non-goal",
+            "initial non-goal",
+            "--exit-criterion",
+            "initial exit",
+            "--validation",
+            "initial validation",
+            "--closure-evidence",
+            "initial evidence",
+        )
+        self.assertEqual(code, 0, err)
+
+        code, out, err = self.run_cli(
+            "plan",
+            "update",
+            "plan-106-update",
+            "--goal",
+            "new goal",
+            "--goal",
+            "new goal",
+            "--non-goal",
+            "new non-goal",
+            "--exit-criterion",
+            "new exit",
+            "--validation",
+            "python3 -m abh doctor",
+            "--closure-evidence",
+            "tests/test_cli.py",
+        )
+        self.assertEqual(code, 0, err)
+        self.assertIn("updated plan plan-106-update", out)
+
+        code, out, err = self.run_cli("plan", "status", "plan-106-update", "--json")
+        self.assertEqual(code, 0, err)
+        plan = json.loads(out)["data"]["plan"]
+        self.assertEqual(plan["goals"], ["initial goal", "new goal"])
+        self.assertEqual(plan["non_goals"], ["initial non-goal", "new non-goal"])
+        self.assertEqual(plan["exit_criteria"], ["initial exit", "new exit"])
+        self.assertEqual(plan["validation_checklist"], ["initial validation", "python3 -m abh doctor"])
+        self.assertEqual(plan["closure_evidence"], ["initial evidence", "tests/test_cli.py"])
+
+        doc = (self.root / "docs" / "plans" / "plan-106-update.md").read_text(encoding="utf-8")
+        self.assertIn("- new goal", doc)
+        self.assertIn("- new non-goal", doc)
+        self.assertIn("- new exit", doc)
+        self.assertIn("- python3 -m abh doctor", doc)
+        self.assertIn("- tests/test_cli.py", doc)
+
+    def test_plan_update_json_returns_machine_readable_plan(self) -> None:
+        code, out, err = self.run_cli(
+            "plan",
+            "create",
+            "--id",
+            "plan-107-update-json",
+            "--title",
+            "Update JSON",
+            "--attractor",
+            "docs/architecture/attractors/abh-core-attractor.md",
+            "--baseline",
+            "baseline",
+            "--goal",
+            "initial goal",
+            "--non-goal",
+            "initial non-goal",
+            "--exit-criterion",
+            "initial exit",
+            "--validation",
+            "initial validation",
+            "--closure-evidence",
+            "initial evidence",
+        )
+        self.assertEqual(code, 0, err)
+
+        code, out, err = self.run_cli(
+            "plan",
+            "update",
+            "plan-107-update-json",
+            "--validation",
+            "python3 -m unittest tests/test_cli.py -v",
+            "--json",
+        )
+        self.assertEqual(code, 0, err)
+        payload = json.loads(out)
+        self.assertTrue(payload["ok"])
+        self.assertEqual(payload["command"], "plan update")
+        self.assertEqual(payload["data"]["plan"]["validation_checklist"][-1], "python3 -m unittest tests/test_cli.py -v")
+
+    def test_plan_update_removes_validation_checklist_entry(self) -> None:
+        code, out, err = self.run_cli(
+            "plan",
+            "create",
+            "--id",
+            "plan-108-remove-validation",
+            "--title",
+            "Remove Validation",
+            "--attractor",
+            "docs/architecture/attractors/abh-core-attractor.md",
+            "--baseline",
+            "baseline",
+            "--goal",
+            "repair validation checklist",
+            "--non-goal",
+            "general delete",
+            "--exit-criterion",
+            "unsafe validation removed",
+            "--validation",
+            "python3 -m abh doctor",
+            "--validation",
+            "python3 -m abh verify run plan-108-remove-validation",
+            "--closure-evidence",
+            "docs/plans/plan-108-remove-validation.md",
+        )
+        self.assertEqual(code, 0, err)
+
+        code, out, err = self.run_cli(
+            "plan",
+            "update",
+            "plan-108-remove-validation",
+            "--remove-validation",
+            "python3 -m abh verify run plan-108-remove-validation",
+            "--json",
+        )
+        self.assertEqual(code, 0, err)
+        payload = json.loads(out)
+        self.assertEqual(payload["data"]["plan"]["validation_checklist"], ["python3 -m abh doctor"])
+        doc = (self.root / "docs" / "plans" / "plan-108-remove-validation.md").read_text(encoding="utf-8")
+        self.assertIn("- python3 -m abh doctor", doc)
+        self.assertNotIn("- python3 -m abh verify run plan-108-remove-validation", doc)
 
     def test_failed_verification_blocks_ready_plan(self) -> None:
         code, out, err = self.run_cli(
@@ -271,6 +414,27 @@ class CliTests(TestCase):
         self.assertEqual(payload["command"], "verify run")
         self.assertEqual(payload["data"]["verification"]["result"], "pass")
         self.assertEqual(payload["data"]["verification"]["failed_checks"], [])
+
+    def test_verify_run_detects_recursive_self_invocation_command(self) -> None:
+        self.assertTrue(
+            is_recursive_verify_command(
+                "python3 -m abh verify run plan-recursive-guard --timeout 1",
+                "plan-recursive-guard",
+            )
+        )
+        self.assertTrue(
+            is_recursive_verify_command(
+                "python3 -m abh verify run --json plan-recursive-guard",
+                "plan-recursive-guard",
+            )
+        )
+        self.assertFalse(
+            is_recursive_verify_command(
+                "python3 -m abh verify run another-plan",
+                "plan-recursive-guard",
+            )
+        )
+        self.assertFalse(is_recursive_verify_command("python3 -m abh doctor", "plan-recursive-guard"))
 
     def test_invalid_ready_transition_is_rejected(self) -> None:
         code, out, err = self.run_cli(

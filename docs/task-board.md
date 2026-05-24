@@ -2,7 +2,7 @@
 
 ## 当前阶段
 
-Sprint 13：阶段 3 Verify Runner MVP（已完成）
+Sprint 13：阶段 3 Verify Runner + Plan Update MVP（已完成）
 
 ## 状态说明
 
@@ -176,3 +176,8 @@ Sprint 13：阶段 3 Verify Runner MVP（已完成）
 | S13-005 | 记录 runner 递归 dogfood memory | Done | `docs/memory/mem-verify-runner-recursion-001.md` |
 | S13-006 | 同步阶段 3 启动文档 | Done | `README.md`, `docs/development-roadmap.md`, `docs/task-board.md` |
 | S13-007 | plan-016 验证与独立审计 | Done | `docs/audits/audit-016-verify-runner.md` |
+| S13-008 | 启动 Plan Update MVP 计划 | Done | `docs/plans/plan-017-plan-update.md` |
+| S13-009 | 实现 `abh plan update <plan_id>` | Done | `abh/core.py`, `abh/cli.py` |
+| S13-010 | 补充 plan update TDD 覆盖 | Done | `tests/test_cli.py` |
+| S13-011 | Dogfood `plan update` 更新 plan-017 自身 | Done | `docs/plans/plan-017-plan-update.md` |
+| S13-012 | plan-017 验证与独立审计 | Done | `docs/audits/audit-017-plan-update.md` |

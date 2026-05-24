@@ -23,6 +23,7 @@ from .core import (
     run_verification,
     search_memory,
     transition_plan,
+    update_plan_record,
     validate_identifier,
 )
 from .models import SCHEMA_VERSION
@@ -119,6 +120,17 @@ def build_parser() -> argparse.ArgumentParser:
     plan_list = plan_sub.add_parser("list", help="list all plans")
     add_json_argument(plan_list)
     plan_list.set_defaults(handler=handle_plan_list)
+
+    update = plan_sub.add_parser("update", help="append fields to a plan")
+    update.add_argument("plan_id")
+    update.add_argument("--goal", action="append", default=[])
+    update.add_argument("--non-goal", action="append", default=[])
+    update.add_argument("--exit-criterion", action="append", default=[])
+    update.add_argument("--validation", action="append", default=[])
+    update.add_argument("--remove-validation", action="append", default=[])
+    update.add_argument("--closure-evidence", action="append", default=[])
+    add_json_argument(update)
+    update.set_defaults(handler=handle_plan_update)
 
     transition = plan_sub.add_parser("transition", help="move plan to another status")
     transition.add_argument("plan_id")
@@ -250,6 +262,23 @@ def handle_plan_status(args: argparse.Namespace) -> int:
 def handle_plan_transition(args: argparse.Namespace) -> int:
     transition_plan(args.plan_id, args.to)
     print(f"transitioned {args.plan_id} -> {args.to}")
+    return 0
+
+
+def handle_plan_update(args: argparse.Namespace) -> int:
+    plan = update_plan_record(
+        plan_id=args.plan_id,
+        goals=args.goal,
+        non_goals=args.non_goal,
+        exit_criteria=args.exit_criterion,
+        validation_checklist=args.validation,
+        remove_validation_checklist=args.remove_validation,
+        closure_evidence=args.closure_evidence,
+    )
+    if args.json:
+        print_json_envelope(ok=True, command=command_name(args), data={"plan": plan.to_dict()})
+        return 0
+    print(f"updated plan {plan.id}")
     return 0
 
 

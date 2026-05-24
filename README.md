@@ -172,6 +172,21 @@ abh plan transition plan-001 --to running
 
 状态迁移有约束：进入 `ready` 前必须有 goals、non-goals、exit criteria 等完整信息；进入 `closing` 前必须有一条通过的验证记录。
 
+### 3.1 更新计划内容
+
+从阶段 3 开始，可以用 `plan update` 追加计划条目，并保持 `.abh/` JSON 与 `docs/` Markdown 双写一致：
+
+```bash
+abh plan update plan-017-plan-update \
+  --goal "补充新的目标" \
+  --validation "python3 -m abh doctor" \
+  --closure-evidence "docs/plans/plan-017-plan-update.md"
+
+abh plan update plan-017-plan-update --validation "python3 -m unittest tests/test_cli.py -v" --json
+```
+
+`plan update` 当前追加 goals、non-goals、exit criteria、validation checklist 和 closure evidence，并会跳过重复条目。它还支持用 `--remove-validation` 精确移除错误的 validation checklist 条目，用于修复不安全或过期的验证命令。它不提供通用删除、替换、重排，也不改变计划状态。
+
 ### 4. 记录验证
 
 ```bash
@@ -377,7 +392,7 @@ python3 -m abh.mcp_server
 
 当前仓库已经覆盖计划、验证、审计、关闭、记忆、路由和基础漂移分析。后续计划：
 
-- 继续推进阶段 3：`plan-016-verify-runner` 已完成，下一步是 `plan-017-plan-update`
+- 继续推进阶段 3：`plan-016-verify-runner` 和 `plan-017-plan-update` 已完成，下一步建议切分 `plan-018-core-module-split`
 - 提升漂移分析精度：从关键词匹配升级到更高质量的证据提取
 - 增加 `abh report`，展示计划关闭率、审计驳回率和重复漂移情况
 - 支持 Git hook 集成，在提交前自动验证状态一致性

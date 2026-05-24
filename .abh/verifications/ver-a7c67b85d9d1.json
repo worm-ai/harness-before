@@ -1,0 +1,14 @@
+{
+  "schema_version": "1",
+  "id": "ver-a7c67b85d9d1",
+  "plan_id": "plan-017-plan-update",
+  "command": "python3 -m unittest tests/test_cli.py -v && python3 -m abh doctor && python3 -m abh plan update plan-017-plan-update --closure-evidence docs/plans/plan-017-plan-update.md --json",
+  "result": "pass",
+  "artifacts": [
+    "command='python3 -m unittest tests/test_cli.py -v'; exit_code=0; duration_seconds=0.284; stdout=''; stderr='test_abh_error_json_returns_structured_error (tests.test_cli.CliTests.test_abh_error_json_returns_structured_error) ... ok\\\\ntest_audit_list_returns_all_audits (tests.test_cli.CliTests.test_audit_list_returns_all_audits) ... ok\\\\ntest_audit_record_allows_close_only_after_pass (tests.test_cli.CliTests.test_audit_record_allows_close_only_after_pass) ... ok\\\\ntest_core_read_commands_support_json_output (tests.test_cli.CliTests.test_core_read_commands_support_json_output) ... ok\\\\ntest_doctor_json_repor'",
+    "command='python3 -m abh doctor'; exit_code=0; duration_seconds=0.037; stdout='doctor: ok'; stderr=''",
+    "command='python3 -m abh plan update plan-017-plan-update --closure-evidence docs/plans/plan-017-plan-update.md --json'; exit_code=0; duration_seconds=0.035; stdout='{\"schema_version\": \"1\", \"ok\": true, \"command\": \"plan update\", \"data\": {\"plan\": {\"schema_version\": \"1\", \"id\": \"plan-017-plan-update\", \"title\": \"Plan Update MVP\", \"attractor\": \"docs/architecture/attractors/abh-core-attractor.md\", \"baseline\": \"docs/development-roadmap.md\", \"owner\": \"platform\", \"status\": \"running\", \"goals\": [\"实现 abh plan update <plan_id>，支持通过 CLI 追加计划内容并保持 JSON/Markdown 双写一致\", \"支持追加 goals、non-goals、exit criteria、validation checklist 和 closure evidence\", \"避免重复追加同一条计划内容\", \"支持移除错误的 val'; stderr=''"
+  ],
+  "failed_checks": [],
+  "created_at": "2026-05-24T08:28:10.829928+00:00"
+}

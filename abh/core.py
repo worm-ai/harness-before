@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import shlex
 import subprocess
 import time
 import uuid
@@ -180,6 +181,38 @@ def create_plan(
     return save_plan(plan, cwd=cwd, write_doc=True)
 
 
+def append_unique(existing: list[str], additions: list[str] | None) -> list[str]:
+    values = list(existing)
+    for item in additions or []:
+        if item not in values:
+            values.append(item)
+    return values
+
+
+def update_plan_record(
+    *,
+    plan_id: str,
+    goals: list[str] | None = None,
+    non_goals: list[str] | None = None,
+    exit_criteria: list[str] | None = None,
+    validation_checklist: list[str] | None = None,
+    remove_validation_checklist: list[str] | None = None,
+    closure_evidence: list[str] | None = None,
+    cwd: Path | None = None,
+) -> PlanRecord:
+    plan = load_plan(plan_id, cwd)
+    if not any((goals, non_goals, exit_criteria, validation_checklist, remove_validation_checklist, closure_evidence)):
+        raise AbhError("plan update requires at least one field to append")
+    plan.goals = append_unique(plan.goals, goals)
+    plan.non_goals = append_unique(plan.non_goals, non_goals)
+    plan.exit_criteria = append_unique(plan.exit_criteria, exit_criteria)
+    plan.validation_checklist = append_unique(plan.validation_checklist, validation_checklist)
+    for item in remove_validation_checklist or []:
+        plan.validation_checklist = [value for value in plan.validation_checklist if value != item]
+    plan.closure_evidence = append_unique(plan.closure_evidence, closure_evidence)
+    return save_plan(plan, cwd=cwd, write_doc=True)
+
+
 def validate_plan_ready(plan: PlanRecord) -> None:
     missing: list[str] = []
     if not plan.title.strip():
@@ -259,6 +292,21 @@ def record_verification(
     return run
 
 
+def is_recursive_verify_command(command: str, plan_id: str) -> bool:
+    try:
+        parts = shlex.split(command)
+    except ValueError:
+        return False
+    if len(parts) < 5:
+        return False
+    for index in range(len(parts) - 4):
+        if parts[index:index + 4] == ["python3", "-m", "abh", "verify"] and "run" in parts[index + 4:]:
+            return plan_id in parts[index + 4:]
+        if parts[index:index + 4] == ["python", "-m", "abh", "verify"] and "run" in parts[index + 4:]:
+            return plan_id in parts[index + 4:]
+    return False
+
+
 def run_verification(
     *,
     plan_id: str,
@@ -277,6 +325,10 @@ def run_verification(
     commands = list(plan.validation_checklist)
 
     for command in commands:
+        if is_recursive_verify_command(command, plan_id):
+            artifacts.append(f"command={command!r}; exit_code=recursive_verify_guard")
+            failed_checks.append(command)
+            continue
         started = time.perf_counter()
         try:
             completed = subprocess.run(

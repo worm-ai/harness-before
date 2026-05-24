@@ -1,0 +1,66 @@
+{
+  "schema_version": "1",
+  "id": "audit-017-plan-update",
+  "plan_id": "plan-017-plan-update",
+  "auditor": "independent-user-session",
+  "scope": "Independent audit of Plan Update MVP: append, dedupe, JSON/Markdown dual-write, scoped --remove-validation, recursive verify guard, dogfood evidence, and closure readiness",
+  "status": "complete",
+  "result": "pass",
+  "rationale": "All plan-017 goals and exit criteria are met. plan update supports append and dedupe for goals, non-goals, exit criteria, validation checklist, and closure evidence; JSON/Markdown dual-write and --json envelope are verified; scoped --remove-validation repairs unsafe validation checklist entries; recursive verify guard prevents reprocessing; tests pass and doctor is clean. The recursive storm was observed during audit and then compacted to 7 representative verification records for repository hygiene.",
+  "evidence": [
+    "docs/plans/plan-017-plan-update.md",
+    ".abh/plans/plan-017-plan-update.json",
+    "abh/core.py",
+    "abh/cli.py",
+    "tests/test_cli.py",
+    "README.md",
+    "docs/development-roadmap.md",
+    "docs/task-board.md",
+    "docs/memory/mem-plan-update-remove-validation-001.md",
+    "docs/memory/mem-verify-runner-recursion-001.md",
+    ".abh/verifications/ver-37d33af3d107.json",
+    ".abh/verifications/ver-a7c67b85d9d1.json"
+  ],
+  "findings": [
+    {
+      "severity": "Pass",
+      "finding": "All 6 goal types implementable via CLI",
+      "evidence": "abh/cli.py; abh/core.py; tests/test_cli.py",
+      "recommendation": "Plan closed after passing audit"
+    },
+    {
+      "severity": "Pass",
+      "finding": "JSON/Markdown dual-write and dedupe verified",
+      "evidence": "docs/plans/plan-017-plan-update.md; .abh/plans/plan-017-plan-update.json",
+      "recommendation": "Keep doctor in validation checklist"
+    },
+    {
+      "severity": "Pass",
+      "finding": "--remove-validation stays scoped to validation checklist repair",
+      "evidence": "abh/cli.py; abh/core.py",
+      "recommendation": "Avoid broad delete/replace semantics until separately planned"
+    },
+    {
+      "severity": "Pass",
+      "finding": "Recursive verify guard prevents same-plan reprocessing",
+      "evidence": "abh/core.py; tests/test_cli.py",
+      "recommendation": "Keep representative storm records as evidence"
+    },
+    {
+      "severity": "Info",
+      "finding": "Recursive storm evidence compacted from 134 runs to 7 representative records",
+      "evidence": ".abh/verifications/ver-37d33af3d107.json; .abh/verifications/ver-2b2e7ba94c60.json; .abh/verifications/ver-a7c67b85d9d1.json",
+      "recommendation": "Preserve kept samples and avoid recommitting duplicate timeout records"
+    },
+    {
+      "severity": "Info",
+      "finding": "No MCP plan update write tool added",
+      "evidence": "abh/mcp_server.py",
+      "recommendation": "Matches plan non-goal"
+    }
+  ],
+  "follow_ups": [],
+  "created_at": "2026-05-24T08:40:00.279265+00:00",
+  "updated_at": "2026-05-24T08:54:19.392247+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/audits/audit-017-plan-update.md"
+}
