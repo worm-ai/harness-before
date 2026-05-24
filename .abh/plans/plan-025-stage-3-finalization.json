@@ -1,0 +1,52 @@
+{
+  "schema_version": "1",
+  "id": "plan-025-stage-3-finalization",
+  "title": "Stage 3 Finalization",
+  "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+  "baseline": "Stage 3 planned queue has completed plan-016 through plan-024: verify run, plan update, module splits, environment metadata, trust/stale, failure classification, atomic writes, and memory/drift/routing module split.",
+  "owner": "platform",
+  "status": "closed",
+  "goals": [
+    "Audit the completed Stage 3 capability set and decide whether v0.3 Verify Runner can be marked complete.",
+    "Synchronize README, development-roadmap, task-board, and 阶段规划 so Stage 3 is marked complete and Stage 4 Attractor Registry is the next implementation stage.",
+    "Record closure evidence that Stage 3 completed without introducing new Stage 4 functionality.",
+    "Keep this slice documentation/governance-only with no behavior, schema, CLI, MCP, storage, or algorithm changes."
+  ],
+  "non_goals": [
+    "Do not implement Attractor Registry, audit independence tooling, drift quality upgrades, reports, init, CI templates, or new CLI/MCP commands in this slice.",
+    "Do not change plan/audit/verification state machines, close gates, stale semantics, storage format, or schemas.",
+    "Do not rewrite historical verification or audit facts from prior plans."
+  ],
+  "exit_criteria": [
+    "development-roadmap marks Stage 3 complete, identifies v0.3 readiness, and lists Stage 4 Attractor Registry as the next stage.",
+    "README and 阶段规划 consistently describe Stage 3 as complete and Stage 4 as next.",
+    "task-board contains Sprint 21 plan-025 closure tasks.",
+    "No behavior code changes are made outside documentation and ABH plan/audit/verification records for this slice.",
+    "python3 -m unittest tests/test_cli.py -v passes.",
+    "python3 -m abh doctor passes."
+  ],
+  "validation_checklist": [
+    "python3 -m unittest tests/test_cli.py -v",
+    "python3 -m abh doctor"
+  ],
+  "closure_evidence": [
+    "docs/development-roadmap.md Stage 3 completion update",
+    "README.md Stage 3 completion update",
+    "docs/阶段规划.md Stage 3 completion update",
+    "docs/task-board.md Sprint 21 plan-025 entries",
+    "Independent audit confirms docs-only finalization scope",
+    "audit-025-stage-3-finalization"
+  ],
+  "verification_runs": [
+    "ver-6fb30ef1954e",
+    "ver-8baff1d36d35",
+    "ver-3a94943557a8",
+    "ver-d8676af7be2a"
+  ],
+  "audit_ids": [
+    "audit-025-stage-3-finalization"
+  ],
+  "created_at": "2026-05-24T13:58:43.329836+00:00",
+  "updated_at": "2026-05-24T14:41:10.378310+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-025-stage-3-finalization.md"
+}

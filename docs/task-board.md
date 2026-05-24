@@ -254,3 +254,13 @@ Sprint 16：阶段 3 Functional Plan（已完成）
 | S20-005 | 补充 core re-export 和 CLI/MCP 回归测试 | Done | `tests/test_cli.py` |
 | S20-006 | 同步阶段 3 文档 | Done | `README.md`, `docs/development-roadmap.md`, `docs/阶段规划.md` |
 | S20-007 | plan-024 验证与独立审计 | Done | `.abh/verifications/ver-e44f2ac2dc7a.json`, `docs/audits/audit-024-memory-drift-routing-module-split.md` |
+
+## Sprint 21
+
+| ID | 任务 | 状态 | 产出 |
+| --- | --- | --- | --- |
+| S21-001 | 启动 Stage 3 Finalization 计划 | Done | `docs/plans/plan-025-stage-3-finalization.md` |
+| S21-002 | 判断 v0.3 Verify Runner 里程碑 readiness | Done | `docs/development-roadmap.md`, `docs/阶段规划.md` |
+| S21-003 | 同步 README 和 roadmap 到阶段 3 收尾状态 | Done | `README.md`, `docs/development-roadmap.md` |
+| S21-004 | 明确阶段 4 Attractor Registry 启动条件 | Done | `docs/development-roadmap.md`, `docs/阶段规划.md` |
+| S21-005 | plan-025 验证与独立审计 | Done | `.abh/verifications/ver-3a94943557a8.json`, `docs/audits/audit-025-stage-3-finalization.md` |

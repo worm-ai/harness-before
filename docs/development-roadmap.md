@@ -244,11 +244,11 @@
 
 ## 4. 当前执行焦点
 
-Sprint 20 已完成。`plan-024-memory-drift-routing-module-split` 已通过 verification 与独立审计，阶段 3 下一条切片是 `plan-025-stage-3-finalization`。
+Sprint 21 已完成。`plan-025-stage-3-finalization` 已关闭，阶段 3 功能队列收束为 v0.3 Verify Runner 里程碑；下一阶段启动方向是阶段 4 Attractor Registry。
 
 `plan-015-controlled-mcp-write-tools` 已关闭。阶段 2 Agent Protocol Foundation 已完整完成：核心只读命令具备显式 JSON 输出和结构化错误格式，MCP stdio Server 同时提供只读工具和受控写工具，写工具必须显式 `confirm=true` 并复用现有 ABH 门禁。
 
-当前执行计划：暂无。下一条阶段 3 切片是 `plan-025-stage-3-finalization`。
+当前执行计划：暂无。下一条计划建议为 `plan-026-attractor-registry`。
 
 当前阶段状态：
 
@@ -256,10 +256,10 @@ Sprint 20 已完成。`plan-024-memory-drift-routing-module-split` 已通过 ver
 - 已完成：`plan-014-readonly-mcp-server`。
 - 已完成：`plan-015-controlled-mcp-write-tools`。
 - 阶段 2 判定：完成。JSON contract、结构化错误、只读 MCP 和受控 MCP 写工具均已通过 verification 与独立审计。
-- 当前里程碑：v0.3 Verify Runner 阶段已启动；已完成 `plan-016-verify-runner`、`plan-017-plan-update`、`plan-018-core-module-split`、`plan-019-verification-environment-metadata`、`plan-020-stage-3-functional-plan`、`plan-021-verification-trust-and-stale-detection`、`plan-022-verification-failure-classification`、`plan-023-atomic-abh-writes` 和 `plan-024-memory-drift-routing-module-split`。
-- 当前阶段：阶段 3 验证执行器已启动，Verify Runner MVP、Plan Update MVP、Core Module Split、环境元信息切片、剩余功能规划、可信等级、stale 检测、失败分类、写入安全和 memory/drift/routing 模块拆分已交付。
-- 当前阶段 3 焦点：进入 `plan-025-stage-3-finalization`，判断 v0.3 里程碑是否可标记完成。
-- 不进入当前切片：Attractor Registry、Web UI、外部数据库。
+- 当前里程碑：v0.3 Verify Runner 阶段功能队列已交付；`plan-016-verify-runner`、`plan-017-plan-update`、`plan-018-core-module-split`、`plan-019-verification-environment-metadata`、`plan-020-stage-3-functional-plan`、`plan-021-verification-trust-and-stale-detection`、`plan-022-verification-failure-classification`、`plan-023-atomic-abh-writes` 和 `plan-024-memory-drift-routing-module-split` 已完成。
+- 当前阶段：阶段 3 验证执行器已经具备 v0.3 所需能力，`plan-025-stage-3-finalization` 已留下收尾验证、独立审计和阶段 4 启动证据。
+- 当前阶段 3 判定：完成。v0.3 Verify Runner 里程碑已关闭。
+- 下一阶段焦点：阶段 4 Attractor Registry，预计从 `plan-026-attractor-registry` 启动。
 
 ## 5. 长期阶段线
 
@@ -355,6 +355,7 @@ Sprint 20 已完成。`plan-024-memory-drift-routing-module-split` 已通过 ver
 - 已记录：plan-019 dogfood 中发现 ABH 对同一对象并行写入会损坏 JSON/Markdown，后续应补原子写或文件锁保护。
 - 已完成：`plan-023-atomic-abh-writes` 为 `.abh` JSON 和 Markdown 保存路径补充原子写与本地文件锁。
 - 已完成：`plan-024-memory-drift-routing-module-split` 将 memory、drift 和 routing 行为从 `core.py` 拆到领域模块。
+- 已完成：`plan-025-stage-3-finalization` 将阶段 3/v0.3 标记为完成，并同步阶段 4 启动条件。
 
 建议版本：v0.3。
 
@@ -369,7 +370,7 @@ Sprint 20 已完成。`plan-024-memory-drift-routing-module-split` 已通过 ver
 - `plan-022-verification-failure-classification`（已完成）
 - `plan-023-atomic-abh-writes`（已完成）
 - `plan-024-memory-drift-routing-module-split`（已完成）
-- `plan-025-stage-3-finalization`
+- `plan-025-stage-3-finalization`（已完成）
 
 ### 阶段 4：补齐 Attractor Registry
 
@@ -461,7 +462,7 @@ Sprint 20 已完成。`plan-024-memory-drift-routing-module-split` 已通过 ver
 | --- | --- | --- | --- |
 | 阶段 1：恢复权威基线，稳住内核 | `plan-006-stabilize`, `plan-007-zero-dep-install`, `plan-008-roadmap-sync-and-doctor`, `plan-009-roadmap-phase-alignment`, `plan-010-core-governance-hardening`, `plan-011-stage-1-finalization` | 历史计划迁移、安装门槛降低、`abh doctor`、路线图对齐、demo 清理、schema version、历史 schema 迁移、CI、版本策略 | 已完成；内容级 doctor、发布自动化转入后续质量/发布计划 |
 | 阶段 2：Agent Protocol 基础 | `plan-012-agent-protocol-foundation`, `plan-013-json-output-and-errors`, `plan-014-readonly-mcp-server`, `plan-015-controlled-mcp-write-tools` | Agent Protocol 五层基线、阶段路线、核心只读命令 `--json`、统一 JSON envelope、结构化 ABH 错误、只读 MCP stdio Server、受控 MCP 写工具 | 已完成；verify runner 和 Attractor Registry 转入后续阶段 |
-| 阶段 3：验证执行器 | `plan-002-sprint-2-local-plan-loop`, `plan-016-verify-runner`, `plan-017-plan-update`, `plan-018-core-module-split`, `plan-019-verification-environment-metadata`, `plan-020-stage-3-functional-plan`, `plan-021-verification-trust-and-stale-detection`, `plan-022-verification-failure-classification`, `plan-023-atomic-abh-writes`, `plan-024-memory-drift-routing-module-split` | `verify record` 可记录验证结果；`verify run` 可执行 validation checklist、记录机器证据、失败阻断计划并支持 JSON 输出；`plan update` 可通过 CLI 双写追加计划字段并精确修复 validation checklist；`core.py` 已拆出 plan/audit/verification/errors/memory/drift/routing 领域模块并保持兼容导出；environment 元数据已补充 cwd、git、版本、timeout、argv 和 allowlisted env 证据；trust level、stale summary 和失败分类已落盘并暴露给审计；`.abh` JSON 与 Markdown 保存路径已补充原子写和本地文件锁；阶段 3 剩余功能已规划成可执行队列 | 仅剩阶段 3 收尾判断与文档同步 |
+| 阶段 3：验证执行器 | `plan-002-sprint-2-local-plan-loop`, `plan-016-verify-runner`, `plan-017-plan-update`, `plan-018-core-module-split`, `plan-019-verification-environment-metadata`, `plan-020-stage-3-functional-plan`, `plan-021-verification-trust-and-stale-detection`, `plan-022-verification-failure-classification`, `plan-023-atomic-abh-writes`, `plan-024-memory-drift-routing-module-split`, `plan-025-stage-3-finalization` | `verify record` 可记录验证结果；`verify run` 可执行 validation checklist、记录机器证据、失败阻断计划并支持 JSON 输出；`plan update` 可通过 CLI 双写追加计划字段并精确修复 validation checklist；`core.py` 已拆出 plan/audit/verification/errors/memory/drift/routing 领域模块并保持兼容导出；environment 元数据已补充 cwd、git、版本、timeout、argv 和 allowlisted env 证据；trust level、stale summary 和失败分类已落盘并暴露给审计；`.abh` JSON 与 Markdown 保存路径已补充原子写和本地文件锁；阶段 3 已通过 `plan-025` 收尾为 v0.3 Verify Runner 里程碑 | 已完成；Attractor Registry 转入阶段 4 |
 | 阶段 4：Attractor Registry | `plan-001-sprint-1-foundation` | active attractor 文档和模板 | attractor CLI、版本迁移、active 校验 |
 | 阶段 5：真正独立审计 | `plan-003-sprint-3-audit-memory-close`, `plan-007-zero-dep-install`, `plan-008-roadmap-sync-and-doctor` | audit request/record/close 闭环，人工独立审计流程已 dogfood | audit prompt/bundle、独立上下文字段、关闭门禁 |
 | 阶段 6：漂移与记忆质量提升 | `plan-004-sprint-4-route-drift`, `plan-007-sprint-7-dogfood` | 关键词 drift、route 注入活跃计划和记忆 | severity/confidence、memory 索引、对象图路由、report |
@@ -469,7 +470,7 @@ Sprint 20 已完成。`plan-024-memory-drift-routing-module-split` 已通过 ver
 
 ## 7. 下一批推荐计划
 
-本节只列下一批仍可切分执行的计划。已关闭的 `plan-012-agent-protocol-foundation`、`plan-013-json-output-and-errors`、`plan-014-readonly-mcp-server`、`plan-015-controlled-mcp-write-tools`、`plan-016-verify-runner`、`plan-017-plan-update`、`plan-018-core-module-split` 和 `plan-019-verification-environment-metadata` 已归入第 3 章历史执行线与第 6 章阶段映射。
+本节只列下一批仍可切分执行的计划。已关闭的 `plan-012-agent-protocol-foundation`、`plan-013-json-output-and-errors`、`plan-014-readonly-mcp-server`、`plan-015-controlled-mcp-write-tools` 和阶段 3 的 `plan-016` 至 `plan-025` 已归入第 3 章历史执行线与第 6 章阶段映射；下一条建议计划是 `plan-026-attractor-registry`。
 
 已完成参考：
 
@@ -572,7 +573,7 @@ Sprint 20 已完成。`plan-024-memory-drift-routing-module-split` 已通过 ver
 
 ### plan-025-stage-3-finalization
 
-状态：建议。
+状态：已完成，对应 Sprint 21。
 
 范围：
 
