@@ -1,0 +1,50 @@
+{
+  "schema_version": "1",
+  "id": "plan-027-stage-4-attractor-entry-plan",
+  "title": "Stage 4 Agent-First Attractor Entry Plan",
+  "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+  "baseline": "v0.3.0 is released; Stage 4 has been reframed as Agent-First attractor entry, but architecture docs and task-board still need alignment.",
+  "owner": "platform",
+  "status": "closed",
+  "goals": [
+    "Define Agent-First Command Contract as the Stage 4 technical baseline.",
+    "Update roadmap, phase plan, README, task-board, and Agent Protocol docs so Stage 4 consistently starts with agent-first attractor entry.",
+    "Keep this slice documentation/governance-only with no runtime behavior changes."
+  ],
+  "non_goals": [
+    "Do not implement abh attractor, abh init, abh agent setup, hooks, abh next, onboarding check, or package distribution in this slice.",
+    "Do not change CLI/MCP behavior, schemas, state machines, close gates, storage format, or runtime algorithms."
+  ],
+  "exit_criteria": [
+    "docs/architecture/agent-protocol.md describes Agent-First Command Contract and separates human approval from Agent command execution.",
+    "README, development-roadmap, 阶段规划, and task-board consistently identify Stage 4 as Agent-First attractor entry starting at plan-027.",
+    "development-roadmap lists Stage 4 plan queue and P1 implementation order without splitting Attractor Registry into a later stage.",
+    "python3 -m abh doctor passes.",
+    "python3 -m unittest tests/test_cli.py -v passes."
+  ],
+  "validation_checklist": [
+    "python3 -m abh doctor",
+    "python3 -m unittest tests/test_cli.py -v",
+    "git diff --check",
+    "python3 -m abh plan status plan-027-stage-4-attractor-entry-plan --json"
+  ],
+  "closure_evidence": [
+    "docs/architecture/agent-protocol.md",
+    "README.md",
+    "docs/development-roadmap.md",
+    "docs/task-board.md",
+    "docs/阶段规划.md",
+    "audit-027-stage-4-attractor-entry-plan"
+  ],
+  "verification_runs": [
+    "ver-789e779e8498",
+    "ver-dd4e1a8178a1",
+    "ver-49c8fc69492a"
+  ],
+  "audit_ids": [
+    "audit-027-stage-4-attractor-entry-plan"
+  ],
+  "created_at": "2026-05-25T14:44:23.639922+00:00",
+  "updated_at": "2026-05-25T15:45:49.590992+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-027-stage-4-attractor-entry-plan.md"
+}

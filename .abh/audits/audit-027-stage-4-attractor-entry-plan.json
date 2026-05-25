@@ -1,0 +1,31 @@
+{
+  "schema_version": "1",
+  "id": "audit-027-stage-4-attractor-entry-plan",
+  "plan_id": "plan-027-stage-4-attractor-entry-plan",
+  "auditor": "independent-review",
+  "scope": "Audit plan-027 Stage 4 Agent-First attractor entry planning: verify Agent-First Command Contract is documented, docs are aligned, non-goals respected, and validation evidence passes.",
+  "status": "complete",
+  "result": "pass",
+  "rationale": "Independent audit passed: plan-027 establishes Stage 4 as Agent-First attractor entry, documents Agent-First Command Contract in agent-protocol, aligns README/roadmap/阶段规划/task-board, keeps Attractor Registry inside Stage 4, respects docs-only non-goals, and validation passes with latest verification stale=false.",
+  "evidence": [
+    "docs/plans/plan-027-stage-4-attractor-entry-plan.md",
+    ".abh/verifications/ver-789e779e8498.json",
+    "docs/architecture/agent-protocol.md",
+    "README.md",
+    "docs/development-roadmap.md",
+    "docs/task-board.md",
+    "docs/阶段规划.md"
+  ],
+  "findings": [
+    {
+      "severity": "Low",
+      "finding": "No blocking issue",
+      "evidence": "docs/architecture/agent-protocol.md,docs/development-roadmap.md,docs/阶段规划.md,README.md,docs/task-board.md,.abh/verifications/ver-dd4e1a8178a1.json",
+      "recommendation": "All exit criteria satisfied and non-goals respected"
+    }
+  ],
+  "follow_ups": [],
+  "created_at": "2026-05-25T14:49:22.157900+00:00",
+  "updated_at": "2026-05-25T15:44:33.913009+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/audits/audit-027-stage-4-attractor-entry-plan.md"
+}

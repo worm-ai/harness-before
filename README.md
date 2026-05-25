@@ -400,7 +400,8 @@ python3 -m abh.mcp_server
 
 - 阶段 3 功能规划已收尾：`plan-016-verify-runner` 至 `plan-025-stage-3-finalization` 构成 v0.3 Verify Runner 里程碑，覆盖本地验证执行、计划更新、验证环境元数据、可信等级、stale 提示、失败分类、原子写和领域模块拆分
 - v0.3.0 发布准备由 `plan-026-v0-3-release-prep` 收口，release notes 见 `docs/releases/v0.3.0.md`
-- 下一阶段：阶段 4 Attractor Registry，计划从 `plan-027-attractor-registry` 启动
+- 下一阶段：阶段 4 Agent-First 吸引子入口层，已从 `plan-027-stage-4-attractor-entry-plan` 启动，把 Agent-First Command Contract、`abh init`、`abh attractor`、`abh agent setup`、Git hooks、`abh next`、onboarding check、quickstart/recipes 和分发路径合并为一条“进入吸引子轨道”的能力线
+- 阶段 4 的目标不是普通 onboarding，而是让 Codex、Claude Code 和 MCP 客户端默认通过 JSON/非交互命令进入 active attractor -> plan -> verification -> audit -> memory 的轨迹控制回路；人类主要负责定义吸引子、批准写入和执行独立审计
 - 后续提升漂移分析精度：从关键词匹配升级到更高质量的证据提取
 - 增加 `abh report`，展示计划关闭率、审计驳回率和重复漂移情况
 - 支持 Git hook 集成，在提交前自动验证状态一致性

@@ -6,6 +6,23 @@ Agent Protocol is the programmatic interface that lets AI agents read and later 
 
 The protocol does not replace the CLI. The CLI remains the execution substrate; Agent Protocol defines the structured contracts that can be exposed through JSON output and MCP tools.
 
+## Stage 4 Agent-First Update
+
+Stage 2 made ABH machine-readable. Stage 4 makes ABH agent-first.
+
+Agent-first does not mean humans disappear from the workflow. It means ABH commands are designed primarily as a control plane for Codex, Claude Code, MCP clients, and future agents. Humans define or approve the high-risk boundaries: active attractor changes, repository writes, hook installation, independent audit, and release decisions.
+
+The core Stage 4 interface is an Agent-First Command Contract:
+
+- every agent-facing command has a stable command id;
+- every agent-facing command has a JSON envelope;
+- every write command declares side effects;
+- every write command supports a confirmation boundary such as `confirm=true`, `--confirm`, `--write`, or `--dry-run`;
+- CLI, MCP tools, hooks, and future agent setup commands adapt the same contract instead of each defining independent schemas;
+- `abh next --json` becomes the default navigation entry for agents deciding which ABH action should happen next.
+
+This updates the Stage 2 principle "machine-readable output must be explicit" into a stronger Stage 4 requirement: machine-readable behavior must be the primary contract for agent-facing automation, while human-readable text remains a compatibility and inspection layer.
+
 ## Current Gap
 
 ABH has a parameterized CLI for plans, verifications, audits, memory, routing, drift, close, and doctor. It now exposes explicit JSON output for core read commands, structured ABH errors, and an MCP stdio server.
@@ -17,6 +34,9 @@ Before Stage 2, an agent could run commands but could not reliably parse results
 - Repository files remain the source of truth.
 - Human-readable Markdown and natural CLI output remain supported by default.
 - Machine-readable output must be explicit, stable, and schema-versioned.
+- Agent-facing behavior must be non-interactive, repeatable, and safe to call from Codex, Claude Code, and MCP clients.
+- CLI and MCP must adapt one shared command contract instead of duplicating schemas and confirmation rules.
+- Write operations must expose an explicit approval boundary and must be able to explain their side effects before writing.
 - MCP tools must wrap existing ABH behavior instead of bypassing state, audit, or doctor gates.
 - Read capability comes before write capability.
 - Write capability must preserve existing plan, verification, audit, close, memory, and drift rules.
@@ -158,12 +178,55 @@ Write tools must:
 - return structured verification evidence
 - be covered by CLI and MCP contract tests
 
+### Layer 6: Agent-First Command Contract
+
+Stage 4 should introduce a shared command contract module that both CLI and MCP adapters consume.
+
+Each command contract should describe:
+
+- command id, for example `plan.status` or `agent.setup.codex`;
+- input fields and validation rules;
+- output payload schema;
+- whether the command is read-only or write-capable;
+- required confirmation boundary for writes;
+- side effects, including files and ABH objects that may be written;
+- failure categories and business-rule gates;
+- recommended next actions where applicable.
+
+Initial Stage 4 command families:
+
+- `attractor.*`: manage active attractor metadata and supersession records;
+- `init.*`: initialize a repository around an active attractor;
+- `agent.setup.*`: export setup bundles for Codex, Claude Code, and generic MCP clients;
+- `hooks.*`: install or inspect local guardrail hooks;
+- `next`: recommend the next ABH action from current repository state;
+- `onboarding.check`: check whether the repository is ABH-ready for agents.
+
+The CLI adapter may still provide human-readable output, but every Stage 4 command should first define its JSON result. The MCP adapter should use the same command contract and only translate it into MCP tool metadata and `structuredContent`.
+
+### Layer 7: Agent Navigation
+
+`abh route` answers "what should I read?".
+
+`abh next --json` should answer "what should the agent do next?".
+
+The `next` result should include:
+
+- `next_action`;
+- recommended `command`;
+- whether the action requires human confirmation;
+- rationale grounded in active attractor, plan status, latest verification, audit state, stale summary, and memory where relevant;
+- optional alternatives when more than one safe next action exists.
+
+This is the main convenience layer for agents. Agents should not have to memorize ABH workflow order; they should ask ABH for the next valid step.
+
 ## Near-term Plans
 
 - `plan-012-agent-protocol-foundation`: completed; defined this protocol baseline and aligned roadmap/task-board.
 - `plan-013-json-output-and-errors`: completed; implemented JSON output and structured errors for read commands.
 - `plan-014-readonly-mcp-server`: completed; exposes read-only MCP tools over the JSON/internal object contract.
 - `plan-015-controlled-mcp-write-tools`: completed; exposes controlled MCP write tools with explicit confirmation and existing ABH gates.
+- `plan-027-stage-4-attractor-entry-plan`: current Stage 4 planning slice; defines Agent-First attractor entry and promotes the shared command contract as the technical baseline for `abh attractor`, `abh init`, `abh agent setup`, hooks, `abh next`, and onboarding checks.
 
 ## Milestone Status
 
@@ -175,3 +238,4 @@ Stage 2 / Agent Protocol Foundation is complete as of `plan-015-controlled-mcp-w
 - Do not make JSON output the default human CLI output.
 - Do not give agents write tools before read tools are stable.
 - Do not bypass ABH closure, audit, memory, or doctor gates.
+- Do not let Stage 4 setup helpers become human-only wizards; they must produce machine-readable setup bundles first.

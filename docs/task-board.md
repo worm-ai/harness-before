@@ -2,7 +2,7 @@
 
 ## 当前阶段
 
-Sprint 16：阶段 3 Functional Plan（已完成）
+Sprint 23：阶段 4 Agent-First 吸引子入口层（进行中）
 
 ## 状态说明
 
@@ -276,3 +276,15 @@ Sprint 16：阶段 3 Functional Plan（已完成）
 | S22-003 | 编写 v0.3.0 release notes | Done | `docs/releases/v0.3.0.md` |
 | S22-004 | 同步 README、roadmap、阶段规划和后续计划编号 | Done | `README.md`, `docs/development-roadmap.md`, `docs/阶段规划.md` |
 | S22-005 | release-prep 验证、审计、关闭和 tag | Done | `audit-026-v0-3-release-prep`, `v0.3.0` |
+
+## Sprint 23
+
+目标：启动阶段 4 Agent-First 吸引子入口层，先把 Agent-First Command Contract 写成技术底座，再进入 attractor/init/setup/hooks/next 等实现计划。
+
+| ID | 任务 | 状态 | 产出 |
+| --- | --- | --- | --- |
+| S23-001 | 启动 Stage 4 Attractor Entry 计划 | Done | `docs/plans/plan-027-stage-4-attractor-entry-plan.md` |
+| S23-002 | 将 Agent-First Command Contract 纳入 Agent Protocol | Done | `docs/architecture/agent-protocol.md` |
+| S23-003 | 同步 README、roadmap、阶段规划和 task-board | Done | `README.md`, `docs/development-roadmap.md`, `docs/阶段规划.md`, `docs/task-board.md` |
+| S23-004 | 确认阶段 4 计划队列和下一条实现计划 | Done | `plan-028-agent-first-command-contract` |
+| S23-005 | plan-027 验证与独立审计 | Review | `.abh/verifications/ver-789e779e8498.json`, `docs/audits/audit-027-stage-4-attractor-entry-plan.md` |

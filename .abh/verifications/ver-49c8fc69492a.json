@@ -1,0 +1,90 @@
+{
+  "schema_version": "1",
+  "id": "ver-49c8fc69492a",
+  "plan_id": "plan-027-stage-4-attractor-entry-plan",
+  "command": "python3 -m abh doctor && python3 -m unittest tests/test_cli.py -v && git diff --check && python3 -m abh plan status plan-027-stage-4-attractor-entry-plan --json",
+  "result": "pass",
+  "artifacts": [
+    "command='python3 -m abh doctor'; exit_code=0; duration_seconds=0.043; stdout='doctor: ok'; stderr=''",
+    "command='python3 -m unittest tests/test_cli.py -v'; exit_code=0; duration_seconds=1.941; stdout=''; stderr='test_abh_error_json_returns_structured_error (tests.test_cli.CliTests.test_abh_error_json_returns_structured_error) ... ok\\\\ntest_audit_list_returns_all_audits (tests.test_cli.CliTests.test_audit_list_returns_all_audits) ... ok\\\\ntest_audit_record_allows_close_only_after_pass (tests.test_cli.CliTests.test_audit_record_allows_close_only_after_pass) ... ok\\\\ntest_core_read_commands_support_json_output (tests.test_cli.CliTests.test_core_read_commands_support_json_output) ... ok\\\\ntest_core_reexports_me'",
+    "command='git diff --check'; exit_code=0; duration_seconds=0.018; stdout=''; stderr=''",
+    "command='python3 -m abh plan status plan-027-stage-4-attractor-entry-plan --json'; exit_code=0; duration_seconds=0.068; stdout='{\"schema_version\": \"1\", \"ok\": true, \"command\": \"plan status\", \"data\": {\"plan\": {\"schema_version\": \"1\", \"id\": \"plan-027-stage-4-attractor-entry-plan\", \"title\": \"Stage 4 Agent-First Attractor Entry Plan\", \"attractor\": \"docs/architecture/attractors/abh-core-attractor.md\", \"baseline\": \"v0.3.0 is released; Stage 4 has been reframed as Agent-First attractor entry, but architecture docs and task-board still need alignment.\", \"owner\": \"platform\", \"status\": \"closed\", \"goals\": [\"Define Agent-First Command'; stderr=''"
+  ],
+  "failed_checks": [],
+  "failure_classifications": [],
+  "environment": {
+    "cwd": "/Users/cc/ai/harness-before",
+    "git": {
+      "commit": "9d9cb8c8093ea256fb2fd62882810ee8a28b2431",
+      "dirty": true,
+      "status_hash": "1fbe68d47f901c56bdef05966e73711138cf7274b533f2be08d99bf530b510cf",
+      "available": true
+    },
+    "abh": {
+      "version": "0.3.0"
+    },
+    "python": {
+      "version": "3.13.3 (main, Jan 27 2026, 20:15:53) [Clang 17.0.0 (clang-1700.6.3.2)]",
+      "executable": "/Users/cc/.pyenv/versions/3.13.3/bin/python3"
+    },
+    "runner": {
+      "timeout_seconds": 120,
+      "shell": true,
+      "check_count": 4
+    },
+    "commands": [
+      {
+        "command": "python3 -m abh doctor",
+        "argv": [
+          "python3",
+          "-m",
+          "abh",
+          "doctor"
+        ]
+      },
+      {
+        "command": "python3 -m unittest tests/test_cli.py -v",
+        "argv": [
+          "python3",
+          "-m",
+          "unittest",
+          "tests/test_cli.py",
+          "-v"
+        ]
+      },
+      {
+        "command": "git diff --check",
+        "argv": [
+          "git",
+          "diff",
+          "--check"
+        ]
+      },
+      {
+        "command": "python3 -m abh plan status plan-027-stage-4-attractor-entry-plan --json",
+        "argv": [
+          "python3",
+          "-m",
+          "abh",
+          "plan",
+          "status",
+          "plan-027-stage-4-attractor-entry-plan",
+          "--json"
+        ]
+      }
+    ],
+    "environment_variables": {},
+    "plan": {
+      "updated_at": "2026-05-25T15:45:04.329915+00:00",
+      "content_hash": "d8f674337c8041bc2e62593b13ef7a20b01ef792b5e354a4af74ba3dac7383b9",
+      "validation_checklist": [
+        "python3 -m abh doctor",
+        "python3 -m unittest tests/test_cli.py -v",
+        "git diff --check",
+        "python3 -m abh plan status plan-027-stage-4-attractor-entry-plan --json"
+      ]
+    }
+  },
+  "trust_level": "local_shell",
+  "created_at": "2026-05-25T15:45:49.590147+00:00"
+}
