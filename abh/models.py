@@ -18,6 +18,65 @@ def utc_now() -> str:
 
 
 @dataclass(slots=True)
+class AttractorRecord:
+    id: str
+    title: str
+    version: str
+    path: str
+    intent: str
+    status: str = "active"
+    owner: str = "architecture"
+    supersedes: str = "none"
+    reason: str = ""
+    impact: str = ""
+    migration_strategy: str = ""
+    invariants: list[str] = field(default_factory=list)
+    created_at: str = field(default_factory=utc_now)
+    updated_at: str = field(default_factory=utc_now)
+    doc_path: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "schema_version": SCHEMA_VERSION,
+            "id": self.id,
+            "title": self.title,
+            "version": self.version,
+            "status": self.status,
+            "path": self.path,
+            "owner": self.owner,
+            "supersedes": self.supersedes,
+            "reason": self.reason,
+            "impact": self.impact,
+            "migration_strategy": self.migration_strategy,
+            "intent": self.intent,
+            "invariants": list(self.invariants),
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+            "doc_path": self.doc_path,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "AttractorRecord":
+        return cls(
+            id=data["id"],
+            title=data["title"],
+            version=data["version"],
+            path=data["path"],
+            intent=data["intent"],
+            status=data.get("status", "active"),
+            owner=data.get("owner", "architecture"),
+            supersedes=data.get("supersedes", "none"),
+            reason=data.get("reason", ""),
+            impact=data.get("impact", ""),
+            migration_strategy=data.get("migration_strategy", ""),
+            invariants=list(data.get("invariants", [])),
+            created_at=data.get("created_at", utc_now()),
+            updated_at=data.get("updated_at", utc_now()),
+            doc_path=data.get("doc_path", ""),
+        )
+
+
+@dataclass(slots=True)
 class VerificationRun:
     id: str
     plan_id: str

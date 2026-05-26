@@ -33,6 +33,10 @@ def audits_dir(cwd: Path | None = None) -> Path:
     return abh_dir(cwd) / "audits"
 
 
+def attractors_dir(cwd: Path | None = None) -> Path:
+    return abh_dir(cwd) / "attractors"
+
+
 def memory_dir(cwd: Path | None = None) -> Path:
     return abh_dir(cwd) / "memory"
 
@@ -61,6 +65,10 @@ def docs_drift_dir(cwd: Path | None = None) -> Path:
     return docs_dir(cwd) / "drift"
 
 
+def docs_attractors_dir(cwd: Path | None = None) -> Path:
+    return docs_dir(cwd) / "architecture" / "attractors"
+
+
 def plan_json_path(plan_id: str, cwd: Path | None = None) -> Path:
     return plans_dir(cwd) / f"{plan_id}.json"
 
@@ -79,6 +87,14 @@ def audit_json_path(audit_id: str, cwd: Path | None = None) -> Path:
 
 def audit_doc_path(audit_id: str, cwd: Path | None = None) -> Path:
     return docs_audits_dir(cwd) / f"{audit_id}.md"
+
+
+def attractor_json_path(attractor_id: str, cwd: Path | None = None) -> Path:
+    return attractors_dir(cwd) / f"{attractor_id}.json"
+
+
+def attractor_doc_path(attractor_id: str, cwd: Path | None = None) -> Path:
+    return docs_attractors_dir(cwd) / f"{attractor_id}.md"
 
 
 def memory_json_path(memory_id: str, cwd: Path | None = None) -> Path:
@@ -103,10 +119,12 @@ def ensure_workspace(cwd: Path | None = None) -> None:
         plans_dir(cwd),
         verifications_dir(cwd),
         audits_dir(cwd),
+        attractors_dir(cwd),
         memory_dir(cwd),
         drift_dir(cwd),
         docs_plans_dir(cwd),
         docs_audits_dir(cwd),
+        docs_attractors_dir(cwd),
         docs_memory_dir(cwd),
         docs_drift_dir(cwd),
     ):
