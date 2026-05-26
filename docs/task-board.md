@@ -2,7 +2,7 @@
 
 ## 当前阶段
 
-Sprint 24：Agent-First Command Contract（已完成）
+Sprint 25：Attractor Registry MVP（已完成）
 
 ## 状态说明
 
@@ -302,3 +302,18 @@ Sprint 24：Agent-First Command Contract（已完成）
 | S24-005 | 对齐 MCP `abh_plan_status` 与 CLI `plan status --json` 的 `verification_summary` | Done | `abh/mcp_server.py`, `tests/test_cli.py` |
 | S24-006 | 同步 Agent Protocol、README、roadmap 和阶段规划 | Done | `docs/architecture/agent-protocol.md`, `README.md`, `docs/development-roadmap.md`, `docs/阶段规划.md` |
 | S24-007 | plan-028 验证与独立审计 | Done | `.abh/verifications/ver-400d1483ff53.json`, `docs/audits/audit-028-agent-first-command-contract.md` |
+
+## Sprint 25
+
+目标：把 active attractor 从 Markdown 约定升级为 Agent 可读、CLI 可管理、MCP 可读取的一等 ABH 对象，并让 ready plan 绑定当前 active attractor。
+
+| ID | 任务 | 状态 | 产出 |
+| --- | --- | --- | --- |
+| S25-001 | 启动 Attractor Registry MVP 计划 | Done | `docs/plans/plan-029-attractor-registry.md` |
+| S25-002 | 新增 AttractorRecord、存储路径和领域模块 | Done | `abh/models.py`, `abh/storage.py`, `abh/attractors.py` |
+| S25-003 | 新增 `abh attractor` CLI 命令 | Done | `abh/cli.py`, `tests/test_cli.py` |
+| S25-004 | 接入 Agent-First command contract 和 MCP 只读工具 | Done | `abh/commands.py`, `abh/mcp_server.py` |
+| S25-005 | ready plan 校验 active attractor | Done | `abh/plans.py`, `tests/test_cli.py` |
+| S25-006 | 注册当前仓库 active attractor | Done | `.abh/attractors/attractor-abh-core.json`, `docs/architecture/attractors/abh-core-attractor.md` |
+| S25-007 | 同步 Stage 4 文档 | Done | `README.md`, `docs/development-roadmap.md`, `docs/阶段规划.md`, `docs/architecture/agent-protocol.md` |
+| S25-008 | plan-029 验证与独立审计 | Done | `.abh/verifications/ver-ed85ce8d3ae8.json`, `docs/audits/audit-029-attractor-registry.md` |
