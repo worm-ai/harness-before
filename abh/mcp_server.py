@@ -19,8 +19,11 @@ from .core import (
     list_audits,
     list_memories,
     list_plans,
+    list_roadmap_items,
     load_attractor,
     load_plan,
+    next_plan_id,
+    next_plan_sequence,
     record_audit,
     record_verification,
     request_audit,
@@ -120,6 +123,21 @@ def call_plan_status(arguments: dict[str, Any]) -> dict[str, Any]:
     plan_id = require_string(arguments, "plan_id")
     plan = load_plan(plan_id)
     return {"plan": plan.to_dict(), "verification_summary": verification_freshness_summary(plan)}
+
+
+def call_roadmap_list(arguments: dict[str, Any]) -> dict[str, Any]:
+    items = list_roadmap_items()
+    return {"items": [item.to_dict() for item in items], "total": len(items)}
+
+
+def call_roadmap_next_id(arguments: dict[str, Any]) -> dict[str, Any]:
+    return {"next_plan_id": next_plan_id(), "next_sequence": next_plan_sequence()}
+
+
+def call_roadmap_check(arguments: dict[str, Any]) -> dict[str, Any]:
+    from .core import check_plan_numbering, check_roadmap_queue
+
+    return {"issues": check_plan_numbering() + check_roadmap_queue()}
 
 
 def call_attractor_list(arguments: dict[str, Any]) -> dict[str, Any]:
@@ -266,6 +284,9 @@ TOOL_HANDLERS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
     "abh_attractor_active": call_attractor_active,
     "abh_plan_list": call_plan_list,
     "abh_plan_status": call_plan_status,
+    "abh_roadmap_list": call_roadmap_list,
+    "abh_roadmap_next_id": call_roadmap_next_id,
+    "abh_roadmap_check": call_roadmap_check,
     "abh_audit_list": call_audit_list,
     "abh_memory_list": call_memory_list,
     "abh_memory_search": call_memory_search,
