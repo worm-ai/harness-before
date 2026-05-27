@@ -196,6 +196,7 @@ Each command contract should describe:
 Initial Stage 4 command families:
 
 - `attractor.*`: manage active attractor metadata and supersession records;
+- `context.*` or init-provided owner docs: expose documentation routing, project context, source-of-truth precedence, conventions, and codebase map seeded from `docs/index.md` and `docs/context/`;
 - `init.*`: initialize a repository around an active attractor;
 - `agent.setup.*`: export setup bundles for Codex, Claude Code, and generic MCP clients;
 - `hooks.*`: install or inspect local guardrail hooks;
@@ -206,11 +207,15 @@ The first implementation surface is `abh.commands`. It records stable command id
 
 The CLI adapter may still provide human-readable output, but every Stage 4 command should first define its JSON result. The MCP adapter should use the same command contract and only translate it into MCP tool metadata and `structuredContent`. Future `abh attractor`, `abh init`, `abh agent setup`, hooks, `abh next`, and onboarding commands must be added to the contract before or alongside their CLI/MCP adapters.
 
+AGE owner-doc baseline: before `abh init` writes repository setup files, ABH must have stable owner-doc templates for `docs/index.md` and `docs/context/`. These files define the reading order, source-of-truth precedence, project context, conventions, and codebase map that future Agent setup and navigation commands consume.
+
 ### Layer 7: Agent Navigation
 
 `abh route` answers "what should I read?".
 
 `abh next --json` should answer "what should the agent do next?".
+
+Agent navigation should prefer `docs/index.md` and `docs/context/source-of-truth.md` when explaining why a specific owner doc, command, or human confirmation boundary is recommended.
 
 The `next` result should include:
 
@@ -231,8 +236,9 @@ This is the main convenience layer for agents. Agents should not have to memoriz
 - `plan-027-stage-4-attractor-entry-plan`: completed; defined Agent-First attractor entry and promoted the shared command contract as the technical baseline for `abh attractor`, `abh init`, `abh agent setup`, hooks, `abh next`, and onboarding checks.
 - `plan-028-agent-first-command-contract`: completed; extracted the shared command contract layer for the existing CLI/MCP surface and aligned MCP `abh_plan_status` with CLI `plan status --json`.
 - `plan-029-attractor-registry`: completed; added the active attractor registry through the shared command contract, CLI commands, MCP read tools, and ready-plan active attractor validation.
-- `plan-030-roadmap-queue-and-plan-numbering`: current slice; prevents future roadmap inserts from forcing mass renumbering by introducing stable roadmap keys and materialized plan id allocation.
-- `stage4.abh-init-active-attractor`: next Stage 4 implementation item in the roadmap queue; when materialized, it should bind repository initialization to the current active attractor and seed the baseline `.abh/` layout.
+- `plan-030-roadmap-queue-and-plan-numbering`: completed; prevents future roadmap inserts from forcing mass renumbering by introducing stable roadmap keys and materialized plan id allocation.
+- `plan-031-truth-precedence-and-age-docs`: current slice; records AGE owner-doc routing and source-of-truth precedence before init consumes them.
+- `stage4.abh-init-active-attractor`: next Stage 4 implementation item in the roadmap queue; when materialized, it should bind repository initialization to the current active attractor and seed the baseline `.abh/` layout plus AGE owner docs.
 
 Roadmap discipline: concrete `plan-NNN-*` ids are facts about plans that already exist. Future work must use stable queue keys such as `stage4.abh-init-active-attractor` until `abh roadmap materialize <key>` allocates the next available plan id.
 

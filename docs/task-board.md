@@ -330,3 +330,15 @@ Sprint 25：Attractor Registry MVP（已完成）
 | S26-004 | 接入 doctor 编号/queue 一致性检查 | Doing | `abh/core.py`, `tests/test_cli.py` |
 | S26-005 | 将未来计划文档改为稳定 queue key | Doing | `README.md`, `docs/development-roadmap.md`, `docs/阶段规划.md`, `docs/architecture/agent-protocol.md` |
 | S26-006 | plan-030 验证与独立审计 | To Do | `.abh/verifications/`, `docs/audits/audit-030-roadmap-queue-and-plan-numbering.md` |
+
+## Sprint 27
+
+目标：吸收 AGE 模板的 truth precedence 和 owner-doc 分层，把它们固化为 `abh init`、Agent setup、`abh next` 和 onboarding check 的前置文档基线。
+
+| ID | 任务 | 状态 | 产出 |
+| --- | --- | --- | --- |
+| S27-001 | 启动 Truth Precedence and AGE Docs Baseline 计划 | Done | `docs/plans/plan-031-truth-precedence-and-age-docs.md` |
+| S27-002 | 新增顶级文档路由 | Done | `docs/index.md` |
+| S27-003 | 新增 context owner docs | Done | `docs/context/source-of-truth.md`, `docs/context/project-context.md`, `docs/context/conventions.md`, `docs/context/codebase-map.md` |
+| S27-004 | 同步 Stage 4 roadmap 和 Agent Protocol | Done | `docs/development-roadmap.md`, `docs/architecture/agent-protocol.md` |
+| S27-005 | plan-031 验证与独立审计 | Done | `.abh/verifications/ver-a628d91e3765.json`, `docs/audits/audit-031-truth-precedence-and-age-docs.md` |
