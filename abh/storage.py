@@ -45,6 +45,10 @@ def drift_dir(cwd: Path | None = None) -> Path:
     return abh_dir(cwd) / "drift"
 
 
+def roadmap_path(cwd: Path | None = None) -> Path:
+    return abh_dir(cwd) / "roadmap.json"
+
+
 def docs_dir(cwd: Path | None = None) -> Path:
     return root_dir(cwd) / "docs"
 
