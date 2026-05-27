@@ -53,6 +53,16 @@ from .plans import (
     update_plan_record,
     validate_plan_ready,
 )
+from .roadmap import (
+    check_plan_numbering,
+    check_roadmap_queue,
+    list_roadmap_items,
+    load_roadmap_queue,
+    materialize_roadmap_item,
+    next_plan_id,
+    next_plan_sequence,
+    save_roadmap_queue,
+)
 from .routing import ROUTES, route_question
 from .storage import (
     audits_dir,
@@ -109,4 +119,6 @@ def doctor(cwd: Path | None = None) -> list[str]:
             issues.append(f"missing markdown for {label} {object_id}")
         for object_id in sorted(doc_ids - json_ids):
             issues.append(f"orphan markdown for {label} {object_id}")
+    issues.extend(check_plan_numbering(cwd))
+    issues.extend(check_roadmap_queue(cwd))
     return issues
