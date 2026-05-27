@@ -1,0 +1,134 @@
+{
+  "schema_version": "1",
+  "items": [
+    {
+      "key": "stage4.abh-init-active-attractor",
+      "title": "ABH Init Active Attractor",
+      "stage": "stage4",
+      "summary": "Initialize a repository around the active attractor and seed the baseline ABH workspace layout.",
+      "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+      "baseline": "Stage 4 already has Agent-First command contracts and Attractor Registry; repository initialization should bind new workspaces to active attractor without preassigning plan numbers in documentation.",
+      "goals": [
+        "Create a non-interactive abh init flow that prepares .abh and docs directories around the active attractor.",
+        "Provide machine-readable preview output before writing project files.",
+        "Avoid silent overwrite of existing README, AGENTS.md, CLAUDE.md, .abh, or docs templates."
+      ],
+      "non_goals": [
+        "Do not implement agent setup, hooks, abh next, onboarding check, or distribution in this slice."
+      ],
+      "exit_criteria": [
+        "abh init can initialize a new workspace with an active attractor and minimum ABH directories.",
+        "Existing files are not silently overwritten.",
+        "Initialization output is machine-readable and suitable for agent use."
+      ],
+      "validation_checklist": [
+        "python3 -m unittest tests/test_cli.py -v",
+        "python3 -m abh doctor",
+        "git diff --check"
+      ],
+      "closure_evidence": [
+        "README.md",
+        "docs/development-roadmap.md",
+        "docs/阶段规划.md"
+      ],
+      "status": "queued",
+      "plan_id": null
+    },
+    {
+      "key": "stage4.agent-contract-setup",
+      "title": "Agent Contract Setup",
+      "stage": "stage4",
+      "summary": "Generate Claude Code, Codex, and MCP setup bundles from the shared Agent-First command contract.",
+      "status": "queued",
+      "plan_id": null
+    },
+    {
+      "key": "stage4.git-hooks-guardrails",
+      "title": "Git Hooks Guardrails",
+      "stage": "stage4",
+      "summary": "Install ABH hook profiles that protect plan, verification, audit, and doctor invariants.",
+      "status": "queued",
+      "plan_id": null
+    },
+    {
+      "key": "stage4.abh-next-and-onboarding-check",
+      "title": "ABH Next and Onboarding Check",
+      "stage": "stage4",
+      "summary": "Expose the next recommended ABH action and check whether a repository is ABH-ready.",
+      "status": "queued",
+      "plan_id": null
+    },
+    {
+      "key": "stage4.quickstart-recipes-and-distribution",
+      "title": "Quickstart Recipes and Distribution",
+      "stage": "stage4",
+      "summary": "Publish quickstart recipes, demo loop, and package distribution path for agent-first adoption.",
+      "status": "queued",
+      "plan_id": null
+    },
+    {
+      "key": "stage5.audit-prompt-bundle",
+      "title": "Audit Prompt Bundle",
+      "stage": "stage5",
+      "summary": "Generate independent audit prompts and evidence bundles from plan state.",
+      "status": "queued",
+      "plan_id": null
+    },
+    {
+      "key": "stage5.independent-audit-gate",
+      "title": "Independent Audit Gate",
+      "stage": "stage5",
+      "summary": "Record auditor context and enforce freshness/independence metadata at close time.",
+      "status": "queued",
+      "plan_id": null
+    },
+    {
+      "key": "stage6.drift-quality",
+      "title": "Drift Quality",
+      "stage": "stage6",
+      "summary": "Improve drift findings with severity, matched spans, excerpts, and confidence.",
+      "status": "queued",
+      "plan_id": null
+    },
+    {
+      "key": "stage6.memory-index",
+      "title": "Memory Index",
+      "stage": "stage6",
+      "summary": "Add memory tags, deprecation status, and reverse links to plans and audits.",
+      "status": "queued",
+      "plan_id": null
+    },
+    {
+      "key": "stage6.reporting",
+      "title": "Reporting",
+      "stage": "stage6",
+      "summary": "Report plan close rate, audit rejection rate, repeated drift, and memory hits.",
+      "status": "queued",
+      "plan_id": null
+    },
+    {
+      "key": "stage7.ci-templates",
+      "title": "CI Templates",
+      "stage": "stage7",
+      "summary": "Provide CI templates that run doctor, tests, and drift checks in pull requests.",
+      "status": "queued",
+      "plan_id": null
+    },
+    {
+      "key": "stage7.multi-repo-sharing",
+      "title": "Multi Repo Sharing",
+      "stage": "stage7",
+      "summary": "Support importing and exporting attractor and memory context across repositories.",
+      "status": "queued",
+      "plan_id": null
+    },
+    {
+      "key": "stage7.team-policy-and-release-automation",
+      "title": "Team Policy and Release Automation",
+      "stage": "stage7",
+      "summary": "Promote hook profiles into auditable team policy and automate release readiness checks.",
+      "status": "queued",
+      "plan_id": null
+    }
+  ]
+}

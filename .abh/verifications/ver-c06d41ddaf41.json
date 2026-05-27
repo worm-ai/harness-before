@@ -1,0 +1,129 @@
+{
+  "schema_version": "1",
+  "id": "ver-c06d41ddaf41",
+  "plan_id": "plan-030-roadmap-queue-and-plan-numbering",
+  "command": "python3 -m unittest tests/test_cli.py -v && python3 -m abh doctor && git diff --check && python3 -m abh plan status plan-030-roadmap-queue-and-plan-numbering --json && python3 -m abh roadmap check --json && python3 -m abh roadmap next-id --json && python3 -m abh roadmap list --json",
+  "result": "pass",
+  "artifacts": [
+    "command='python3 -m unittest tests/test_cli.py -v'; exit_code=0; duration_seconds=2.059; stdout=''; stderr='test_abh_error_json_returns_structured_error (tests.test_cli.CliTests.test_abh_error_json_returns_structured_error) ... ok\\\\ntest_agent_first_command_contract_describes_existing_agent_commands (tests.test_cli.CliTests.test_agent_first_command_contract_describes_existing_agent_commands) ... ok\\\\ntest_attractor_create_active_show_list_and_supersede_json_flow (tests.test_cli.CliTests.test_attractor_create_active_show_list_and_supersede_json_flow) ... ok\\\\ntest_attractor_create_does_not_overwrite_exist'",
+    "command='python3 -m abh doctor'; exit_code=0; duration_seconds=0.046; stdout='doctor: ok'; stderr=''",
+    "command='git diff --check'; exit_code=0; duration_seconds=0.013; stdout=''; stderr=''",
+    "command='python3 -m abh plan status plan-030-roadmap-queue-and-plan-numbering --json'; exit_code=0; duration_seconds=0.056; stdout='{\"schema_version\": \"1\", \"ok\": true, \"command\": \"plan status\", \"data\": {\"plan\": {\"schema_version\": \"1\", \"id\": \"plan-030-roadmap-queue-and-plan-numbering\", \"title\": \"Roadmap Queue and Plan Numbering\", \"attractor\": \"docs/architecture/attractors/abh-core-attractor.md\", \"baseline\": \"Stage 4 roadmap currently prewrites concrete future plan ids in multiple docs. Inserting a checkpoint or urgent slice forces manual renumbering across roadmap, stage plan, task board, protocol docs, and README, which crea'; stderr=''",
+    "command='python3 -m abh roadmap check --json'; exit_code=0; duration_seconds=0.040; stdout='{\"schema_version\": \"1\", \"ok\": true, \"command\": \"roadmap check\", \"data\": {\"issues\": []}, \"errors\": [], \"warnings\": []}'; stderr=''",
+    "command='python3 -m abh roadmap next-id --json'; exit_code=0; duration_seconds=0.041; stdout='{\"schema_version\": \"1\", \"ok\": true, \"command\": \"roadmap next-id\", \"data\": {\"next_plan_id\": \"plan-031\", \"next_sequence\": 31}, \"errors\": [], \"warnings\": []}'; stderr=''",
+    "command='python3 -m abh roadmap list --json'; exit_code=0; duration_seconds=0.039; stdout='{\"schema_version\": \"1\", \"ok\": true, \"command\": \"roadmap list\", \"data\": {\"items\": [{\"key\": \"stage4.abh-init-active-attractor\", \"title\": \"ABH Init Active Attractor\", \"stage\": \"stage4\", \"summary\": \"Initialize a repository around the active attractor and seed the baseline ABH workspace layout.\", \"attractor\": \"docs/architecture/attractors/abh-core-attractor.md\", \"baseline\": \"Stage 4 already has Agent-First command contracts and Attractor Registry; repository initialization should bind new workspaces '; stderr=''"
+  ],
+  "failed_checks": [],
+  "failure_classifications": [],
+  "environment": {
+    "cwd": "/Users/cc/ai/harness-before",
+    "git": {
+      "commit": "2634081cf15e1e04461fbae122d5e39bc6f993de",
+      "dirty": true,
+      "status_hash": "b098b08cb24d0f6c35ad5d503f23bfdfb983bcd98720dce8c85458716f35dc9d",
+      "available": true
+    },
+    "abh": {
+      "version": "0.3.0"
+    },
+    "python": {
+      "version": "3.13.3 (main, Jan 27 2026, 20:15:53) [Clang 17.0.0 (clang-1700.6.3.2)]",
+      "executable": "/Users/cc/.pyenv/versions/3.13.3/bin/python3"
+    },
+    "runner": {
+      "timeout_seconds": 120,
+      "shell": true,
+      "check_count": 7
+    },
+    "commands": [
+      {
+        "command": "python3 -m unittest tests/test_cli.py -v",
+        "argv": [
+          "python3",
+          "-m",
+          "unittest",
+          "tests/test_cli.py",
+          "-v"
+        ]
+      },
+      {
+        "command": "python3 -m abh doctor",
+        "argv": [
+          "python3",
+          "-m",
+          "abh",
+          "doctor"
+        ]
+      },
+      {
+        "command": "git diff --check",
+        "argv": [
+          "git",
+          "diff",
+          "--check"
+        ]
+      },
+      {
+        "command": "python3 -m abh plan status plan-030-roadmap-queue-and-plan-numbering --json",
+        "argv": [
+          "python3",
+          "-m",
+          "abh",
+          "plan",
+          "status",
+          "plan-030-roadmap-queue-and-plan-numbering",
+          "--json"
+        ]
+      },
+      {
+        "command": "python3 -m abh roadmap check --json",
+        "argv": [
+          "python3",
+          "-m",
+          "abh",
+          "roadmap",
+          "check",
+          "--json"
+        ]
+      },
+      {
+        "command": "python3 -m abh roadmap next-id --json",
+        "argv": [
+          "python3",
+          "-m",
+          "abh",
+          "roadmap",
+          "next-id",
+          "--json"
+        ]
+      },
+      {
+        "command": "python3 -m abh roadmap list --json",
+        "argv": [
+          "python3",
+          "-m",
+          "abh",
+          "roadmap",
+          "list",
+          "--json"
+        ]
+      }
+    ],
+    "environment_variables": {},
+    "plan": {
+      "updated_at": "2026-05-27T03:15:28.206443+00:00",
+      "content_hash": "b8a64f3b7c2ad92e8990465819c05bd7cd3690bda2f81574a8581836bd248a35",
+      "validation_checklist": [
+        "python3 -m unittest tests/test_cli.py -v",
+        "python3 -m abh doctor",
+        "git diff --check",
+        "python3 -m abh plan status plan-030-roadmap-queue-and-plan-numbering --json",
+        "python3 -m abh roadmap check --json",
+        "python3 -m abh roadmap next-id --json",
+        "python3 -m abh roadmap list --json"
+      ]
+    }
+  },
+  "trust_level": "local_shell",
+  "created_at": "2026-05-27T03:16:34.093440+00:00"
+}
