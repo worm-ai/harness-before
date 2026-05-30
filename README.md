@@ -287,12 +287,16 @@ abh memory add \
   --summary "某条路径无法稳定收敛" \
   --context "在重复验证中出现漂移" \
   --implication "后续不要再作为默认方案" \
-  --evidence "docs/audits/audit-001.md"
+  --evidence "docs/audits/audit-001.md" \
+  --tag quality-signal \
+  --status active \
+  --related-plan plan-001
 
 abh memory search --query "漂移"
+abh memory search --status active --tag quality-signal --related-plan plan-001 --json
 ```
 
-记忆搜索使用子字符串匹配（不区分大小写）。如需更精确的范围，可以用 `--type` 按类型过滤。
+记忆搜索使用子字符串匹配（不区分大小写）。如需更精确的范围，可以用 `--type`、`--status`、`--tag`、`--related-plan`、`--related-audit` 和 `--related-drift` 过滤。从 Stage 6 Memory Index 开始，memory JSON 和 Markdown 会保留 `tags`、`status`、`related_plan_ids`、`related_audit_ids`、`related_drift_ids` 与 `superseded_by`，让过去经验能按关系和有效性复用。
 
 ### 10. 列出记忆记录
 
@@ -482,7 +486,7 @@ python3 -m abh.mcp_server
 - v0.3.0 发布准备由 `plan-026-v0-3-release-prep` 收口，release notes 见 `docs/releases/v0.3.0.md`
 - 阶段 4 Agent-First 吸引子入口层已完成：`plan-027-stage-4-attractor-entry-plan`、`plan-028-agent-first-command-contract`、`plan-029-attractor-registry`、`plan-030-roadmap-queue-and-plan-numbering`、`plan-031-truth-precedence-and-age-docs`、`plan-032-abh-init-active-attractor`、`plan-033-agent-contract-setup`、`plan-034-git-hooks-guardrails`、`plan-035-abh-next-and-onboarding-check` 和 `plan-036-quickstart-recipes-and-distribution` 均已完成；quickstart、recipes 和当前 git/editable 分发路径已纳入 Stage 4 adoption 入口
 - 阶段 5 独立审计支持已完成：`plan-037-audit-prompt-bundle` 已交付只读 `abh audit bundle <plan> --json`，用于生成审计提示词和证据清单；`plan-038-independent-audit-gate` 已把 audit context/source、independence 和 fresh verification basis 纳入 `abh audit record` 与 `abh close` 门禁。自动执行审计和真实身份校验仍属后续切片
-- 阶段 6 已启动：`plan-039-quality-signal-model` 定义 product-quality-first / agent-navigation-second 的质量信号模型；`plan-040-drift-quality` 正在把 drift finding 提升为带 severity、matched span、source excerpt 和 confidence 的质量信号
+- 阶段 6 已启动：`plan-039-quality-signal-model` 定义 product-quality-first / agent-navigation-second 的质量信号模型；`plan-040-drift-quality` 已把 drift finding 提升为带 severity、matched span、source excerpt 和 confidence 的质量信号；`plan-041-memory-index` 正在把 memory 提升为带 tags、status、关系索引和 supersession 的可复用质量知识
 - 未来路线图不再为未创建计划预写 `plan-033` 这类具体编号；未 materialize 的事项使用 `.abh/roadmap.json` 中的稳定 key，真实 plan id 只在 `abh roadmap materialize <key>` 时分配
 - 阶段 4 的目标不是普通 onboarding，而是让 Codex、Claude Code 和 MCP 客户端默认通过 JSON/非交互命令进入 active attractor -> plan -> verification -> audit -> memory 的轨迹控制回路；人类主要负责定义吸引子、批准写入和执行独立审计
 - 后续提升漂移分析精度：从关键词匹配升级到更高质量的证据提取

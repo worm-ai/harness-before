@@ -9,6 +9,7 @@ from .audit_bundle import audit_bundle
 from .commands import dumps_envelope, make_envelope
 from .hooks import hook_profile, install_hooks
 from .navigation import onboarding_check, recommend_next_action
+from .models import MEMORY_STATUSES
 from .core import (
     AbhError,
     add_memory,
@@ -312,12 +313,23 @@ def build_parser() -> argparse.ArgumentParser:
     memory_add.add_argument("--implication", required=True)
     memory_add.add_argument("--evidence", action="append", default=[])
     memory_add.add_argument("--related", action="append", default=[])
+    memory_add.add_argument("--tag", action="append", default=[])
+    memory_add.add_argument("--status", choices=MEMORY_STATUSES, default="active")
+    memory_add.add_argument("--related-plan", action="append", default=[])
+    memory_add.add_argument("--related-audit", action="append", default=[])
+    memory_add.add_argument("--related-drift", action="append", default=[])
+    memory_add.add_argument("--superseded-by", default="")
     memory_add.add_argument("--deprecation-policy")
     memory_add.set_defaults(handler=handle_memory_add)
 
     memory_search = memory_sub.add_parser("search", help="search memory records")
     memory_search.add_argument("--type", choices=["false_assumption", "rejected_path", "divergent_pattern", "overturned_completion"])
     memory_search.add_argument("--query")
+    memory_search.add_argument("--status", choices=MEMORY_STATUSES)
+    memory_search.add_argument("--tag")
+    memory_search.add_argument("--related-plan")
+    memory_search.add_argument("--related-audit")
+    memory_search.add_argument("--related-drift")
     add_json_argument(memory_search)
     memory_search.set_defaults(handler=handle_memory_search)
 
@@ -747,6 +759,12 @@ def handle_memory_add(args: argparse.Namespace) -> int:
         implication=args.implication,
         evidence=args.evidence,
         related=args.related,
+        tags=args.tag,
+        status=args.status,
+        related_plan_ids=args.related_plan,
+        related_audit_ids=args.related_audit,
+        related_drift_ids=args.related_drift,
+        superseded_by=args.superseded_by,
         deprecation_policy=args.deprecation_policy,
     )
     print(f"recorded memory {memory.id}")
@@ -754,7 +772,15 @@ def handle_memory_add(args: argparse.Namespace) -> int:
 
 
 def handle_memory_search(args: argparse.Namespace) -> int:
-    results = search_memory(memory_type=args.type, query=args.query)
+    results = search_memory(
+        memory_type=args.type,
+        query=args.query,
+        status=args.status,
+        tag=args.tag,
+        related_plan_id=args.related_plan,
+        related_audit_id=args.related_audit,
+        related_drift_id=args.related_drift,
+    )
     if args.json:
         print_json_envelope(
             ok=True,

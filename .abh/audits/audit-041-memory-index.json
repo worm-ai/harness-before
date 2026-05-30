@@ -1,0 +1,37 @@
+{
+  "schema_version": "1",
+  "id": "audit-041-memory-index",
+  "plan_id": "plan-041-memory-index",
+  "auditor": "opencode-independent-review",
+  "scope": "Independent audit of plan-041 Memory Index implementation",
+  "auditor_context": "opencode --pure --model deepseek/deepseek-chat; independent read-only audit",
+  "independence": "independent",
+  "verification_id": "ver-543729974fde",
+  "status": "complete",
+  "result": "pass",
+  "rationale": "opencode --pure deepseek independent audit passed for plan-041; post-close verification ver-543729974fde is passing and fresh, and the low findings remain future-scope suggestions rather than blockers.",
+  "evidence": [
+    "docs/plans/plan-041-memory-index.md",
+    ".abh/verifications/ver-eee5e8ff79a7.json",
+    "tests/test_cli.py",
+    "abh/memory.py"
+  ],
+  "findings": [
+    {
+      "severity": "Low",
+      "finding": "Memory search superseded_by is not filterable",
+      "evidence": "opencode audit: search_memory filters status, tag, related plan/audit/drift but not superseded_by; plan only requires status and relationship filtering/exposure",
+      "recommendation": "Consider adding --superseded-by filter in a future slice if agents need direct supersession queries"
+    },
+    {
+      "severity": "Low",
+      "finding": "Quality signal first_seen/last_seen remain future scope",
+      "evidence": "docs/architecture/quality-signals.md lists first_seen/last_seen; MemoryRecord uses created_at/updated_at and docs allow partial fields for existing objects",
+      "recommendation": "Accept as scope boundary; add first_seen/last_seen when health aggregation materializes"
+    }
+  ],
+  "follow_ups": [],
+  "created_at": "2026-05-30T08:16:15.773715+00:00",
+  "updated_at": "2026-05-30T08:46:22.880119+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/audits/audit-041-memory-index.md"
+}

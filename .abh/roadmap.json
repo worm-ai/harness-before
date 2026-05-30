@@ -521,8 +521,8 @@
         "docs/task-board.md",
         "docs/context/codebase-map.md"
       ],
-      "status": "queued",
-      "plan_id": null
+      "status": "materialized",
+      "plan_id": "plan-041-memory-index"
     },
     {
       "key": "stage6.project-health-report",

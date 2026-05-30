@@ -2,7 +2,7 @@
 
 ## 当前阶段
 
-阶段 6：漂移与记忆质量提升（Doing）；当前计划：`plan-040-drift-quality`
+阶段 6：漂移与记忆质量提升（Doing）；当前计划：`plan-041-memory-index`
 
 ## 状态说明
 
@@ -426,3 +426,39 @@
 | S34-003 | 实现 audit metadata 与 independent/fresh close gate | Done | `abh/models.py`, `abh/audits.py`, `abh/plans.py`, `abh/cli.py`, `abh/commands.py`, `abh/mcp_server.py` |
 | S34-004 | 同步 README、roadmap、task-board、Agent Protocol 和 codebase map | Done | `README.md`, `docs/development-roadmap.md`, `docs/task-board.md`, `docs/architecture/agent-protocol.md`, `docs/context/codebase-map.md` |
 | S34-005 | plan-038 验证、独立审计和关闭 | Done | `.abh/verifications/`, `docs/audits/audit-038-independent-audit-gate.md`, `docs/plans/plan-038-independent-audit-gate.md` |
+
+## Sprint 35
+
+目标：把 `stage6.quality-signal-model` dogfood 成 `plan-039-quality-signal-model`，先定义 product-quality-first / agent-navigation-second 的质量信号词汇，再让 drift、memory、route、`abh next` 和 health report 复用。
+
+| ID | 任务 | 状态 | 产出 |
+| --- | --- | --- | --- |
+| S35-001 | materialize Quality Signal Model 计划 | Done | `stage6.quality-signal-model` -> `docs/plans/plan-039-quality-signal-model.md` |
+| S35-002 | 定义 Stage 6 quality signal model | Done | `docs/architecture/quality-signals.md` |
+| S35-003 | 同步 roadmap、task-board、Agent Protocol 和 codebase map | Done | `docs/development-roadmap.md`, `docs/task-board.md`, `docs/architecture/agent-protocol.md`, `docs/context/codebase-map.md` |
+| S35-004 | plan-039 验证、独立审计和关闭 | Done | `docs/audits/audit-039-quality-signal-model.md`, `docs/plans/plan-039-quality-signal-model.md` |
+
+## Sprint 36
+
+目标：把 `stage6.drift-quality` dogfood 成 `plan-040-drift-quality`，让 drift finding 从简单规则命中升级为带 severity、confidence、matched span、source excerpt、evidence path 和 recommendation 的质量信号。
+
+| ID | 任务 | 状态 | 产出 |
+| --- | --- | --- | --- |
+| S36-001 | materialize Drift Quality 计划 | Done | `stage6.drift-quality` -> `docs/plans/plan-040-drift-quality.md` |
+| S36-002 | 定义 drift quality 红灯测试 | Done | `tests/test_cli.py` |
+| S36-003 | 实现 drift finding 质量信号元数据 | Done | `abh/models.py`, `abh/drift.py`, `abh/cli.py`, `abh/mcp_server.py` |
+| S36-004 | 同步 README、roadmap、task-board、quality signals 和 codebase map | Done | `README.md`, `docs/development-roadmap.md`, `docs/task-board.md`, `docs/architecture/quality-signals.md`, `docs/context/codebase-map.md` |
+| S36-005 | plan-040 验证、独立审计和关闭 | Done | `docs/audits/audit-040-drift-quality.md`, `docs/plans/plan-040-drift-quality.md` |
+
+## Sprint 37
+
+目标：把 `stage6.memory-index` dogfood 成 `plan-041-memory-index`，让 memory 从 keyword-searchable notes 升级为带 tags、status、typed relationships 和 supersession 的可复用质量知识。
+
+| ID | 任务 | 状态 | 产出 |
+| --- | --- | --- | --- |
+| S37-001 | materialize Memory Index 计划 | Done | `stage6.memory-index` -> `docs/plans/plan-041-memory-index.md` |
+| S37-002 | 定义 memory metadata 红灯测试 | Done | `tests/test_cli.py` |
+| S37-003 | 实现 memory metadata、Markdown 渲染和 relationship/status filters | Done | `abh/models.py`, `abh/memory.py`, `abh/cli.py` |
+| S37-004 | 接入 Agent-First command contract 和 MCP 写/读工具 | Done | `abh/commands.py`, `abh/mcp_server.py` |
+| S37-005 | 同步 README、roadmap、task-board、quality signals、Agent Protocol 和 codebase map | Done | `README.md`, `docs/development-roadmap.md`, `docs/task-board.md`, `docs/architecture/quality-signals.md`, `docs/architecture/agent-protocol.md`, `docs/context/codebase-map.md` |
+| S37-006 | plan-041 验证、独立审计和关闭 | Review | `.abh/verifications/`, `docs/audits/audit-041-memory-index.md`, `docs/plans/plan-041-memory-index.md` |

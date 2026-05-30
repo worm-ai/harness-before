@@ -137,6 +137,17 @@ class CliTests(TestCase):
         self.assertIn("independence", audit_record.input_schema["properties"])
         self.assertIn("verification_id", audit_record.input_schema["properties"])
 
+        memory_add = command_contract("memory.add")
+        self.assertEqual(memory_add.cli_command, "memory add")
+        self.assertEqual(memory_add.mcp_tool, "abh_memory_add")
+        self.assertFalse(memory_add.read_only)
+        self.assertIn("tags", memory_add.input_schema["properties"])
+        self.assertIn("status", memory_add.input_schema["properties"])
+        self.assertIn("related_plan_ids", memory_add.input_schema["properties"])
+        self.assertIn("related_audit_ids", memory_add.input_schema["properties"])
+        self.assertIn("related_drift_ids", memory_add.input_schema["properties"])
+        self.assertIn("superseded_by", memory_add.input_schema["properties"])
+
         plan_create = command_contract("plan.create")
         self.assertEqual(plan_create.cli_command, "plan create")
         self.assertEqual(plan_create.mcp_tool, "abh_plan_create")
@@ -2052,6 +2063,100 @@ class CliTests(TestCase):
         self.assertIn("mem-001 [overturned_completion]", out)
         self.assertIn("Audit overturned a premature close", out)
 
+    def test_memory_metadata_is_recorded_searchable_and_rendered(self) -> None:
+        code, out, err = self.run_cli(
+            "memory",
+            "add",
+            "--id",
+            "mem-quality-001",
+            "--type",
+            "false_assumption",
+            "--summary",
+            "Quality metadata makes memory reusable",
+            "--context",
+            "A plan repeated a previously rejected shortcut.",
+            "--evidence",
+            "docs/audits/audit-040-drift-quality.md",
+            "--tag",
+            "quality-signal",
+            "--tag",
+            "audit",
+            "--status",
+            "active",
+            "--related-plan",
+            "plan-040-drift-quality",
+            "--related-audit",
+            "audit-040-drift-quality",
+            "--related-drift",
+            "drift-quality-001",
+            "--superseded-by",
+            "mem-quality-002",
+            "--related",
+            "plan-040-drift-quality",
+            "--implication",
+            "Route and audit flows should surface reusable memory.",
+        )
+
+        self.assertEqual(code, 0, err)
+        payload = json.loads((self.root / ".abh" / "memory" / "mem-quality-001.json").read_text(encoding="utf-8"))
+        self.assertEqual(payload["tags"], ["quality-signal", "audit"])
+        self.assertEqual(payload["status"], "active")
+        self.assertEqual(payload["related_plan_ids"], ["plan-040-drift-quality"])
+        self.assertEqual(payload["related_audit_ids"], ["audit-040-drift-quality"])
+        self.assertEqual(payload["related_drift_ids"], ["drift-quality-001"])
+        self.assertEqual(payload["superseded_by"], "mem-quality-002")
+
+        markdown = (self.root / "docs" / "memory" / "mem-quality-001.md").read_text(encoding="utf-8")
+        self.assertIn("- Tags: quality-signal, audit", markdown)
+        self.assertIn("- Related Plans: plan-040-drift-quality", markdown)
+        self.assertIn("- Related Audits: audit-040-drift-quality", markdown)
+        self.assertIn("- Related Drift Reports: drift-quality-001", markdown)
+        self.assertIn("- Superseded By: mem-quality-002", markdown)
+
+        code, out, err = self.run_cli(
+            "memory",
+            "search",
+            "--status",
+            "active",
+            "--related-plan",
+            "plan-040-drift-quality",
+            "--tag",
+            "quality-signal",
+            "--json",
+        )
+        self.assertEqual(code, 0, err)
+        result = json.loads(out)["data"]["memories"]
+        self.assertEqual([memory["id"] for memory in result], ["mem-quality-001"])
+        self.assertEqual(result[0]["related_plan_ids"], ["plan-040-drift-quality"])
+
+    def test_memory_legacy_records_get_metadata_defaults(self) -> None:
+        (self.root / ".abh" / "memory").mkdir(parents=True, exist_ok=True)
+        write_json(
+            self.root / ".abh" / "memory" / "mem-legacy.json",
+            {
+                "schema_version": "1",
+                "id": "mem-legacy",
+                "type": "rejected_path",
+                "summary": "legacy memory",
+                "context": "created before memory index",
+                "implication": "legacy reads still work",
+                "related": ["plan-old"],
+                "evidence": ["docs/memory/mem-legacy.md"],
+            },
+        )
+
+        code, out, err = self.run_cli("memory", "list", "--json")
+
+        self.assertEqual(code, 0, err)
+        memory = json.loads(out)["data"]["memories"][0]
+        self.assertEqual(memory["id"], "mem-legacy")
+        self.assertEqual(memory["status"], "active")
+        self.assertEqual(memory["tags"], [])
+        self.assertEqual(memory["related_plan_ids"], [])
+        self.assertEqual(memory["related_audit_ids"], [])
+        self.assertEqual(memory["related_drift_ids"], [])
+        self.assertEqual(memory["superseded_by"], "")
+
     def test_route_recommends_reading_order_for_close_question(self) -> None:
         code, out, err = self.run_cli(
             "route",
@@ -3202,11 +3307,23 @@ class McpServerTests(TestCase):
                         "implication": "write tools preserve ABH gates",
                         "evidence": ["tests/test_cli.py"],
                         "related": ["plan-mcp-write"],
+                        "tags": ["mcp", "quality-signal"],
+                        "status": "active",
+                        "related_plan_ids": ["plan-mcp-write"],
+                        "related_audit_ids": ["audit-mcp-write"],
+                        "related_drift_ids": ["drift-mcp-write"],
+                        "superseded_by": "mem-mcp-write-v2",
                     },
                 },
             }
         )
-        self.assertEqual(memory_response["result"]["structuredContent"]["data"]["memory"]["id"], "mem-mcp-write")
+        memory = memory_response["result"]["structuredContent"]["data"]["memory"]
+        self.assertEqual(memory["id"], "mem-mcp-write")
+        self.assertEqual(memory["tags"], ["mcp", "quality-signal"])
+        self.assertEqual(memory["related_plan_ids"], ["plan-mcp-write"])
+        self.assertEqual(memory["related_audit_ids"], ["audit-mcp-write"])
+        self.assertEqual(memory["related_drift_ids"], ["drift-mcp-write"])
+        self.assertEqual(memory["superseded_by"], "mem-mcp-write-v2")
         self.assertTrue((self.root / ".abh" / "plans" / "plan-mcp-write.json").exists())
         self.assertTrue((self.root / "docs" / "plans" / "plan-mcp-write.md").exists())
         self.assertTrue((self.root / ".abh" / "audits" / "audit-mcp-write.json").exists())

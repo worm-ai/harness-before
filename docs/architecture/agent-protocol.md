@@ -245,7 +245,9 @@ This is the main convenience layer for agents. Agents should not have to memoriz
 - `plan-036-quickstart-recipes-and-distribution`: completed; materialized from `stage4.quickstart-recipes-and-distribution` and documents quickstart, recipes, and current git/editable distribution paths.
 - `plan-037-audit-prompt-bundle`: completed; materialized from `stage5.audit-prompt-bundle` and adds a read-only `abh audit bundle <plan> --json` surface for independent audit prompts and evidence paths.
 - `plan-038-independent-audit-gate`: completed; materialized from `stage5.independent-audit-gate` and adds audit verdict metadata plus close-time independent/fresh verification checks.
-- `plan-039-quality-signal-model`: in progress; materialized from `stage6.quality-signal-model` and defines the product-quality-first, agent-navigation-second signal model consumed by future drift, memory, route, `abh next`, and health-report surfaces.
+- `plan-039-quality-signal-model`: completed; materialized from `stage6.quality-signal-model` and defines the product-quality-first, agent-navigation-second signal model consumed by future drift, memory, route, `abh next`, and health-report surfaces.
+- `plan-040-drift-quality`: completed; materialized from `stage6.drift-quality` and adds severity, confidence, matched span, source excerpt, evidence path, and recommendation metadata to drift findings.
+- `plan-041-memory-index`: in progress; materialized from `stage6.memory-index` and adds memory tags, status, typed plan/audit/drift relationships, supersession metadata, and relationship/status filters.
 
 Stage 6 quality signal direction:
 

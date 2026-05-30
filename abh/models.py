@@ -9,6 +9,7 @@ VERIFICATION_RESULTS = ("pass", "fail", "partial")
 VERIFICATION_TRUST_LEVELS = ("unknown", "manual_record", "local_shell", "isolated_shell", "ci")
 AUDIT_RESULTS = ("pass", "fail", "partial", "need_info")
 MEMORY_TYPES = ("false_assumption", "rejected_path", "divergent_pattern", "overturned_completion")
+MEMORY_STATUSES = ("active", "resolved", "superseded", "dismissed")
 DRIFT_TYPES = ("boundary_drift", "dependency_drift", "test_drift", "terminology_drift")
 SCHEMA_VERSION = "1"
 
@@ -217,6 +218,11 @@ class MemoryRecord:
     status: str = "active"
     related: list[str] = field(default_factory=list)
     evidence: list[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
+    related_plan_ids: list[str] = field(default_factory=list)
+    related_audit_ids: list[str] = field(default_factory=list)
+    related_drift_ids: list[str] = field(default_factory=list)
+    superseded_by: str = ""
     deprecation_policy: str = "Mark deprecated when evidence no longer applies."
     created_at: str = field(default_factory=utc_now)
     updated_at: str = field(default_factory=utc_now)
@@ -233,6 +239,11 @@ class MemoryRecord:
             "status": self.status,
             "related": list(self.related),
             "evidence": list(self.evidence),
+            "tags": list(self.tags),
+            "related_plan_ids": list(self.related_plan_ids),
+            "related_audit_ids": list(self.related_audit_ids),
+            "related_drift_ids": list(self.related_drift_ids),
+            "superseded_by": self.superseded_by,
             "deprecation_policy": self.deprecation_policy,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
@@ -250,6 +261,11 @@ class MemoryRecord:
             status=data.get("status", "active"),
             related=list(data.get("related", [])),
             evidence=list(data.get("evidence", [])),
+            tags=list(data.get("tags", [])),
+            related_plan_ids=list(data.get("related_plan_ids", [])),
+            related_audit_ids=list(data.get("related_audit_ids", [])),
+            related_drift_ids=list(data.get("related_drift_ids", [])),
+            superseded_by=data.get("superseded_by", ""),
             deprecation_policy=data.get("deprecation_policy", "Mark deprecated when evidence no longer applies."),
             created_at=data.get("created_at", utc_now()),
             updated_at=data.get("updated_at", utc_now()),

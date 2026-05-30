@@ -167,11 +167,34 @@ def call_memory_list(arguments: dict[str, Any]) -> dict[str, Any]:
 def call_memory_search(arguments: dict[str, Any]) -> dict[str, Any]:
     memory_type = arguments.get("type")
     query = arguments.get("query")
+    status = arguments.get("status")
+    tag = arguments.get("tag")
+    related_plan_id = arguments.get("related_plan_id")
+    related_audit_id = arguments.get("related_audit_id")
+    related_drift_id = arguments.get("related_drift_id")
     if memory_type is not None and not isinstance(memory_type, str):
         raise AbhError("invalid tool argument: type must be a string")
     if query is not None and not isinstance(query, str):
         raise AbhError("invalid tool argument: query must be a string")
-    memories = search_memory(memory_type=memory_type, query=query)
+    if status is not None and not isinstance(status, str):
+        raise AbhError("invalid tool argument: status must be a string")
+    if tag is not None and not isinstance(tag, str):
+        raise AbhError("invalid tool argument: tag must be a string")
+    if related_plan_id is not None and not isinstance(related_plan_id, str):
+        raise AbhError("invalid tool argument: related_plan_id must be a string")
+    if related_audit_id is not None and not isinstance(related_audit_id, str):
+        raise AbhError("invalid tool argument: related_audit_id must be a string")
+    if related_drift_id is not None and not isinstance(related_drift_id, str):
+        raise AbhError("invalid tool argument: related_drift_id must be a string")
+    memories = search_memory(
+        memory_type=memory_type,
+        query=query,
+        status=status,
+        tag=tag,
+        related_plan_id=related_plan_id,
+        related_audit_id=related_audit_id,
+        related_drift_id=related_drift_id,
+    )
     return {"memories": [memory.to_dict() for memory in memories], "total": len(memories)}
 
 
@@ -264,6 +287,12 @@ def call_memory_add(arguments: dict[str, Any]) -> dict[str, Any]:
         implication=require_string(arguments, "implication"),
         evidence=optional_string_list(arguments, "evidence"),
         related=optional_string_list(arguments, "related"),
+        tags=optional_string_list(arguments, "tags"),
+        status=optional_string(arguments, "status", "active") or "active",
+        related_plan_ids=optional_string_list(arguments, "related_plan_ids"),
+        related_audit_ids=optional_string_list(arguments, "related_audit_ids"),
+        related_drift_ids=optional_string_list(arguments, "related_drift_ids"),
+        superseded_by=optional_string(arguments, "superseded_by"),
         deprecation_policy=optional_string(arguments, "deprecation_policy"),
     )
     return {"memory": memory.to_dict()}

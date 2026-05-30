@@ -75,15 +75,15 @@ Drift analysis remains local and rule-based in Stage 6. ABH should not call an L
 
 Memory entries become reusable quality knowledge when they can say when to use them and whether they are still valid.
 
-Future memory metadata should include:
+Memory Index records the first runtime layer of this metadata:
 
 - tags;
 - status;
 - related plans, audits, and drift reports;
 - superseded_by for outdated learning;
-- reuse guidance explaining when the memory should influence a plan, route, audit, or next action.
+- reuse guidance through summary, context, implication, evidence, and relationship fields explaining when the memory should influence a plan, route, audit, or next action.
 
-Memory search should still support keyword lookup, but Stage 6 should make relationship and status filters first-class.
+Memory search still supports keyword lookup, and Stage 6 makes relationship and status filters first-class through `--status`, `--tag`, `--related-plan`, `--related-audit`, and `--related-drift`. Historical memory records remain readable; missing metadata is treated as active memory with empty tags and relationship lists.
 
 ## Verification And Audit Signals
 

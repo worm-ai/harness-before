@@ -250,7 +250,7 @@ Sprint 25 已完成 `plan-029-attractor-registry`。`plan-028-agent-first-comman
 
 最近关闭计划：`plan-038-independent-audit-gate`。这一切片从 queue key `stage5.independent-audit-gate` materialize 而来，已经把 auditor context/source、independence 和当前 fresh passing verification basis 纳入 audit record 与 close gate。
 
-当前进行计划：`plan-040-drift-quality`。`plan-039-quality-signal-model` 已关闭并定义 Stage 6 的质量信号模型；`plan-040` 正在把 drift finding 升级为包含 severity、confidence、matched span、source excerpt 和 evidence path 的产品质量信号。
+当前进行计划：`plan-041-memory-index`。`plan-039-quality-signal-model` 已关闭并定义 Stage 6 的质量信号模型；`plan-040-drift-quality` 已关闭并把 drift finding 升级为包含 severity、confidence、matched span、source excerpt 和 evidence path 的产品质量信号；`plan-041` 正在把 memory 升级为可按 tags、status、plan/audit/drift 关系和 supersession 复用的质量知识。
 
 当前阶段状态：
 
@@ -457,7 +457,7 @@ Roadmap queue 规则：
 
 - 先定义统一 quality signal model，覆盖 severity、confidence、evidence refs、source excerpt、关系字段、status 和 health aggregation 语义。
 - drift finding 增加 severity、matched span、source excerpt 和 confidence。
-- memory 支持标签、状态废弃、related plan/audit 反向索引。
+- memory 支持标签、状态、related plan/audit/drift 反向索引和 supersession。
 - route 从关键词匹配升级为“对象图 + 简单权重排序”。
 - 新增 `abh report health --json`，展示计划关闭率、审计驳回率、重复漂移率、stale verification、memory 命中情况和 top quality risks。
 
@@ -466,8 +466,8 @@ Roadmap queue 规则：
 建议后续计划：
 
 - `plan-039-quality-signal-model`（已完成）
-- `plan-040-drift-quality`（进行中）
-- `stage6.memory-index`
+- `plan-040-drift-quality`（已完成）
+- `plan-041-memory-index`（进行中）
 - `stage6.project-health-report`
 
 ### 阶段 7：团队可用与生态集成
@@ -500,12 +500,12 @@ Roadmap queue 规则：
 | 阶段 3：验证执行器 | `plan-002-sprint-2-local-plan-loop`, `plan-016-verify-runner`, `plan-017-plan-update`, `plan-018-core-module-split`, `plan-019-verification-environment-metadata`, `plan-020-stage-3-functional-plan`, `plan-021-verification-trust-and-stale-detection`, `plan-022-verification-failure-classification`, `plan-023-atomic-abh-writes`, `plan-024-memory-drift-routing-module-split`, `plan-025-stage-3-finalization`, `plan-026-v0-3-release-prep` | `verify record` 可记录验证结果；`verify run` 可执行 validation checklist、记录机器证据、失败阻断计划并支持 JSON 输出；`plan update` 可通过 CLI 双写追加计划字段并精确修复 validation checklist；`core.py` 已拆出 plan/audit/verification/errors/memory/drift/routing 领域模块并保持兼容导出；environment 元数据已补充 cwd、git、版本、timeout、argv 和 allowlisted env 证据；trust level、stale summary 和失败分类已落盘并暴露给审计；`.abh` JSON 与 Markdown 保存路径已补充原子写和本地文件锁；阶段 3 已通过 `plan-025` 收尾为 v0.3 Verify Runner 里程碑，并通过 `plan-026` 对齐 v0.3.0 release metadata 与 release notes | 已完成；Agent-First 吸引子入口层成为下一阶段最高优先级 |
 | 阶段 4：Agent-First 吸引子入口层 | `plan-001-sprint-1-foundation`, `plan-007-zero-dep-install`, `plan-027-stage-4-attractor-entry-plan`, `plan-028-agent-first-command-contract`, `plan-029-attractor-registry`, `plan-030-roadmap-queue-and-plan-numbering`, `plan-031-truth-precedence-and-age-docs`, `plan-032-abh-init-active-attractor`, `plan-033-agent-contract-setup`, `plan-034-git-hooks-guardrails`, `plan-035-abh-next-and-onboarding-check`, `plan-036-quickstart-recipes-and-distribution` | active attractor 文档和模板；uvx/uv tool install 降低接入门槛；Stage 4 已校准为 Agent-First 吸引子入口层；`abh.commands` 已承载共享命令契约、JSON envelope、MCP tool metadata、side effects 和 confirmation boundary；MCP `abh_plan_status` 已与 CLI `plan status --json` 对齐；Attractor Registry 已把 active attractor 升级为 CLI/MCP 可读对象并接入 ready plan 校验；roadmap queue 已避免未来编号漂移；AGE owner-doc baseline 已定义 docs 路由、context 和 truth precedence；`abh init` 已提供 JSON preview、`--write --confirm` 写入边界、默认 active attractor 和 owner-doc 初始化；Agent Contract Export 已实现 Codex、Claude Code 和 MCP 的只读 setup bundle；Git Hooks Guardrails 已交付本地 default pre-commit MVP；Next/Onboarding Check 已交付只读 Agent navigation 和 readiness MVP；Quickstart/Recipes 已补齐 Stage 4 adoption 入口和当前 git/editable 分发路径 | PyPI/uvx abh 裸包名发布、release automation、团队级 hook/profile 策略 |
 | 阶段 5：真正独立审计 | `plan-003-sprint-3-audit-memory-close`, `plan-007-zero-dep-install`, `plan-008-roadmap-sync-and-doctor`, `plan-037-audit-prompt-bundle`, `plan-038-independent-audit-gate` | audit request/record/close 闭环，人工独立审计流程已 dogfood；`plan-037` 已交付只读 audit bundle/prompt surface；`plan-038` 已把审计上下文、独立性声明和 fresh verification basis 纳入关闭门禁 | 已完成；自动审计执行和真实身份校验转入后续策略/生态计划 |
-| 阶段 6：漂移与记忆质量提升 | `plan-004-sprint-4-route-drift`, `plan-007-sprint-7-dogfood`, `plan-039-quality-signal-model`, `plan-040-drift-quality` | 关键词 drift、route 注入活跃计划和记忆；`plan-039` 定义 product-quality-first / agent-navigation-second 的质量信号模型；`plan-040` 正在提升 drift finding 质量 | memory 索引、对象图路由、health report |
+| 阶段 6：漂移与记忆质量提升 | `plan-004-sprint-4-route-drift`, `plan-007-sprint-7-dogfood`, `plan-039-quality-signal-model`, `plan-040-drift-quality`, `plan-041-memory-index` | 关键词 drift、route 注入活跃计划和记忆；`plan-039` 定义 product-quality-first / agent-navigation-second 的质量信号模型；`plan-040` 提升 drift finding 质量；`plan-041` 正在把 memory 提升为带 tags、status、typed relationships 和 supersession 的可复用质量知识 | 对象图路由、health report |
 | 阶段 7：团队可用与生态集成 | `plan-007-zero-dep-install` | uvx/uv tool install 降低接入门槛 | CI 模板、多仓库、团队策略、发布自动化 |
 
 ## 7. 下一批推荐计划
 
-本节只列下一批仍可切分执行的计划。已关闭的 `plan-012-agent-protocol-foundation`、`plan-013-json-output-and-errors`、`plan-014-readonly-mcp-server`、`plan-015-controlled-mcp-write-tools`、阶段 3 的 `plan-016` 至 `plan-025`、release-prep 的 `plan-026-v0-3-release-prep`、Stage 4 的 `plan-027-stage-4-attractor-entry-plan` 至 `plan-036-quickstart-recipes-and-distribution`，Stage 5 的 `plan-037-audit-prompt-bundle` 和 `plan-038-independent-audit-gate`，以及 Stage 6 的 `plan-039-quality-signal-model` 已归入第 3 章历史执行线与第 6 章阶段映射。当前 materialized roadmap item 是 `stage6.drift-quality`；后续 queued roadmap items 是 `stage6.memory-index` 和 `stage6.project-health-report`。未来事项的事实来源是 `.abh/roadmap.json`，文档中不再为未 materialize 项预写具体 plan 编号。
+本节只列下一批仍可切分执行的计划。已关闭的 `plan-012-agent-protocol-foundation`、`plan-013-json-output-and-errors`、`plan-014-readonly-mcp-server`、`plan-015-controlled-mcp-write-tools`、阶段 3 的 `plan-016` 至 `plan-025`、release-prep 的 `plan-026-v0-3-release-prep`、Stage 4 的 `plan-027-stage-4-attractor-entry-plan` 至 `plan-036-quickstart-recipes-and-distribution`，Stage 5 的 `plan-037-audit-prompt-bundle` 和 `plan-038-independent-audit-gate`，以及 Stage 6 的 `plan-039-quality-signal-model` 和 `plan-040-drift-quality` 已归入第 3 章历史执行线与第 6 章阶段映射。当前 materialized roadmap item 是 `stage6.memory-index`；后续 queued roadmap item 是 `stage6.project-health-report`。未来事项的事实来源是 `.abh/roadmap.json`，文档中不再为未 materialize 项预写具体 plan 编号。
 
 已完成参考：
 
