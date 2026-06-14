@@ -188,6 +188,7 @@ def record_verification(
         from .boundary import compute_structure_hash, build_import_map as _bim
         metadata.setdefault("structure_hash", compute_structure_hash(root))
         metadata.setdefault("baseline_import_map", _bim(root))
+        metadata.setdefault("git", git_metadata(root))
     except Exception:
         pass
     run = VerificationRun(

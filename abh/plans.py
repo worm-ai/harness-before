@@ -273,6 +273,12 @@ def close_plan(plan_id: str, cwd: Path | None = None) -> PlanRecord:
         raise AbhError("cannot close plan without a passing audit")
     if not plan.closure_evidence:
         raise AbhError("cannot close plan without closure evidence")
+    # Structural scope check: compare baseline vs current diff against plan scope.
+    from .boundary import check_plan_scope
+    scope_findings = check_plan_scope(plan_id=plan_id, cwd=cwd)
+    if scope_findings:
+        lines = "\n".join(f"  - [{f.severity}] {f.evidence}" for f in scope_findings)
+        raise AbhError(f"plan scope violations detected; cannot close:\n{lines}")
     plan.status = "closed"
     if passing_audit.id not in plan.closure_evidence:
         plan.closure_evidence.append(passing_audit.id)

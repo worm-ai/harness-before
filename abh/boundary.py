@@ -197,3 +197,117 @@ def analyze_plan_drift(*, plan_id: str, cwd: Path | None = None) -> list[DriftFi
                 )
 
     return findings
+
+
+def _file_in_scope(file_path: str, scope_dirs: set[str]) -> bool:
+    """Check whether a file path falls within at least one scope directory."""
+    normalized = file_path.replace("\\", "/")
+    for scope in scope_dirs:
+        s = scope.rstrip("/") + "/"
+        if normalized.startswith(s) or normalized == scope.rstrip("/"):
+            return True
+    return False
+
+
+def infer_plan_scope(plan, cwd: Path) -> set[str]:
+    """Extract directory scopes from plan goals.
+
+    Heuristics:
+    1. Path-like tokens containing ``/`` or ending in ``.py`` → directory prefix.
+    2. Tokens that match existing directories under ``cwd``.
+    3. Tokens that match known module paths from the codebase map.
+
+    Returns an empty set if no scope can be inferred (meaning no restriction).
+    """
+    scopes: set[str] = set()
+    for goal in plan.goals:
+        for word in goal.split():
+            word = word.strip(".,;:'\"/")
+            if not word:
+                continue
+            # Path-like: contains / or ends with .py
+            if "/" in word:
+                # Use full path prefix, not just the first component.
+                path_part = word.rstrip("/")
+                scopes.add(path_part)
+            elif word.endswith(".py"):
+                scopes.add(word.rsplit("/", 1)[0] if "/" in word else word[:-3])
+            else:
+                # Check if it matches an existing directory
+                candidate = cwd / word
+                if candidate.is_dir():
+                    scopes.add(word)
+    # Also look for quoted paths or backtick paths in goals
+    import re
+    for goal in plan.goals:
+        for match in re.finditer(r'[`"]([^`"]+)[`"]', goal):
+            path_str = match.group(1)
+            if "/" in path_str or path_str.endswith(".py"):
+                scopes.add(path_str.split("/")[0])
+    return scopes
+
+
+def check_plan_scope(*, plan_id: str, cwd: Path | None = None) -> list[DriftFinding]:
+    """Check whether git changes since baseline exceed the plan's declared scope.
+
+    Compares the files changed between the plan's first verification and HEAD
+    against the scope inferred from plan.goals. Also runs import-based non-goal
+    checking via analyze_plan_drift().
+
+    Returns a list of DriftFinding objects — empty means the plan's changes
+    are within scope and no non-goal violations were found.
+    """
+    from .plans import load_plan
+    from .verifications import load_verification
+
+    root = Path.cwd() if cwd is None else Path(cwd)
+    plan = load_plan(plan_id, cwd=root)
+
+    if not plan.verification_runs:
+        return []
+
+    # Get the baseline verification's git state.
+    baseline_run = load_verification(plan.verification_runs[0], cwd=root)
+    baseline_git = baseline_run.environment.get("git", {})
+    if not isinstance(baseline_git, dict):
+        return []
+
+    baseline_commit = baseline_git.get("commit")
+    if not isinstance(baseline_commit, str) or not baseline_commit:
+        return []
+
+    # Get changed files since baseline.
+    from .plans import changed_git_status_paths
+    git_status_paths = changed_git_status_paths(baseline_run, cwd=root)
+    if git_status_paths is None:
+        return []
+
+    # Infer scope from plan goals.
+    scope = infer_plan_scope(plan, root)
+
+    findings: list[DriftFinding] = []
+
+    # Check each changed file against scope.
+    for path in git_status_paths:
+        # ABH's own governance files are never out of scope.
+        if path.startswith((".abh/", "docs/audits/", "docs/plans/", "docs/memory/")):
+            continue
+        if scope and not _file_in_scope(path, scope):
+            findings.append(
+                DriftFinding(
+                    drift_type="boundary_drift",
+                    evidence=f"Changed file {path!r} is outside plan scope {sorted(scope)}",
+                    recommendation=f"Review plan '{plan_id}' goals. If this change is intentional, update the plan scope. Otherwise, revert the out-of-scope change.",
+                    severity="medium",
+                    confidence="high",
+                    rule_id=f"plan_scope:{plan_id}",
+                    source_excerpt=f"git diff includes {path}",
+                    evidence_path=str(root / path),
+                )
+            )
+
+    # Also check import changes against non-goals.
+    import_findings = analyze_plan_drift(plan_id=plan_id, cwd=root)
+    findings.extend(import_findings)
+
+    return findings
