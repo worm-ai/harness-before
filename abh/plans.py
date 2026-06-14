@@ -112,6 +112,7 @@ def create_plan(
     validation_checklist: list[str] | None = None,
     closure_evidence: list[str] | None = None,
     commitment_phase_state: CommitmentPhaseState | None = None,
+    scope_paths: list[str] | None = None,
     cwd: Path | None = None,
 ) -> PlanRecord:
     ensure_workspace(cwd)
@@ -142,7 +143,14 @@ def create_plan(
         closure_evidence=list(closure_evidence or []),
         commitment_phase_state=commitment_phase_state or CommitmentPhaseState(),
         doc_path=str(plan_doc_path(plan_id, cwd)),
+        scope=list(scope_paths or []),
     )
+    # Capturer le commit git au moment de la creation du plan.
+    from .verifications import git_metadata
+    root = Path.cwd() if cwd is None else Path(cwd)
+    git_meta = git_metadata(root)
+    if git_meta.get("available") and isinstance(git_meta.get("commit"), str):
+        plan.baseline_commit = str(git_meta["commit"])
     if status == "ready":
         validate_plan_ready(plan)
     return save_plan(plan, cwd=cwd, write_doc=True)

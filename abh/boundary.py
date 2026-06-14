@@ -250,46 +250,43 @@ def infer_plan_scope(plan, cwd: Path) -> set[str]:
 def check_plan_scope(*, plan_id: str, cwd: Path | None = None) -> list[DriftFinding]:
     """Check whether git changes since baseline exceed the plan's declared scope.
 
-    Compares the files changed between the plan's first verification and HEAD
-    against the scope inferred from plan.goals. Also runs import-based non-goal
-    checking via analyze_plan_drift().
+    Uses ``plan.baseline_commit`` (captured at plan creation time) as the
+    reference point. Compares files changed since that commit against the
+    scope inferred from plan.goals (or explicit plan.scope).
 
-    Returns a list of DriftFinding objects — empty means the plan's changes
-    are within scope and no non-goal violations were found.
+    Returns a list of DriftFinding objects. An empty list with all checks
+    passing means the plan's changes are within scope.
     """
     from .plans import load_plan
-    from .verifications import load_verification
 
     root = Path.cwd() if cwd is None else Path(cwd)
     plan = load_plan(plan_id, cwd=root)
 
-    if not plan.verification_runs:
+    baseline_commit = getattr(plan, "baseline_commit", "") or ""
+    if not baseline_commit:
+        # Plan was created without git — scope check not applicable.
         return []
 
-    # Get the baseline verification's git state.
-    baseline_run = load_verification(plan.verification_runs[0], cwd=root)
-    baseline_git = baseline_run.environment.get("git", {})
-    if not isinstance(baseline_git, dict):
-        return []
+    # Verify git is still available and the commit still exists.
+    from .verifications import git_metadata
+    current_git = git_metadata(root)
+    if not current_git.get("available"):
+        return [_no_git_finding(plan_id)]
 
-    baseline_commit = baseline_git.get("commit")
-    if not isinstance(baseline_commit, str) or not baseline_commit:
-        return []
-
-    # Get changed files since baseline.
-    from .plans import changed_git_status_paths
-    git_status_paths = changed_git_status_paths(baseline_run, cwd=root)
+    # Get changed files since the baseline commit.
+    git_status_paths = _changed_files_since(baseline_commit, root)
     if git_status_paths is None:
-        return []
+        return [_no_git_finding(plan_id)]
 
-    # Infer scope from plan goals.
-    scope = infer_plan_scope(plan, root)
+    # Resolve scope: explicit plan.scope takes priority over goal inference.
+    scope = set(getattr(plan, "scope", []) or [])
+    if not scope:
+        scope = infer_plan_scope(plan, root)
 
     findings: list[DriftFinding] = []
 
     # Check each changed file against scope.
     for path in git_status_paths:
-        # ABH's own governance files are never out of scope.
         if path.startswith((".abh/", "docs/audits/", "docs/plans/", "docs/memory/")):
             continue
         if scope and not _file_in_scope(path, scope):
@@ -297,17 +294,46 @@ def check_plan_scope(*, plan_id: str, cwd: Path | None = None) -> list[DriftFind
                 DriftFinding(
                     drift_type="boundary_drift",
                     evidence=f"Changed file {path!r} is outside plan scope {sorted(scope)}",
-                    recommendation=f"Review plan '{plan_id}' goals. If this change is intentional, update the plan scope. Otherwise, revert the out-of-scope change.",
+                    recommendation=f"Review plan '{plan_id}' scope. If this change is intentional, update the plan scope. Otherwise, revert the out-of-scope change.",
                     severity="medium",
                     confidence="high",
                     rule_id=f"plan_scope:{plan_id}",
-                    source_excerpt=f"git diff includes {path}",
+                    source_excerpt=f"git diff {baseline_commit[:8]}..HEAD includes {path}",
                     evidence_path=str(root / path),
                 )
             )
 
     # Also check import changes against non-goals.
-    import_findings = analyze_plan_drift(plan_id=plan_id, cwd=root)
-    findings.extend(import_findings)
+    if plan.verification_runs:
+        import_findings = analyze_plan_drift(plan_id=plan_id, cwd=root)
+        findings.extend(import_findings)
 
     return findings
+
+
+def _no_git_finding(plan_id: str) -> DriftFinding:
+    return DriftFinding(
+        drift_type="boundary_drift",
+        evidence=f"git unavailable; cannot verify plan scope for {plan_id}",
+        recommendation="Ensure git is available and the plan was created with a valid baseline_commit. Re-create the plan if necessary.",
+        severity="need_info",
+        confidence="low",
+        rule_id=f"plan_scope_git:{plan_id}",
+        source_excerpt="git unavailable",
+        evidence_path="",
+    )
+
+
+def _changed_files_since(commit: str, root: Path) -> list[str] | None:
+    """Return files changed since a given commit, or None if unavailable."""
+    import subprocess
+    try:
+        result = subprocess.run(
+            ["git", "diff", "--name-only", commit],
+            cwd=root, text=True, capture_output=True, timeout=10, check=False,
+        )
+        if result.returncode != 0:
+            return None
+        return [p.strip().replace("\\", "/") for p in result.stdout.splitlines() if p.strip()]
+    except (OSError, subprocess.TimeoutExpired):
+        return None

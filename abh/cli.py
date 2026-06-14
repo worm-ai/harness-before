@@ -204,6 +204,7 @@ def build_parser() -> argparse.ArgumentParser:
     create.add_argument("--exit-criterion", action="append", default=[])
     create.add_argument("--validation", action="append", default=[])
     create.add_argument("--closure-evidence", action="append", default=[])
+    create.add_argument("--scope", action="append", default=[], help="directory scope for structural drift check at close")
     add_commitment_phase_state_arguments(create)
     add_json_argument(create)
     create.set_defaults(handler=handle_plan_create)
@@ -521,6 +522,7 @@ def handle_plan_create(args: argparse.Namespace) -> int:
         validation_checklist=args.validation,
         closure_evidence=args.closure_evidence,
         commitment_phase_state=commitment_phase_state_from_args(args),
+        scope_paths=args.scope,
     )
     if args.json:
         print_json_envelope(ok=True, command=command_name(args), data={"plan": plan.to_dict()})

@@ -216,6 +216,7 @@ def call_plan_create(arguments: dict[str, Any]) -> dict[str, Any]:
         exit_criteria=optional_string_list(arguments, "exit_criteria"),
         validation_checklist=optional_string_list(arguments, "validation_checklist"),
         closure_evidence=optional_string_list(arguments, "closure_evidence"),
+        scope_paths=optional_string_list(arguments, "scope"),
     )
     return {"plan": plan.to_dict()}
 

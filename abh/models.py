@@ -27,6 +27,8 @@ RECORD_SCHEMAS: dict[str, dict[str, set[str]]] = {
             "commitment_phase_state",
             "verification_runs",
             "audit_ids",
+            "baseline_commit",
+            "scope",
             "created_at",
             "updated_at",
             "doc_path",
@@ -551,6 +553,8 @@ class PlanRecord:
     commitment_phase_state: CommitmentPhaseState = field(default_factory=CommitmentPhaseState)
     verification_runs: list[str] = field(default_factory=list)
     audit_ids: list[str] = field(default_factory=list)
+    baseline_commit: str = ""
+    scope: list[str] = field(default_factory=list)
     created_at: str = field(default_factory=utc_now)
     updated_at: str = field(default_factory=utc_now)
     doc_path: str = ""
@@ -572,6 +576,8 @@ class PlanRecord:
             "commitment_phase_state": self.commitment_phase_state.to_dict(),
             "verification_runs": list(self.verification_runs),
             "audit_ids": list(self.audit_ids),
+            "baseline_commit": self.baseline_commit,
+            "scope": list(self.scope),
             "created_at": self.created_at,
             "updated_at": self.updated_at,
             "doc_path": self.doc_path,
@@ -595,6 +601,8 @@ class PlanRecord:
             commitment_phase_state=CommitmentPhaseState.from_dict(data.get("commitment_phase_state")),
             verification_runs=list(data.get("verification_runs", [])),
             audit_ids=list(data.get("audit_ids", [])),
+            baseline_commit=str(data.get("baseline_commit", "")),
+            scope=list(data.get("scope", [])),
             created_at=data.get("created_at", utc_now()),
             updated_at=data.get("updated_at", utc_now()),
             doc_path=data.get("doc_path", ""),
