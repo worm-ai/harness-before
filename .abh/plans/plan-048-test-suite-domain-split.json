@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "plan-048-test-suite-domain-split",
   "title": "Test Suite Domain Split",
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",
@@ -52,5 +52,12 @@
   ],
   "created_at": "2026-06-05T02:36:46.023921+00:00",
   "updated_at": "2026-06-05T05:54:50.625934+00:00",
-  "doc_path": "D:\\work\\ai\\harness-before\\docs\\plans\\plan-048-test-suite-domain-split.md"
+  "doc_path": "D:\\work\\ai\\harness-before\\docs\\plans\\plan-048-test-suite-domain-split.md",
+  "commitment_phase_state": {
+    "stable_state_now": [],
+    "active_change_pressure": [],
+    "target_stable_state": [],
+    "conversion_proof": [],
+    "residual_pressure": []
+  }
 }

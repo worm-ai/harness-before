@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-033-agent-contract-setup",
   "plan_id": "plan-033-agent-contract-setup",
   "auditor": "independent-review",

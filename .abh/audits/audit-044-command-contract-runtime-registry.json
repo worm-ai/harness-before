@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-044-command-contract-runtime-registry",
   "plan_id": "plan-044-command-contract-runtime-registry",
   "auditor": "independent-review",

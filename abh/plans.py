@@ -17,6 +17,8 @@ from .storage import (
     write_json_markdown_pair,
 )
 
+PLAN_BOOKKEEPING_FIELDS = {"closure_evidence", "commitment_phase_state", "verification_runs", "audit_ids", "status", "doc_path", "updated_at"}
+
 ALLOWED_TRANSITIONS: dict[str, set[str]] = {
     "draft": {"ready"},
     "ready": {"running", "blocked"},
@@ -38,13 +40,19 @@ PLAN_VERIFICATION_FIELDS = (
 )
 
 
-def list_plans(cwd: Path | None = None) -> list[PlanRecord]:
+def list_plans(cwd: Path | None = None, *, limit: int | None = None, offset: int = 0, status: str | None = None) -> list[PlanRecord]:
     directory = plans_dir(cwd)
     if not directory.exists():
         return []
     plans: list[PlanRecord] = []
     for path in sorted(directory.glob("*.json")):
         plans.append(PlanRecord.from_dict(read_json(path)))
+    if status:
+        plans = [p for p in plans if p.status == status]
+    if offset:
+        plans = plans[offset:]
+    if limit is not None:
+        plans = plans[:limit]
     return plans
 
 
@@ -57,6 +65,26 @@ def load_plan(plan_id: str, cwd: Path | None = None) -> PlanRecord:
 
 
 def save_plan(plan: PlanRecord, cwd: Path | None = None, write_doc: bool = True) -> PlanRecord:
+    """Save a plan to disk.
+
+    Raises AbhError if a closed plan is being modified in proof-bearing
+    fields. Bookkeeping fields (closure_evidence, commitment_phase_state,
+    etc.) are allowed to change after close.
+    """
+    if plan.status == "closed":
+        plan_path = plan_json_path(plan.id, cwd)
+        if plan_path.exists():
+            existing = PlanRecord.from_dict(read_json(plan_path))
+            if existing.status == "closed":
+                current = plan.to_dict()
+                prior = existing.to_dict()
+                for key in sorted(set(prior) | set(current)):
+                    if key in PLAN_BOOKKEEPING_FIELDS:
+                        continue
+                    if key in ("schema_version", "created_at"):
+                        continue
+                    if prior.get(key) != current.get(key):
+                        raise AbhError(f"cannot modify closed plan {plan.id}: field {key!r} changed; reopen via transition if intentional")
     ensure_workspace(cwd)
     plan.updated_at = utc_now()
     if write_doc:

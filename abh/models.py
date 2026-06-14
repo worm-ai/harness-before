@@ -11,7 +11,8 @@ AUDIT_RESULTS = ("pass", "fail", "partial", "need_info")
 MEMORY_TYPES = ("false_assumption", "rejected_path", "divergent_pattern", "overturned_completion")
 MEMORY_STATUSES = ("active", "resolved", "superseded", "dismissed")
 DRIFT_TYPES = ("boundary_drift", "dependency_drift", "test_drift", "terminology_drift")
-SCHEMA_VERSION = "1"
+SCHEMA_VERSION = "2"
+CURRENT_VERSION = 2
 RECORD_SCHEMAS: dict[str, dict[str, set[str]]] = {
     "plan": {
         "required": {"schema_version", "id", "title", "attractor", "baseline"},
@@ -103,7 +104,11 @@ def validate_record_schema(record_type: str, data: dict[str, Any]) -> list[dict[
     if "schema_version" not in data:
         issues.append({"category": "missing_schema_version", "field": "schema_version", "value": ""})
     elif str(data["schema_version"]) != SCHEMA_VERSION:
-        issues.append({"category": "unsupported_schema_version", "field": "schema_version", "value": str(data["schema_version"])})
+        version = int(str(data["schema_version"]))
+        if version < CURRENT_VERSION:
+            issues.append({"category": "legacy_schema_version", "field": "schema_version", "value": str(data["schema_version"])})
+        else:
+            issues.append({"category": "unsupported_schema_version", "field": "schema_version", "value": str(data["schema_version"])})
     for field_name in sorted(required - set(data)):
         if field_name == "schema_version":
             continue
@@ -122,6 +127,8 @@ def schema_issue_messages(record_type: str, record_id: str, data: dict[str, Any]
         field = issue["field"]
         if category == "missing_schema_version":
             messages.append(f"missing schema_version for {record_type} {record_id}")
+        elif category == "legacy_schema_version":
+            messages.append(f"legacy schema_version for {record_type} {record_id}: {issue['value']} (use 'abh doctor --fix' to migrate)")
         elif category == "unsupported_schema_version":
             messages.append(f"unsupported schema_version for {record_type} {record_id}: {issue['value']}")
         elif category == "missing_required_field":
@@ -177,6 +184,7 @@ class AttractorRecord:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "AttractorRecord":
+        data = migrate_record("attractor", data)
         return cls(
             id=data["id"],
             title=data["title"],
@@ -226,6 +234,7 @@ class VerificationRun:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "VerificationRun":
+        data = migrate_record("verification", data)
         return cls(
             id=data["id"],
             plan_id=data["plan_id"],
@@ -307,6 +316,7 @@ class AuditRecord:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "AuditRecord":
+        data = migrate_record("audit", data)
         return cls(
             id=data["id"],
             plan_id=data["plan_id"],
@@ -371,6 +381,7 @@ class MemoryRecord:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "MemoryRecord":
+        data = migrate_record("memory", data)
         return cls(
             id=data["id"],
             memory_type=data["type"],
@@ -458,6 +469,7 @@ class DriftReport:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "DriftReport":
+        data = migrate_record("drift", data)
         return cls(
             id=data["id"],
             source=data["source"],
@@ -567,6 +579,7 @@ class PlanRecord:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "PlanRecord":
+        data = migrate_record("plan", data)
         return cls(
             id=data["id"],
             title=data["title"],
@@ -651,3 +664,62 @@ class RoadmapQueue:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "RoadmapQueue":
         return cls(items=[RoadmapItem.from_dict(item) for item in data.get("items", [])])
+
+
+# ---------------------------------------------------------------------------
+# Schema migration infrastructure
+# ---------------------------------------------------------------------------
+
+def migrate_v1_to_v2(record_type: str, data: dict[str, Any]) -> dict[str, Any]:
+    """Migrate a v1 record to v2.
+
+    v1 to v2 changes:
+    - Sets schema_version to "2"
+    - Ensures all optional fields exist with their default values
+    - Normalizes deprecated fields
+
+    This function is idempotent: applying it to an already-v2 record
+    is a no-op.
+    """
+    if str(data.get("schema_version", "1")) == "2":
+        return data
+    migrated = dict(data)
+    migrated["schema_version"] = SCHEMA_VERSION
+
+    # Apply record-type-specific defaults for fields introduced between v1 and v2.
+    if record_type == "plan":
+        migrated.setdefault("commitment_phase_state", {
+            "stable_state_now": [],
+            "active_change_pressure": [],
+            "target_stable_state": [],
+            "conversion_proof": [],
+            "residual_pressure": [],
+        })
+    elif record_type == "verification":
+        migrated.setdefault("failed_checks", [])
+        migrated.setdefault("failure_classifications", [])
+        migrated.setdefault("environment", {})
+        if not migrated.get("trust_level"):
+            migrated["trust_level"] = "unknown"
+
+    return migrated
+
+
+def migrate_record(record_type: str, data: dict[str, Any]) -> dict[str, Any]:
+    """Run all applicable migrations on a record dict.
+
+    Checks the schema_version field and applies each migration step
+    sequentially until the record reaches CURRENT_VERSION.
+    Gracefully handles missing, null, or malformed schema_version.
+    """
+    raw = data.get("schema_version")
+    if raw is None or raw is False or (isinstance(raw, str) and raw == ""):
+        return migrate_v1_to_v2(record_type, data)
+    try:
+        version = int(raw)
+    except (ValueError, TypeError):
+        return migrate_v1_to_v2(record_type, data)
+    if version < CURRENT_VERSION:
+        if version < 2:
+            data = migrate_v1_to_v2(record_type, data)
+    return data

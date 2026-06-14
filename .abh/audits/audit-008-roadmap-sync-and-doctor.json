@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-008-roadmap-sync-and-doctor",
   "plan_id": "plan-008-roadmap-sync-and-doctor",
   "auditor": "independent-auditor",

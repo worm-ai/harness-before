@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-055-abh-workflow-skill",
   "plan_id": "plan-055-abh-workflow-skill",
   "auditor": "human-independent-review",

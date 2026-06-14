@@ -355,6 +355,7 @@ def build_parser() -> argparse.ArgumentParser:
     report_health.set_defaults(handler=handle_report_health)
 
     doctor_parser = subparsers.add_parser("doctor", help="check workspace consistency")
+    doctor_parser.add_argument("--fix", action="store_true", help="auto-migrate outdated schema records to current version")
     add_json_argument(doctor_parser)
     doctor_parser.set_defaults(handler=handle_doctor)
 
@@ -823,7 +824,7 @@ def handle_report_health(args: argparse.Namespace) -> int:
 
 
 def handle_doctor(args: argparse.Namespace) -> int:
-    issues = doctor()
+    issues = doctor(fix=args.fix)
     if args.json:
         if not issues:
             print_json_envelope(ok=True, command=command_name(args), data={"issues": []})
@@ -843,9 +844,15 @@ def handle_doctor(args: argparse.Namespace) -> int:
         )
         return 1
     if not issues:
-        print("doctor: ok")
+        label = "doctor: ok"
+        if args.fix:
+            label = "doctor: ok (migrations applied if needed)"
+        print(label)
         return 0
-    print("doctor: found consistency issues")
+    label = "doctor: found consistency issues"
+    if args.fix:
+        label = "doctor: found consistency issues (migrations applied)"
+    print(label)
     for issue in issues:
         print(f"- {issue}")
     return 1

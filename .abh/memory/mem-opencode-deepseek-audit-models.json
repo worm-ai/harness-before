@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "mem-opencode-deepseek-audit-models",
   "type": "divergent_pattern",
   "summary": "Use DeepSeek V4 Pro or V4 Flash for opencode independent audits",

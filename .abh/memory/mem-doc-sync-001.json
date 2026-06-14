@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "mem-doc-sync-001",
   "type": "divergent_pattern",
   "summary": "代码变更后文档同步反复遗漏",

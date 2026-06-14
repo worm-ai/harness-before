@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "plan-043-plan-reference-set",
   "title": "Plan Reference Set",
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",
@@ -49,5 +49,12 @@
   "audit_ids": [],
   "created_at": "2026-05-30T12:08:07.774509+00:00",
   "updated_at": "2026-06-04T10:44:54.387239+00:00",
-  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-043-plan-reference-set.md"
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-043-plan-reference-set.md",
+  "commitment_phase_state": {
+    "stable_state_now": [],
+    "active_change_pressure": [],
+    "target_stable_state": [],
+    "conversion_proof": [],
+    "residual_pressure": []
+  }
 }

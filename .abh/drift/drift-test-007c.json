@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "drift-test-007c",
   "source": "/tmp/test_drift4.txt",
   "findings": [

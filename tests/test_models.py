@@ -29,7 +29,7 @@ class ModelTests(WorkspaceCliTestCase):
         ]
 
         for record in records:
-            self.assertEqual(record.to_dict()["schema_version"], "1")
+            self.assertEqual(record.to_dict()["schema_version"], "2")
 
     def test_model_schema_validation_covers_core_record_families(self) -> None:
         records = {
@@ -105,4 +105,4 @@ class ModelTests(WorkspaceCliTestCase):
         )
 
         self.assertEqual(plan.id, "plan-legacy")
-        self.assertEqual(plan.to_dict()["schema_version"], "1")
+        self.assertEqual(plan.to_dict()["schema_version"], "2")

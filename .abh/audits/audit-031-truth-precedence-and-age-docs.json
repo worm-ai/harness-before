@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-031-truth-precedence-and-age-docs",
   "plan_id": "plan-031-truth-precedence-and-age-docs",
   "auditor": "codex-independent-review",

@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "plan-007-zero-dep-install",
   "title": "零门槛安装：uv 支持与二进制分发",
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",
@@ -47,5 +47,12 @@
   ],
   "created_at": "2026-05-23T03:06:20.686775+00:00",
   "updated_at": "2026-05-23T03:27:10.764418+00:00",
-  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-007-zero-dep-install.md"
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-007-zero-dep-install.md",
+  "commitment_phase_state": {
+    "stable_state_now": [],
+    "active_change_pressure": [],
+    "target_stable_state": [],
+    "conversion_proof": [],
+    "residual_pressure": []
+  }
 }

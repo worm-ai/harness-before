@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-011-stage-1-finalization",
   "plan_id": "plan-011-stage-1-finalization",
   "auditor": "independent-auditor",

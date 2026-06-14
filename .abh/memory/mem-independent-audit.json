@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "mem-independent-audit",
   "type": "false_assumption",
   "summary": "假设同一 agent session 可以完成独立审计",

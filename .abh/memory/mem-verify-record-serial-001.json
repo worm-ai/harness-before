@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "mem-verify-record-serial-001",
   "type": "divergent_pattern",
   "summary": "Parallel verify record can drop plan verification references",

@@ -1,0 +1,69 @@
+{
+  "schema_version": "2",
+  "id": "audit-058-dogfood-hardening",
+  "plan_id": "plan-058-verification-sandbox-and-storage-hardening",
+  "auditor": "human-independent-reviewer",
+  "scope": "Independent audit of plan-058: verification execution policy, closed plan immutability, shared read locks, schema v1→v2 migration, unit test modules. Check that all changes are bound to the active attractor invariants, that no non-goals were implemented, and that exit criteria are met.",
+  "auditor_context": "",
+  "independence": "independent",
+  "verification_id": "ver-845743bb049a",
+  "status": "complete",
+  "result": "fail",
+  "rationale": "Independent audit found 2 HIGH severity TOCTOU race conditions in file locking (shared_file_lock+write_json lack mutual exclusion; file_locks writer wait has gap). Also found: command policy bypass (double spaces), migrate_record crashes on null schema_version, VerificationRun.from_dict missing migration call, roadmap schema handling gap. Non-goals verified clean. Attractor invariants hold. See audit report for full findings.",
+  "evidence": [
+    "docs/plans/plan-058-verification-sandbox-and-storage-hardening.md",
+    "abh/verifications.py",
+    "abh/plans.py",
+    "abh/storage.py",
+    "abh/models.py",
+    "abh/core.py",
+    "abh/roadmap.py",
+    "abh/cli.py",
+    "tests/test_verification_policy.py",
+    "tests/test_plans_unit.py",
+    "tests/test_drift_unit.py",
+    "tests/test_storage_concurrency.py"
+  ],
+  "findings": [
+    {
+      "severity": "high",
+      "finding": "read_json+write_json缺少互斥锁可能导致撕裂读取",
+      "evidence": "storage.py:271 (write_text仅用file_lock) vs storage.py:29-51 (shared_file_lock用.shared/目录)",
+      "recommendation": "使write_text在写入前等待.shared/目录清空，或让read_json获取共享独占锁"
+    },
+    {
+      "severity": "high",
+      "finding": "file_locks写入者等待循环存在TOCTOU间隙",
+      "evidence": "storage.py:213-218",
+      "recommendation": "在获取独占锁后重新检查lock_dir.exists()，最多重试固定次数"
+    },
+    {
+      "severity": "medium",
+      "finding": "check_command_policy可通过双空格绕过rm模式",
+      "evidence": "verifications.py:48-49",
+      "recommendation": "匹配前规范化命令：' '.join(lowered.split())"
+    },
+    {
+      "severity": "low",
+      "finding": "migrate_record在schema_version: null时崩溃",
+      "evidence": "models.py:713",
+      "recommendation": "添加守卫：if raw is None or raw is False then migrate directly"
+    },
+    {
+      "severity": "low",
+      "finding": "VerificationRun.from_dict缺少migrate_record调用",
+      "evidence": "models.py:248",
+      "recommendation": "添加data=migrate_record('verification', data)到from_dict"
+    },
+    {
+      "severity": "low",
+      "finding": "commitment_phase_state被归类为bookkeeping可在close后修改",
+      "evidence": "plans.py:20",
+      "recommendation": "考虑对closed plan保护commitment_phase_state"
+    }
+  ],
+  "follow_ups": [],
+  "created_at": "2026-06-14T09:20:19.714406+00:00",
+  "updated_at": "2026-06-14T09:24:51.987817+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/audits/audit-058-dogfood-hardening.md"
+}

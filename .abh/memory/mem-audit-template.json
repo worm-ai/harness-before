@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "mem-audit-template",
   "type": "divergent_pattern",
   "summary": "ABH 独立审计子 agent 提示词模版",

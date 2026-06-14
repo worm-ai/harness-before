@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-004-sprint-4-route-drift",
   "plan_id": "plan-004-sprint-4-route-drift",
   "auditor": "independent-review",

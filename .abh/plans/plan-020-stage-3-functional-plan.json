@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "plan-020-stage-3-functional-plan",
   "title": "Stage 3 Functional Plan",
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",
@@ -40,5 +40,12 @@
   ],
   "created_at": "2026-05-24T11:37:30.114519+00:00",
   "updated_at": "2026-05-24T11:45:52.714286+00:00",
-  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-020-stage-3-functional-plan.md"
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-020-stage-3-functional-plan.md",
+  "commitment_phase_state": {
+    "stable_state_now": [],
+    "active_change_pressure": [],
+    "target_stable_state": [],
+    "conversion_proof": [],
+    "residual_pressure": []
+  }
 }

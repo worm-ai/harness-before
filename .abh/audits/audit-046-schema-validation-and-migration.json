@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-046-schema-validation-and-migration",
   "plan_id": "plan-046-schema-validation-and-migration",
   "auditor": "human-independent-review",

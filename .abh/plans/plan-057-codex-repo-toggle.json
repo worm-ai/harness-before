@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "plan-057-codex-repo-toggle",
   "title": "Codex Repository ABH Toggle",
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",

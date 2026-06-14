@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "plan-022-verification-failure-classification",
   "title": "Verification Failure Classification",
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",
@@ -46,5 +46,12 @@
   ],
   "created_at": "2026-05-24T12:33:36.852108+00:00",
   "updated_at": "2026-05-24T12:49:28.802144+00:00",
-  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-022-verification-failure-classification.md"
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-022-verification-failure-classification.md",
+  "commitment_phase_state": {
+    "stable_state_now": [],
+    "active_change_pressure": [],
+    "target_stable_state": [],
+    "conversion_proof": [],
+    "residual_pressure": []
+  }
 }

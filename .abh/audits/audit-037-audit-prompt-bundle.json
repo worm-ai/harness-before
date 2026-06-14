@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-037-audit-prompt-bundle",
   "plan_id": "plan-037-audit-prompt-bundle",
   "auditor": "opencode-deepseek-v4-pro",

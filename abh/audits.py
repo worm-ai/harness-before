@@ -31,13 +31,21 @@ def load_audit(audit_id: str, cwd: Path | None = None) -> AuditRecord:
     return AuditRecord.from_dict(read_json(path))
 
 
-def list_audits(cwd: Path | None = None) -> list[AuditRecord]:
+def list_audits(cwd: Path | None = None, *, limit: int | None = None, offset: int = 0, plan_id: str | None = None, status: str | None = None) -> list[AuditRecord]:
     directory = audits_dir(cwd)
     if not directory.exists():
         return []
     audits: list[AuditRecord] = []
     for path in sorted(directory.glob("*.json")):
         audits.append(AuditRecord.from_dict(read_json(path)))
+    if plan_id:
+        audits = [a for a in audits if a.plan_id == plan_id]
+    if status:
+        audits = [a for a in audits if a.status == status]
+    if offset:
+        audits = audits[offset:]
+    if limit is not None:
+        audits = audits[:limit]
     return audits
 
 

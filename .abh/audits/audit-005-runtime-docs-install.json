@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-005-runtime-docs-install",
   "plan_id": "plan-005-runtime-docs-install",
   "auditor": "independent-review",

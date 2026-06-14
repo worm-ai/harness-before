@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "mem-zero-dep-001",
   "type": "false_assumption",
   "summary": "假设 README 中的 pip 安装方式对非 Python 用户足够友好",

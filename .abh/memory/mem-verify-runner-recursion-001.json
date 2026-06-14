@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "mem-verify-runner-recursion-001",
   "type": "divergent_pattern",
   "summary": "verify runner checklist must avoid recursive self-invocation",

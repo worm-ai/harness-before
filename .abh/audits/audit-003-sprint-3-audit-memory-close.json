@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-003-sprint-3-audit-memory-close",
   "plan_id": "plan-003-sprint-3-audit-memory-close",
   "auditor": "independent-review",

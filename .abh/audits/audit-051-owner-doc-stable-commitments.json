@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-051-owner-doc-stable-commitments",
   "plan_id": "plan-051-owner-doc-stable-commitments",
   "auditor": "human-independent-review",

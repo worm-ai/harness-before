@@ -40,7 +40,7 @@ from .memory import (
     save_memory,
     search_memory,
 )
-from .models import schema_issue_messages
+from .models import schema_issue_messages, migrate_record, CURRENT_VERSION
 from .plans import (
     ALLOWED_TRANSITIONS,
     append_unique,
@@ -78,8 +78,9 @@ from .storage import (
     memory_dir,
     plans_dir,
     read_json,
+    write_json,
 )
-from .verifications import is_recursive_verify_command, load_verification, record_verification, run_verification
+from .verifications import is_recursive_verify_command, load_verification, record_verification, run_verification, check_command_policy, CommandPolicyResult
 
 
 # Verification runs are JSON-only execution evidence today, so doctor excludes
@@ -93,7 +94,7 @@ DOCTOR_OBJECTS: tuple[tuple[str, str, Callable[[Path | None], Path], Callable[[P
 )
 
 
-def doctor(cwd: Path | None = None) -> list[str]:
+def doctor(cwd: Path | None = None, *, fix: bool = False) -> list[str]:
     issues: list[str] = []
     for label, prefix, json_dir_factory, docs_dir_factory in DOCTOR_OBJECTS:
         json_dir = json_dir_factory(cwd)
@@ -102,7 +103,17 @@ def doctor(cwd: Path | None = None) -> list[str]:
         if json_dir.exists():
             for path in sorted(json_dir.glob("*.json")):
                 data = read_json(path)
-                issues.extend(schema_issue_messages(label, path.stem, data))
+                version = int(str(data.get("schema_version", "1")))
+                if version < CURRENT_VERSION:
+                    migration_issues = schema_issue_messages(label, path.stem, data)
+                    if fix:
+                        migrated = migrate_record(label, data)
+                        write_json(path, migrated)
+                        issues.append(f"migrated {label} {path.stem} from schema v{version} to v{CURRENT_VERSION}")
+                    else:
+                        issues.extend(migration_issues)
+                else:
+                    issues.extend(schema_issue_messages(label, path.stem, data))
                 if label == "attractor":
                     doc_path = data.get("doc_path") or data.get("path")
                     if isinstance(doc_path, str) and doc_path and not Path(doc_path).exists():

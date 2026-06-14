@@ -25,9 +25,132 @@ GIT_STATUS_HASH_IGNORED_PREFIXES = (
     "docs/plans/",
 )
 
-RUNNER_EXECUTION_POLICY = "trusted_local_shell"
+RUNNER_EXECUTION_POLICY = "guarded_local_shell"
 RUNNER_COMMAND_SOURCE = "plan_validation_checklist"
 RUNNER_ISOLATION = "none"
+
+# Execution policy allowlist: commands that are safe to run locally.
+# Each entry is a (prefix, reason) pair. Commands matching a prefix are allowed.
+SAFE_COMMAND_PREFIXES: tuple[tuple[str, str], ...] = (
+    ("python3 -m ", "python module invocation"),
+    ("python -m ", "python module invocation"),
+    ("python3 ", "python script invocation"),
+    ("python ", "python script invocation"),
+    ("pytest", "pytest test runner"),
+    ("abh ", "abh CLI command"),
+    ("git diff", "git diff check"),
+    ("git status", "git status check"),
+    ("tox", "tox test runner"),
+    ("make ", "make target"),
+)
+
+# Patterns that are always blocked regardless of allowlist.
+DANGEROUS_PATTERNS: tuple[str, ...] = (
+    "rm -rf",
+    "rm -r",
+    "del /",
+    "mkfs",
+    "dd if=",
+    "> /dev/",
+    "curl ",
+    "wget ",
+    "| bash",
+    "| sh",
+    "| zsh",
+    "| fish",
+    "/dev/null",
+    "shutdown",
+    "reboot",
+    "kill -9",
+    "killall",
+)
+
+
+class CommandPolicyResult:
+    """Result of checking a command against the execution policy."""
+
+    __slots__ = ("allowed", "reason", "policy")
+
+    def __init__(self, allowed: bool, reason: str, policy: str) -> None:
+        self.allowed = allowed
+        self.reason = reason
+        self.policy = policy
+
+
+def check_command_policy(command: str, policy: str = RUNNER_EXECUTION_POLICY) -> CommandPolicyResult:
+    """Check whether a command is allowed under the current execution policy.
+
+    Policy modes:
+    - ``local_shell``: legacy mode, all commands allowed (no checks).
+    - ``guarded_local_shell``: allowlist + dangerous pattern block.
+    - ``ci_only``: only allowlisted commands, must be in CI environment.
+    """
+    if policy == "local_shell":
+        return CommandPolicyResult(allowed=True, reason="legacy local_shell policy: all commands allowed", policy=policy)
+
+    stripped = command.strip()
+
+    # Block dangerous patterns first. Normalize whitespace to prevent bypass.
+    lowered = " ".join(stripped.lower().split())
+    for pattern in DANGEROUS_PATTERNS:
+        if pattern in lowered:
+            return CommandPolicyResult(
+                allowed=False,
+                reason=f"blocked by dangerous pattern: {pattern!r}",
+                policy=policy,
+            )
+
+    # Normalize the command: resolve absolute paths and strip quotes from the executable.
+    # Allow commands like "/path/to/python3" -c "..." by extracting the first token.
+    import shlex as _shlex
+    try:
+        parts = _shlex.split(stripped)
+    except ValueError:
+        parts = [stripped]
+
+    if not parts:
+        return CommandPolicyResult(allowed=False, reason="empty command", policy=policy)
+
+    exe_basename = parts[0].replace("\\", "/").split("/")[-1].lower()
+
+    # Match against known safe basenames.
+    safe_basenames = {
+        "python3", "python", "py", "python3.exe", "python.exe",
+        "pytest", "tox", "make", "abh", "abh.exe",
+        "git",
+    }
+    if exe_basename in safe_basenames:
+        if policy == "ci_only":
+            import os
+
+            if os.environ.get("CI") != "true":
+                return CommandPolicyResult(
+                    allowed=False,
+                    reason="ci_only policy requires CI=true environment variable",
+                    policy=policy,
+                )
+        return CommandPolicyResult(allowed=True, reason=f"allowed by safe basename: {exe_basename}", policy=policy)
+
+    # Also match safe prefixes for module invocations.
+    for prefix, reason in SAFE_COMMAND_PREFIXES:
+        if stripped.startswith(prefix):
+            if policy == "ci_only":
+                import os
+
+                if os.environ.get("CI") != "true":
+                    return CommandPolicyResult(
+                        allowed=False,
+                        reason="ci_only policy requires CI=true environment variable",
+                        policy=policy,
+                    )
+            return CommandPolicyResult(allowed=True, reason=f"allowed by prefix: {reason}", policy=policy)
+
+    # Commands not in allowlist and not in blocklist are blocked in guarded mode.
+    return CommandPolicyResult(
+        allowed=False,
+        reason=f"command not in allowlist: {stripped!r}",
+        policy=policy,
+    )
 
 
 def load_verification(run_id: str, cwd: Path | None = None) -> VerificationRun:
@@ -224,11 +347,13 @@ def run_verification(
         raise AbhError("timeout must be greater than zero")
 
     root = Path.cwd() if cwd is None else Path(cwd)
+    execution_policy = RUNNER_EXECUTION_POLICY
     artifacts: list[str] = []
     failed_checks: list[str] = []
     failure_classifications: list[dict[str, object]] = []
     commands = list(plan.validation_checklist)
     environment = environment_snapshot(root=root, commands=commands, timeout_seconds=timeout_seconds)
+    environment["execution_policy"] = execution_policy
 
     for command in commands:
         if is_recursive_verify_command(command, plan_id):
@@ -239,6 +364,19 @@ def run_verification(
                     command=command,
                     category="recursive_guard",
                     message="validation command would recursively invoke verify run for the same plan",
+                )
+            )
+            continue
+        policy_result = check_command_policy(command, execution_policy)
+        if not policy_result.allowed:
+            artifacts.append(f"command={command!r}; exit_code=policy_blocked")
+            failed_checks.append(command)
+            failure_classifications.append(
+                failure_classification(
+                    command=command,
+                    category="policy_blocked",
+                    message=f"command blocked by execution policy: {policy_result.reason}",
+                    details={"policy": policy_result.policy, "reason": policy_result.reason},
                 )
             )
             continue

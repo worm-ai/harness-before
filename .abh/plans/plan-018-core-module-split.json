@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "plan-018-core-module-split",
   "title": "Core Module Split",
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",
@@ -48,5 +48,12 @@
   ],
   "created_at": "2026-05-24T09:10:36.060018+00:00",
   "updated_at": "2026-05-24T10:17:14.556038+00:00",
-  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-018-core-module-split.md"
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-018-core-module-split.md",
+  "commitment_phase_state": {
+    "stable_state_now": [],
+    "active_change_pressure": [],
+    "target_stable_state": [],
+    "conversion_proof": [],
+    "residual_pressure": []
+  }
 }

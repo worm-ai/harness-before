@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-010-core-governance-hardening",
   "plan_id": "plan-010-core-governance-hardening",
   "auditor": "independent-auditor",

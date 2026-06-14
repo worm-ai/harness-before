@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "plan-045-repository-write-transaction-boundary",
   "title": "Repository Write Transaction Boundary",
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",
@@ -55,5 +55,12 @@
   ],
   "created_at": "2026-06-04T10:50:57.111020+00:00",
   "updated_at": "2026-06-04T12:32:40.819735+00:00",
-  "doc_path": "D:\\work\\ai\\harness-before\\docs\\plans\\plan-045-repository-write-transaction-boundary.md"
+  "doc_path": "D:\\work\\ai\\harness-before\\docs\\plans\\plan-045-repository-write-transaction-boundary.md",
+  "commitment_phase_state": {
+    "stable_state_now": [],
+    "active_change_pressure": [],
+    "target_stable_state": [],
+    "conversion_proof": [],
+    "residual_pressure": []
+  }
 }

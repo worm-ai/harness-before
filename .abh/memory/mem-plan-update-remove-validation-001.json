@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "mem-plan-update-remove-validation-001",
   "type": "divergent_pattern",
   "summary": "append-only plan update cannot repair unsafe validation checklist entries",

@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "plan-053-ci-templates",
   "title": "CI Templates",
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",

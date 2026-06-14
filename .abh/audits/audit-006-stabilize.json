@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-006-stabilize",
   "plan_id": "plan-006-stabilize",
   "auditor": "independent-review",

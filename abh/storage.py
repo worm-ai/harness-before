@@ -11,6 +11,47 @@ from typing import Any
 
 LOCK_TIMEOUT_SECONDS = 30.0
 LOCK_POLL_SECONDS = 0.05
+# Shared read-lock extension for concurrent read safety.
+SHARED_LOCK_SUFFIX = ".shared"
+
+
+def shared_lock_path(path: Path) -> Path:
+    """Return the shared-lock directory for a given file.
+
+    Multiple readers each create their own file under this directory.
+    Writers check that no shared-lock directory exists before acquiring
+    an exclusive (write) lock.
+    """
+    return path.with_suffix(path.suffix + SHARED_LOCK_SUFFIX)
+
+
+@contextmanager
+def shared_file_lock(path: Path):
+    """Acquire a shared (read) lock. Readers create a unique file under
+    the shared-lock directory. Wait for active exclusive writers (.lock)
+    before registering as a reader. Writers see the directory as a signal
+    that active reads are in progress and must wait.
+    """
+    lock_path = path.with_suffix(path.suffix + ".lock")
+    lock_dir = shared_lock_path(path)
+    deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
+    # Wait for active exclusive writers to finish.
+    while lock_path.exists() and time.monotonic() < deadline:
+        time.sleep(LOCK_POLL_SECONDS)
+    lock_dir.mkdir(parents=True, exist_ok=True)
+    reader_file = lock_dir / f"{os.getpid()}-{uuid.uuid4().hex[:8]}"
+    try:
+        reader_file.write_text(f"{os.getpid()}\n", encoding="utf-8")
+        yield
+    finally:
+        try:
+            reader_file.unlink()
+        except FileNotFoundError:
+            pass
+        try:
+            lock_dir.rmdir()
+        except OSError:
+            pass
 
 
 def root_dir(cwd: Path | None = None) -> Path:
@@ -137,9 +178,15 @@ def ensure_workspace(cwd: Path | None = None) -> None:
 
 @contextmanager
 def file_lock(path: Path):
+    """Acquire an exclusive (write) lock. Waits for active shared readers
+    to finish before acquiring, then creates the exclusive lock file."""
+    # Wait for active shared readers to finish.
+    lock_dir = shared_lock_path(path)
+    deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
+    while lock_dir.exists() and time.monotonic() < deadline:
+        time.sleep(LOCK_POLL_SECONDS)
     lock_path = path.with_suffix(path.suffix + ".lock")
     path.parent.mkdir(parents=True, exist_ok=True)
-    deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
     fd: int | None = None
     acquired = False
     try:
@@ -153,6 +200,9 @@ def file_lock(path: Path):
                 if time.monotonic() >= deadline:
                     raise TimeoutError(f"timed out waiting for write lock: {lock_path}")
                 time.sleep(LOCK_POLL_SECONDS)
+        # Re-check after acquiring: if readers appeared during lock acquisition, abort.
+        if lock_dir.exists():
+            raise TimeoutError(f"shared readers appeared during write lock acquisition: {lock_path}")
         yield
     finally:
         if fd is not None:
@@ -166,6 +216,9 @@ def file_lock(path: Path):
 
 @contextmanager
 def file_locks(paths: list[Path]):
+    """Acquire exclusive write locks on multiple paths, sorted for
+    deadlock prevention. Each path's lock acquisition includes shared
+    reader coordination (see file_lock)."""
     with ExitStack() as stack:
         for path in sorted(paths, key=lambda item: str(item)):
             stack.enter_context(file_lock(path))
@@ -268,4 +321,7 @@ def write_json_markdown_pair(json_path: Path, data: dict[str, Any], markdown_pat
 
 
 def read_json(path: Path) -> dict[str, Any]:
-    return json.loads(path.read_text(encoding="utf-8"))
+    """Read and parse a JSON file, acquiring a shared read lock for safety
+    against concurrent write-pair updates."""
+    with shared_file_lock(path):
+        return json.loads(path.read_text(encoding="utf-8"))

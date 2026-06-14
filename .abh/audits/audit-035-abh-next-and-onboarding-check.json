@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-035-abh-next-and-onboarding-check",
   "plan_id": "plan-035-abh-next-and-onboarding-check",
   "auditor": "opencode-independent-review",

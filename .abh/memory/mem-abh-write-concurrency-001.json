@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "mem-abh-write-concurrency-001",
   "type": "divergent_pattern",
   "summary": "Avoid parallel ABH write commands against the same object",

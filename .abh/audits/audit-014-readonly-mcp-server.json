@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-014-readonly-mcp-server",
   "plan_id": "plan-014-readonly-mcp-server",
   "auditor": "independent-auditor",

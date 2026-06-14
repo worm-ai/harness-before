@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "plan-009-roadmap-phase-alignment",
   "title": "Roadmap Phase Alignment",
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",
@@ -39,5 +39,12 @@
   ],
   "created_at": "2026-05-23T08:56:11.747758+00:00",
   "updated_at": "2026-05-23T09:08:21.394723+00:00",
-  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-009-roadmap-phase-alignment.md"
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-009-roadmap-phase-alignment.md",
+  "commitment_phase_state": {
+    "stable_state_now": [],
+    "active_change_pressure": [],
+    "target_stable_state": [],
+    "conversion_proof": [],
+    "residual_pressure": []
+  }
 }

@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-039-quality-signal-model",
   "plan_id": "plan-039-quality-signal-model",
   "auditor": "opencode-deepseek-independent-review",

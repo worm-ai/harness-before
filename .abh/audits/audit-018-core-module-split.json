@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-018-core-module-split",
   "plan_id": "plan-018-core-module-split",
   "auditor": "independent-user-session",

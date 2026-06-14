@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "mem-post-close-doc-sync-001",
   "type": "divergent_pattern",
   "summary": "计划关闭后当前状态文档同步遗漏",

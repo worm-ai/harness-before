@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-052-post-close-freshness-semantics",
   "plan_id": "plan-052-post-close-freshness-semantics",
   "auditor": "human-independent-review",

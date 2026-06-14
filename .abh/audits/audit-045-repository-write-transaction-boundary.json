@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-045-repository-write-transaction-boundary",
   "plan_id": "plan-045-repository-write-transaction-boundary",
   "auditor": "human-independent-review",

@@ -61,7 +61,7 @@ class StorageAndDoctorTests(WorkspaceCliTestCase):
         )
         plan_path = self.root / ".abh" / "plans" / "plan-doctor-schema.json"
         data = plan_path.read_text(encoding="utf-8")
-        plan_path.write_text(data.replace('  "schema_version": "1",\n', ""), encoding="utf-8")
+        plan_path.write_text(data.replace('  "schema_version": "2",\n', ""), encoding="utf-8")
 
         code, out, err = self.run_cli("doctor")
 
@@ -173,7 +173,7 @@ class StorageAndDoctorTests(WorkspaceCliTestCase):
         queue.write_text(
             json.dumps(
                 {
-                    "schema_version": "1",
+                    "schema_version": "2",
                     "items": [
                         {
                             "key": "stage4.preassigned",
@@ -200,7 +200,7 @@ class StorageAndDoctorTests(WorkspaceCliTestCase):
         queue.write_text(
             json.dumps(
                 {
-                    "schema_version": "1",
+                    "schema_version": "2",
                     "items": [
                         {
                             "key": "stage4.queued-with-plan",
@@ -260,7 +260,7 @@ class StorageAndDoctorTests(WorkspaceCliTestCase):
         json_path = self.root / ".abh" / "plans" / "plan-pair.json"
         doc_path = self.root / "docs" / "plans" / "plan-pair.md"
 
-        storage.write_json_markdown_pair(json_path, {"schema_version": "1", "id": "plan-pair"}, doc_path, "# Plan\n")
+        storage.write_json_markdown_pair(json_path, {"schema_version": "2", "id": "plan-pair"}, doc_path, "# Plan\n")
 
         self.assertEqual(json.loads(json_path.read_text(encoding="utf-8"))["id"], "plan-pair")
         self.assertEqual(doc_path.read_text(encoding="utf-8"), "# Plan\n")
@@ -270,7 +270,7 @@ class StorageAndDoctorTests(WorkspaceCliTestCase):
         doc_path = self.root / "docs" / "plans" / "plan-pair.md"
         json_path.parent.mkdir(parents=True, exist_ok=True)
         doc_path.parent.mkdir(parents=True, exist_ok=True)
-        json_path.write_text('{"schema_version": "1", "id": "old"}\n', encoding="utf-8")
+        json_path.write_text('{"schema_version": "2", "id": "old"}\n', encoding="utf-8")
         doc_path.write_text("# Old\n", encoding="utf-8")
         real_replace = storage.os.replace
         calls: list[Path] = []
@@ -285,12 +285,12 @@ class StorageAndDoctorTests(WorkspaceCliTestCase):
             with self.assertRaises(OSError):
                 storage.write_json_markdown_pair(
                     json_path,
-                    {"schema_version": "1", "id": "new"},
+                    {"schema_version": "2", "id": "new"},
                     doc_path,
                     "# New\n",
                 )
 
-        self.assertEqual(json_path.read_text(encoding="utf-8"), '{"schema_version": "1", "id": "old"}\n')
+        self.assertEqual(json_path.read_text(encoding="utf-8"), '{"schema_version": "2", "id": "old"}\n')
         self.assertEqual(doc_path.read_text(encoding="utf-8"), "# Old\n")
         self.assertIn(doc_path, calls)
         self.assertIn(json_path, calls)
@@ -448,7 +448,7 @@ class StorageAndDoctorTests(WorkspaceCliTestCase):
 
         def writer(index: int) -> None:
             try:
-                write_json(path, {"schema_version": "1", "index": index})
+                write_json(path, {"schema_version": "2", "index": index})
             except BaseException as exc:
                 errors.append(exc)
 
@@ -460,7 +460,7 @@ class StorageAndDoctorTests(WorkspaceCliTestCase):
 
         self.assertEqual(errors, [])
         payload = json.loads(path.read_text(encoding="utf-8"))
-        self.assertEqual(payload["schema_version"], "1")
+        self.assertEqual(payload["schema_version"], "2")
         self.assertIn(payload["index"], range(8))
         self.assertEqual(list(path.parent.glob("*.tmp")), [])
         self.assertFalse(path.with_suffix(path.suffix + ".lock").exists())

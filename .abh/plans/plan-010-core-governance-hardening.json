@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "plan-010-core-governance-hardening",
   "title": "Core Governance Hardening",
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",
@@ -50,5 +50,12 @@
   ],
   "created_at": "2026-05-23T12:41:45.251472+00:00",
   "updated_at": "2026-05-23T13:39:13.834631+00:00",
-  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-010-core-governance-hardening.md"
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-010-core-governance-hardening.md",
+  "commitment_phase_state": {
+    "stable_state_now": [],
+    "active_change_pressure": [],
+    "target_stable_state": [],
+    "conversion_proof": [],
+    "residual_pressure": []
+  }
 }

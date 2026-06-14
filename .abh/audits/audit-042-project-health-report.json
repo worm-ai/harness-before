@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-042-project-health-report",
   "plan_id": "plan-042-project-health-report",
   "auditor": "opencode-deepseek-chat",

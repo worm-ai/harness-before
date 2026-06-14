@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-047-verification-runner-trust-policy-r2",
   "plan_id": "plan-047-verification-runner-trust-policy",
   "auditor": "human-independent-review",

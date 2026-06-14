@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 
 from .errors import AbhError, validate_identifier
-from .models import PlanRecord, RoadmapItem, RoadmapQueue
+from .models import PlanRecord, RoadmapItem, RoadmapQueue, SCHEMA_VERSION
 from .plans import create_plan, list_plans
 from .storage import abh_dir, ensure_workspace, file_lock, plans_dir, read_json, roadmap_path, write_json
 
@@ -74,7 +74,7 @@ def check_roadmap_queue(cwd: Path | None = None) -> list[str]:
         return []
     data = read_json(path)
     issues: list[str] = []
-    if data.get("schema_version") != "1":
+    if not data.get("schema_version"):
         issues.append("missing schema_version for roadmap queue")
     keys: set[str] = set()
     for raw_item in data.get("items", []):

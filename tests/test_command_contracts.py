@@ -324,7 +324,7 @@ class CommandContractTests(WorkspaceCliTestCase):
                 self.assertEqual(contract.output_keys, ["setup"])
 
         envelope = make_envelope(ok=True, command="plan.status", data={"plan": {"id": "plan-contract"}})
-        self.assertEqual(envelope["schema_version"], "1")
+        self.assertEqual(envelope["schema_version"], "2")
         self.assertTrue(envelope["ok"])
         self.assertEqual(envelope["command"], "plan.status")
 
@@ -342,7 +342,7 @@ class CommandContractTests(WorkspaceCliTestCase):
         self.assertEqual(code, 0, err)
         self.assertEqual(err, "")
         payload = json.loads(out)
-        self.assertEqual(payload["schema_version"], "1")
+        self.assertEqual(payload["schema_version"], "2")
         self.assertTrue(payload["ok"])
         self.assertEqual(payload["command"], "plan list")
         self.assertEqual(payload["errors"], [])
@@ -357,7 +357,7 @@ class CommandContractTests(WorkspaceCliTestCase):
         self.assertEqual(code, 2)
         self.assertEqual(err, "")
         payload = json.loads(out)
-        self.assertEqual(payload["schema_version"], "1")
+        self.assertEqual(payload["schema_version"], "2")
         self.assertFalse(payload["ok"])
         self.assertEqual(payload["command"], "plan status")
         self.assertEqual(payload["data"], {})

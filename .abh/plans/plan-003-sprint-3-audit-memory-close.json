@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "plan-003-sprint-3-audit-memory-close",
   "title": "Sprint 3 Audit Memory Close",
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",
@@ -57,5 +57,12 @@
   ],
   "created_at": "2026-05-22T16:03:50.906933+00:00",
   "updated_at": "2026-05-22T16:04:04.842150+00:00",
-  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-003-sprint-3-audit-memory-close.md"
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-003-sprint-3-audit-memory-close.md",
+  "commitment_phase_state": {
+    "stable_state_now": [],
+    "active_change_pressure": [],
+    "target_stable_state": [],
+    "conversion_proof": [],
+    "residual_pressure": []
+  }
 }

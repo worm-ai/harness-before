@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "plan-008-roadmap-sync-and-doctor",
   "title": "Sprint 8 Roadmap Sync and Doctor",
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",
@@ -43,5 +43,12 @@
   ],
   "created_at": "2026-05-23T07:22:28.746295+00:00",
   "updated_at": "2026-05-23T07:46:36.308593+00:00",
-  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-008-roadmap-sync-and-doctor.md"
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-008-roadmap-sync-and-doctor.md",
+  "commitment_phase_state": {
+    "stable_state_now": [],
+    "active_change_pressure": [],
+    "target_stable_state": [],
+    "conversion_proof": [],
+    "residual_pressure": []
+  }
 }

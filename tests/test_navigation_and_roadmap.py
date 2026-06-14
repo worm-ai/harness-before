@@ -15,7 +15,7 @@ class NavigationAndRoadmapTests(WorkspaceCliTestCase):
         queue.write_text(
             json.dumps(
                 {
-                    "schema_version": "1",
+                    "schema_version": "2",
                     "items": [
                         {
                             "key": "stage4.abh-next-and-onboarding-check",
@@ -78,7 +78,7 @@ class NavigationAndRoadmapTests(WorkspaceCliTestCase):
         queue.write_text(
             json.dumps(
                 {
-                    "schema_version": "1",
+                    "schema_version": "2",
                     "items": [
                         {
                             "key": "stage6.repository-write-transaction-boundary",
@@ -256,7 +256,7 @@ class NavigationAndRoadmapTests(WorkspaceCliTestCase):
         queue.write_text(
             json.dumps(
                 {
-                    "schema_version": "1",
+                    "schema_version": "2",
                     "items": [
                         {
                             "key": "stage4.abh-init-active-attractor",
@@ -309,7 +309,7 @@ class NavigationAndRoadmapTests(WorkspaceCliTestCase):
         queue.write_text(
             json.dumps(
                 {
-                    "schema_version": "1",
+                    "schema_version": "2",
                     "items": [
                         {
                             "key": "stage4.bad-preassigned",
@@ -340,7 +340,7 @@ class NavigationAndRoadmapTests(WorkspaceCliTestCase):
         queue.write_text(
             json.dumps(
                 {
-                    "schema_version": "1",
+                    "schema_version": "2",
                     "items": [
                         {
                             "key": "stage4.concurrent-alpha",

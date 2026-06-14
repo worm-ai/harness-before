@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "plan-050-audit-semantic-conservation",
   "title": "Audit Semantic Conservation",
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",

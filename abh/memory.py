@@ -134,13 +134,17 @@ def search_memory(
     return results
 
 
-def list_memories(cwd: Path | None = None) -> list[MemoryRecord]:
+def list_memories(cwd: Path | None = None, *, limit: int | None = None, offset: int = 0) -> list[MemoryRecord]:
     directory = memory_dir(cwd)
     if not directory.exists():
         return []
     memories: list[MemoryRecord] = []
     for path in sorted(directory.glob("*.json")):
         memories.append(MemoryRecord.from_dict(read_json(path)))
+    if offset:
+        memories = memories[offset:]
+    if limit is not None:
+        memories = memories[:limit]
     return memories
 
 

@@ -1,0 +1,157 @@
+{
+  "schema_version": "2",
+  "id": "ver-b4b62a1bd22e",
+  "plan_id": "plan-058-verification-sandbox-and-storage-hardening",
+  "command": "python3 -m unittest tests/test_cli.py -v && python3 -m abh doctor && python3 -m abh roadmap check --json && git diff --check",
+  "result": "fail",
+  "artifacts": [
+    "command='python3 -m unittest tests/test_cli.py -v'; exit_code=0; duration_seconds=0.413; stdout=''; stderr='test_agent_setup_codex_json_returns_readonly_bundle (tests.test_cli.CliTests.test_agent_setup_codex_json_returns_readonly_bundle) ... ok\\\\ntest_agent_setup_targets_share_shape_and_mcp_includes_server_command (tests.test_cli.CliTests.test_agent_setup_targets_share_shape_and_mcp_includes_server_command) ... ok\\\\ntest_attractor_create_active_show_list_and_supersede_json_flow (tests.test_cli.CliTests.test_attractor_create_active_show_list_and_supersede_json_flow) ... ok\\\\ntest_attractor_create_does_not'",
+    "command='python3 -m abh doctor'; exit_code=1; duration_seconds=0.085; stdout='doctor: found consistency issues\\\\n- missing schema_version for roadmap queue'; stderr=''",
+    "command='python3 -m abh roadmap check --json'; exit_code=1; duration_seconds=0.058; stdout='{\"schema_version\": \"2\", \"ok\": false, \"command\": \"roadmap check\", \"data\": {\"issues\": [\"missing schema_version for roadmap queue\"]}, \"errors\": [], \"warnings\": []}'; stderr=''",
+    "command='git diff --check'; exit_code=0; duration_seconds=0.026; stdout=''; stderr=''"
+  ],
+  "failed_checks": [
+    "python3 -m abh doctor",
+    "python3 -m abh roadmap check --json"
+  ],
+  "failure_classifications": [
+    {
+      "command": "python3 -m abh doctor",
+      "category": "validation_failure",
+      "message": "validation command exited with non-zero status",
+      "details": {
+        "exit_code": 1
+      }
+    },
+    {
+      "command": "python3 -m abh roadmap check --json",
+      "category": "validation_failure",
+      "message": "validation command exited with non-zero status",
+      "details": {
+        "exit_code": 1
+      }
+    }
+  ],
+  "environment": {
+    "cwd": "/Users/cc/ai/harness-before",
+    "git": {
+      "commit": "7dab686c18df0b77fc574eb2e1092182b0bd3261",
+      "dirty": true,
+      "status_hash": "1b986bd12fff2185643fb35e1273b5dbe6effe6f662d3e6d9e03659fa1e23d7c",
+      "available": true
+    },
+    "abh": {
+      "version": "0.3.0"
+    },
+    "python": {
+      "version": "3.13.3 (main, Jan 27 2026, 20:15:53) [Clang 17.0.0 (clang-1700.6.3.2)]",
+      "executable": "/Users/cc/.pyenv/versions/3.13.3/bin/python3"
+    },
+    "runner": {
+      "timeout_seconds": 120,
+      "shell": true,
+      "check_count": 4,
+      "execution_policy": "guarded_local_shell",
+      "trust_level": "local_shell",
+      "command_source": "plan_validation_checklist",
+      "isolation": "none"
+    },
+    "commands": [
+      {
+        "command": "python3 -m unittest tests/test_cli.py -v",
+        "argv": [
+          "python3",
+          "-m",
+          "unittest",
+          "tests/test_cli.py",
+          "-v"
+        ]
+      },
+      {
+        "command": "python3 -m abh doctor",
+        "argv": [
+          "python3",
+          "-m",
+          "abh",
+          "doctor"
+        ]
+      },
+      {
+        "command": "python3 -m abh roadmap check --json",
+        "argv": [
+          "python3",
+          "-m",
+          "abh",
+          "roadmap",
+          "check",
+          "--json"
+        ]
+      },
+      {
+        "command": "git diff --check",
+        "argv": [
+          "git",
+          "diff",
+          "--check"
+        ]
+      }
+    ],
+    "environment_variables": {},
+    "execution_policy": "guarded_local_shell",
+    "plan": {
+      "updated_at": "2026-06-14T09:19:35.189724+00:00",
+      "content_hash": "1a644057e9967ebc7b450a82c4039c6d353f811a350cacedadcb51f1f301ed81",
+      "payload": {
+        "title": "Verification Sandbox and Storage Hardening",
+        "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+        "baseline": "ABH v0.3.0 run_verification uses subprocess.run(shell=True) with no isolation or allowlisting; storage has no archival, pagination, or read-path locking; schema_version is 1 with no migration chain; tests are integration-only with a single test file.",
+        "goals": [
+          "Add execution policy layer to verification runner with command allowlisting and resource limits",
+          "Freeze closed plans against accidental mutation",
+          "Add pagination support to list operations",
+          "Add shared read locks to prevent JSON/Markdown tear during concurrent writes",
+          "Add schema migration v1-to-v2 infrastructure with doctor --fix support",
+          "Add unit test modules for drift, plans, storage, and verification"
+        ],
+        "non_goals": [
+          "Do not add Docker or container sandbox",
+          "Do not change existing verification trust semantics for local_shell records",
+          "Do not replace JSON file storage with a database",
+          "Do not add MCP authentication"
+        ],
+        "exit_criteria": [
+          "Verification commands can be allowlisted and blocked by policy",
+          "Closed plans reject mutation attempts",
+          "list operations support --limit and --offset pagination",
+          "Read paths use shared locks",
+          "Schema v1 records migrate to v2 on read",
+          "Unit tests cover drift analysis, plan transitions, storage concurrency, verification policy"
+        ],
+        "validation_checklist": [
+          "python3 -m unittest tests/test_cli.py -v",
+          "python3 -m abh doctor",
+          "python3 -m abh roadmap check --json",
+          "git diff --check"
+        ],
+        "closure_evidence": [
+          "abh/verifications.py",
+          "abh/storage.py",
+          "abh/plans.py",
+          "abh/models.py",
+          "tests/test_verification_policy.py",
+          "tests/test_storage_concurrency.py",
+          "tests/test_plans_unit.py",
+          "tests/test_drift_unit.py"
+        ]
+      },
+      "validation_checklist": [
+        "python3 -m unittest tests/test_cli.py -v",
+        "python3 -m abh doctor",
+        "python3 -m abh roadmap check --json",
+        "git diff --check"
+      ]
+    }
+  },
+  "trust_level": "local_shell",
+  "created_at": "2026-06-14T09:19:42.672182+00:00"
+}

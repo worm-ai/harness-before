@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-057-codex-repo-toggle",
   "plan_id": "plan-057-codex-repo-toggle",
   "auditor": "human-independent-review",

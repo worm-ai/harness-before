@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "drift-test-noplan",
   "source": "/tmp/test_drift_source.txt",
   "findings": [

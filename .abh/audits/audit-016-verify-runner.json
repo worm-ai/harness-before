@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-016-verify-runner",
   "plan_id": "plan-016-verify-runner",
   "auditor": "independent-user-session",

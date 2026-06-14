@@ -228,7 +228,7 @@ class McpServerTests(WorkspaceMcpTestCase):
             write_json(
                 drift_json_path("drift-mcp-existing"),
                 {
-                    "schema_version": "1",
+                    "schema_version": "2",
                     "id": "drift-mcp-existing",
                     "source": "source.txt",
                     "findings": [

@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "plan-054-multi-repo-sharing",
   "title": "Multi Repo Sharing",
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",

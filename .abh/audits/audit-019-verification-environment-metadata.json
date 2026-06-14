@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-019-verification-environment-metadata",
   "plan_id": "plan-019-verification-environment-metadata",
   "auditor": "independent-review",

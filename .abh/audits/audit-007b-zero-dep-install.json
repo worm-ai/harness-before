@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-007b-zero-dep-install",
   "plan_id": "plan-007-zero-dep-install",
   "auditor": "independent-sub-agent",

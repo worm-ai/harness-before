@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "plan-042-project-health-report",
   "title": "Project Health Report",
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",
@@ -55,5 +55,12 @@
   ],
   "created_at": "2026-05-30T11:01:13.582322+00:00",
   "updated_at": "2026-05-30T12:02:06.144491+00:00",
-  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-042-project-health-report.md"
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-042-project-health-report.md",
+  "commitment_phase_state": {
+    "stable_state_now": [],
+    "active_change_pressure": [],
+    "target_stable_state": [],
+    "conversion_proof": [],
+    "residual_pressure": []
+  }
 }

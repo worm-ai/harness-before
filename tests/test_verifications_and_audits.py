@@ -317,7 +317,7 @@ class VerificationAndAuditTests(WorkspaceCliTestCase):
         self.assertEqual(environment["runner"]["timeout_seconds"], 17)
         self.assertTrue(environment["runner"]["shell"])
         self.assertEqual(environment["runner"]["check_count"], 1)
-        self.assertEqual(environment["runner"]["execution_policy"], "trusted_local_shell")
+        self.assertEqual(environment["runner"]["execution_policy"], "guarded_local_shell")
         self.assertEqual(environment["runner"]["trust_level"], "local_shell")
         self.assertEqual(environment["runner"]["command_source"], "plan_validation_checklist")
         self.assertEqual(environment["runner"]["isolation"], "none")
@@ -333,7 +333,7 @@ class VerificationAndAuditTests(WorkspaceCliTestCase):
     def test_readme_documents_verify_runner_trust_policy_semantics(self) -> None:
         readme = (Path(__file__).resolve().parents[1] / "README.md").read_text(encoding="utf-8")
 
-        self.assertIn("execution_policy=trusted_local_shell", readme)
+        self.assertIn("execution_policy=guarded_local_shell", readme)
         self.assertIn("trust_level=local_shell", readme)
         self.assertIn("command_source=plan_validation_checklist", readme)
         self.assertIn("isolation=none", readme)

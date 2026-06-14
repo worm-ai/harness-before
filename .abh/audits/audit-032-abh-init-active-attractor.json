@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-032-abh-init-active-attractor",
   "plan_id": "plan-032-abh-init-active-attractor",
   "auditor": "independent-user-window",

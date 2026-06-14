@@ -117,7 +117,7 @@ class MemoryDriftReportingTests(WorkspaceCliTestCase):
         write_json(
             self.root / ".abh" / "memory" / "mem-legacy.json",
             {
-                "schema_version": "1",
+                "schema_version": "2",
                 "id": "mem-legacy",
                 "type": "rejected_path",
                 "summary": "legacy memory",
@@ -148,7 +148,7 @@ class MemoryDriftReportingTests(WorkspaceCliTestCase):
         self.assertTrue(payload["ok"])
         self.assertEqual(payload["command"], "report health")
         report = payload["data"]["health_report"]
-        self.assertEqual(report["schema_version"], "1")
+        self.assertEqual(report["schema_version"], "2")
         self.assertEqual(report["posture"], "healthy")
         self.assertEqual(report["metrics"]["plans"]["total"], 0)
         self.assertEqual(report["metrics"]["doctor"]["issues"], 0)
@@ -520,7 +520,7 @@ class MemoryDriftReportingTests(WorkspaceCliTestCase):
         with Chdir(self.root):
             result = TOOL_HANDLERS["abh_report_health"]({})
         self.assertIn("health_report", result)
-        self.assertEqual(result["health_report"]["schema_version"], "1")
+        self.assertEqual(result["health_report"]["schema_version"], "2")
 
     def test_route_recommends_reading_order_for_close_question(self) -> None:
         code, out, err = self.run_cli(
@@ -616,7 +616,7 @@ class MemoryDriftReportingTests(WorkspaceCliTestCase):
             write_json(
                 drift_json_path("drift-legacy"),
                 {
-                    "schema_version": "1",
+                    "schema_version": "2",
                     "id": "drift-legacy",
                     "source": "legacy.txt",
                     "findings": [

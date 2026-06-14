@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "audit-038-independent-audit-gate",
   "plan_id": "plan-038-independent-audit-gate",
   "auditor": "opencode-deepseek-independent-review",

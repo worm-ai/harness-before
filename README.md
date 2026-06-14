@@ -296,11 +296,11 @@ abh verify run plan-016-verify-runner --json
 
 从 `plan-021-verification-trust-and-stale-detection` 开始，verification JSON 会保存 `trust_level`。人工 `verify record` 默认为 `manual_record`，本地 `verify run` 默认为 `local_shell`，旧记录缺少该字段时读取为 `unknown`。`abh plan status <plan> --json` 会额外返回 `verification_summary`，展示 latest verification 的 `trust_level`、`stale` 和 `reasons`。当前 stale 是风险提示，不会自动阻断 close。
 
-从 `plan-047-verification-runner-trust-policy` 开始，`verify run` 的 environment runner metadata 会显式记录 `execution_policy=trusted_local_shell`、`trust_level=local_shell`、`command_source=plan_validation_checklist` 和 `isolation=none`。含义是 ABH 在当前 workspace 通过本地 shell 执行计划中已审阅的 validation checklist；它不是隔离环境、不是 CI attestation、不是防篡改证明，也不表示未审阅的外部命令可以安全自动执行。
+从 `plan-047-verification-runner-trust-policy` 开始，`verify run` 的 environment runner metadata 会显式记录 `execution_policy=guarded_local_shell`、`trust_level=local_shell`、`command_source=plan_validation_checklist` 和 `isolation=none`。含义是 ABH 在当前 workspace 通过本地 shell 执行计划中已审阅的 validation checklist；它不是隔离环境、不是 CI attestation、不是防篡改证明，也不表示未审阅的外部命令可以安全自动执行。
 
 从 `plan-022-verification-failure-classification` 开始，失败的 `verify run` 会保存 `failure_classifications`，把非零退出、超时、递归防护和本地 runner 执行异常分别标记为 `validation_failure`、`timeout`、`recursive_guard` 和 `environment_failure`。该字段只增强审计证据表达，不改变 `pass` / `fail` / `partial` 语义，也不改变 ready/running 失败阻断规则。
 
-这些 checklist 条目按本地 shell 命令解释执行，适合仓库内受信任的验证命令。当前 runner policy 是 `trusted_local_shell`：命令来源限定为 plan validation checklist，执行隔离级别为 `none`。当前 MVP 不提供隔离环境、CI runner、远程 runner 或额外确认提示。
+这些 checklist 条目按本地 shell 命令解释执行，适合仓库内受信任的验证命令。当前 runner policy 是 `guarded_local_shell`：命令来源限定为 plan validation checklist，执行隔离级别为 `none`。当前 MVP 不提供隔离环境、CI runner、远程 runner 或额外确认提示。
 
 ### 5. 发起审计
 

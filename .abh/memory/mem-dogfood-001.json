@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "mem-dogfood-001",
   "type": "false_assumption",
   "summary": "历史手写 Markdown 计划与 abh CLI 管理的数据是两套不相干的东西",

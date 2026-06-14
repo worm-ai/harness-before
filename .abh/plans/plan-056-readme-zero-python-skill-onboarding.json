@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "plan-056-readme-zero-python-skill-onboarding",
   "title": "README Zero Python Skill Onboarding",
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",

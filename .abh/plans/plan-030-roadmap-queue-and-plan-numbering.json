@@ -1,5 +1,5 @@
 {
-  "schema_version": "1",
+  "schema_version": "2",
   "id": "plan-030-roadmap-queue-and-plan-numbering",
   "title": "Roadmap Queue and Plan Numbering",
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",
@@ -60,5 +60,12 @@
   ],
   "created_at": "2026-05-27T01:23:20.671142+00:00",
   "updated_at": "2026-05-27T03:16:34.094257+00:00",
-  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-030-roadmap-queue-and-plan-numbering.md"
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-030-roadmap-queue-and-plan-numbering.md",
+  "commitment_phase_state": {
+    "stable_state_now": [],
+    "active_change_pressure": [],
+    "target_stable_state": [],
+    "conversion_proof": [],
+    "residual_pressure": []
+  }
 }
