@@ -30,7 +30,6 @@ from .core import (
     search_memory,
     transition_plan,
 )
-from .boundary import analyze_structural_drift
 from .drift import list_drift_reports
 from .models import SCHEMA_VERSION
 from .plans import verification_freshness_summary

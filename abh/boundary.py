@@ -1,7 +1,8 @@
-"""Structural drift detection: import boundary analysis for Python projects.
+"""Plan-bound structural drift detection.
 
-Uses only the stdlib ``ast`` module — no external dependencies, no LLM calls.
-Checks whether module-level imports violate declared architectural boundary rules.
+Compares the project's import graph at plan-close time against the
+baseline import graph captured during the plan's first verification.
+New imports are checked against the plan's declared non-goals.
 """
 
 from __future__ import annotations
@@ -11,10 +12,15 @@ import hashlib
 import json
 from pathlib import Path
 
-from .models import BoundaryRule, DriftFinding
+from .models import DriftFinding
 
-# Directories excluded from project import scanning.
 DEFAULT_EXCLUDE_PATTERNS = {"__pycache__", ".git", ".abh", "venv", ".venv", ".tox", "node_modules", "build", "dist", ".eggs"}
+
+# Prefixes that signal a non-goal is a negation — stripped before keyword extraction.
+NEGATION_PREFIXES: tuple[str, ...] = tuple(sorted(
+    ("不", "不要", "无需", "禁止", "避免", "no ", "not ", "don't ", "do not ", "avoid "),
+    key=lambda s: -len(s),
+))
 
 
 def extract_module_imports(file_path: Path, *, parent_module: str = "") -> list[str]:
@@ -22,11 +28,9 @@ def extract_module_imports(file_path: Path, *, parent_module: str = "") -> list[
 
     Only walks top-level AST nodes — imports inside function or class bodies
     are excluded because they are runtime dependencies, not architectural ones.
-
     Relative imports are resolved against ``parent_module``.
 
-    Returns an empty list for files that are not valid Python (syntax errors,
-    encoding issues, etc.).
+    Returns an empty list for files that are not valid Python.
     """
     try:
         tree = ast.parse(file_path.read_text(encoding="utf-8"))
@@ -40,36 +44,22 @@ def extract_module_imports(file_path: Path, *, parent_module: str = "") -> list[
                 imports.append(alias.name)
         elif isinstance(node, ast.ImportFrom):
             if node.level > 0:
-                # Relative import. Resolve each imported name to its absolute module path.
-                # from . import sibling (level=1, module=None, names=[alias('sibling')])
-                # from .models import Thing (level=1, module="models", names=[alias('Thing')])
                 for alias in node.names:
                     target = node.module if node.module is not None else alias.name
                     resolved = _resolve_relative_import(parent_module, node.level, target)
                     if resolved:
                         imports.append(resolved)
             elif node.module is not None:
-                # Absolute import: from os import path → "os"
                 imports.append(node.module)
     return imports
 
 
 def _resolve_relative_import(parent_module: str, level: int, target: str | None) -> str | None:
-    """Resolve a relative import against a parent module path.
-
-    Args:
-        parent_module: Dotted module path of the importing file (e.g. ``abh.drift``).
-        level: Number of dots in the relative import (1 for ``.``, 2 for ``..``).
-        target: The target module name after the dots, or None for bare ``from . import ...``.
-
-    Returns:
-        Resolved absolute module path, or None if resolution is impossible.
-    """
     if not parent_module:
         return None
     parts = parent_module.split(".")
     if level > len(parts):
-        return None  # beyond top-level package
+        return None
     resolved_parts = parts[: len(parts) - level]
     if target:
         resolved_parts.append(target)
@@ -77,21 +67,12 @@ def _resolve_relative_import(parent_module: str, level: int, target: str | None)
 
 
 def _relative_module(file_path: Path, root: Path) -> str:
-    """Return the dotted module path for a file relative to a project root."""
     rel = file_path.relative_to(root).with_suffix("")
     return ".".join(rel.parts)
 
 
 def build_import_map(root: Path, *, glob_pattern: str = "**/*.py", exclude: set[str] | None = None) -> dict[str, list[str]]:
-    """Walk a directory tree and build a module-path → imported-modules map.
-
-    Args:
-        root: Project root directory to scan.
-        glob_pattern: Pattern for files to include (default ``**/*.py``).
-        exclude: Directory names to skip (defaults to common build/venv dirs).
-
-    Returns a dict mapping each module's dotted path to its list of imported modules.
-    """
+    """Walk a directory tree and build a module-path → imported-modules map."""
     exclude_patterns = exclude if exclude is not None else DEFAULT_EXCLUDE_PATTERNS
     import_map: dict[str, list[str]] = {}
     for py_file in sorted(root.glob(glob_pattern)):
@@ -104,151 +85,115 @@ def build_import_map(root: Path, *, glob_pattern: str = "**/*.py", exclude: set[
     return import_map
 
 
-def _module_in_directory(module_path: str, directory: str) -> bool:
-    """Check whether a dotted module path lives under a given directory prefix.
-
-    Examples:
-        >>> _module_in_directory("abh.drift", "abh")
-        True
-        >>> _module_in_directory("abh", "abh")
-        True
-        >>> _module_in_directory("tests.test_cli", "abh")
-        False
-    """
-    normalized_module = module_path.replace("/", ".")
-    normalized_dir = directory.replace("/", ".").rstrip(".")
-    return normalized_module == normalized_dir or normalized_module.startswith(normalized_dir + ".")
-
-
-def _import_targets_directory(imported_module: str, directory: str, import_map: dict[str, list[str]]) -> bool:
-    """Check whether an imported module name resolves to a file in the given directory.
-
-    Returns True if:
-    - The imported module itself lives in the directory (e.g., importing ``abh.models``
-      when checking directory ``abh``).
-    - OR the imported module is a known project module that lives in the directory.
-    """
-    if _module_in_directory(imported_module, directory):
-        return True
-    for known_module in import_map:
-        if known_module.endswith("." + imported_module) or known_module == imported_module:
-            if _module_in_directory(known_module, directory):
-                return True
-    return False
-
-
-def check_boundary_rules(
-    import_map: dict[str, list[str]],
-    rules: list[BoundaryRule],
-    root: Path,
-) -> list[DriftFinding]:
-    """Check import map against a list of boundary rules.
-
-    Each rule says: "modules in ``source_dir`` must NOT import anything from
-    ``forbidden_dir``".  For every violation, a structured ``DriftFinding`` is
-    produced with the exact file path and import line as evidence.
-
-    Args:
-        import_map: Output of ``build_import_map``.
-        rules: Boundary rules to check.
-        root: Project root, used to reconstruct file paths for evidence.
-
-    Returns:
-        List of drift findings, one per violation.
-    """
-    findings: list[DriftFinding] = []
-    for rule in rules:
-        source_dir = rule.source_dir
-        forbidden_dir = rule.forbidden_dir
-        for module, imports in import_map.items():
-            if not _module_in_directory(module, source_dir):
-                continue
-            for imp in imports:
-                if _import_targets_directory(imp, forbidden_dir, import_map):
-                    file_path = root / (module.replace(".", "/") + ".py")
-                    findings.append(
-                        DriftFinding(
-                            drift_type="import_boundary_drift",
-                            evidence=f"{module} imports {imp!r} from forbidden directory {forbidden_dir!r}",
-                            recommendation=rule.recommendation or f"Remove import of {imp!r} from {module} or update boundary rule {rule.rule_id!r}.",
-                            severity=rule.severity,
-                            confidence="high",
-                            rule_id=rule.rule_id,
-                            matched_span={"file": str(file_path), "line": 0, "text": f"import {imp}"},
-                            source_excerpt=f"In {file_path}: imports {imp} (blocked by rule {rule.rule_id})",
-                            evidence_path=str(file_path),
-                        )
-                    )
-    return findings
-
-
-def load_boundary_rules_from_attractor(attractor) -> list[BoundaryRule]:
-    """Parse boundary rules from an AttractorRecord's boundary_rules field.
-
-    Each entry in ``attractor.boundary_rules`` should be a dict with keys:
-    ``rule_id``, ``source_dir``, ``forbidden_dir``, and optionally
-    ``severity``, ``description``, ``recommendation``.
-    """
-    rules: list[BoundaryRule] = []
-    for item in getattr(attractor, "boundary_rules", []) or []:
-        if not isinstance(item, dict):
-            continue
-        rule_id = item.get("rule_id", "")
-        source_dir = item.get("source_dir", "")
-        forbidden_dir = item.get("forbidden_dir", "")
-        if not rule_id or not source_dir or not forbidden_dir:
-            continue
-        rules.append(
-            BoundaryRule(
-                rule_id=str(rule_id),
-                description=str(item.get("description", "")),
-                source_dir=str(source_dir),
-                forbidden_dir=str(forbidden_dir),
-                severity=str(item.get("severity", "high")),
-                recommendation=str(item.get("recommendation", "")),
-            )
-        )
-    return rules
-
-
-def analyze_structural_drift(
-    *,
-    project_root: Path,
-    attractor=None,
-    boundary_rules: list[BoundaryRule] | None = None,
-) -> list[DriftFinding]:
-    """Run boundary rule checks against a project's import graph.
-
-    Args:
-        project_root: Root directory of the project to analyze.
-        attractor: Optional AttractorRecord whose boundary_rules are used.
-        boundary_rules: Optional explicit list of BoundaryRule objects.
-
-    Returns:
-        List of DriftFinding objects describing violations.
-
-    Rules are resolved in order: explicit ``boundary_rules`` first, then
-    attractor-derived rules.
-    """
-    rules = list(boundary_rules or [])
-    if attractor is not None:
-        rules.extend(load_boundary_rules_from_attractor(attractor))
-    if not rules:
-        return []
-    import_map = build_import_map(project_root)
-    return check_boundary_rules(import_map, rules, project_root)
-
-
 def compute_structure_hash(root: Path, *, glob_pattern: str = "**/*.py") -> str:
-    """Compute a deterministic hash of the project's import topology.
-
-    Serializes the import map to canonical JSON and returns its SHA-256.
-    When any module-level import changes, the hash changes — this serves
-    as a structural fingerprint that can be snapshotted at verification
-    time and compared later for staleness detection.
-    """
+    """Compute a deterministic SHA-256 hash of the project's import topology."""
     import_map = build_import_map(root, glob_pattern=glob_pattern)
-    # Canonicalize: sort keys, sort import lists for determinism.
     canonical = {module: sorted(set(imports)) for module, imports in sorted(import_map.items())}
     payload = json.dumps(canonical, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _strip_negation(text: str) -> str:
+    """Remove negation prefixes from a non-goal string to extract positive keywords."""
+    lowered = text.strip().lower()
+    for prefix in NEGATION_PREFIXES:
+        if lowered.startswith(prefix):
+            return lowered[len(prefix):].strip()
+    return lowered
+
+
+def _extract_keywords(text: str) -> list[str]:
+    """Extract searchable substrings from a non-goal after stripping negation.
+
+    For space-delimited languages, returns individual words > 2 chars.
+    For Chinese (no spaces between words), returns the full cleaned text
+    plus individual characters > 1 char for substring matching.
+    """
+    clean = _strip_negation(text)
+    words = clean.split()
+    if words:
+        return [w for w in words if len(w) > 2]
+    # No spaces — treat the whole text as a search keyword.
+    return [clean] if len(clean) > 2 else []
+
+
+def analyze_plan_drift(*, plan_id: str, cwd: Path | None = None) -> list[DriftFinding]:
+    """Compare current import graph against the plan's baseline verification.
+
+    Loads the plan's first verification run (the baseline), retrieves the
+    snapshotted import map, builds the current import map, and reports:
+
+    1. New project-internal imports that match plan non-goal keywords.
+    2. New external dependencies that match plan non-goal keywords.
+
+    Returns a list of DriftFinding objects — empty if no violations found.
+    """
+    from .plans import load_plan
+    from .verifications import load_verification
+
+    root = Path.cwd() if cwd is None else Path(cwd)
+    plan = load_plan(plan_id, cwd=root)
+
+    if not plan.verification_runs:
+        return []
+
+    # Get baseline import map from the first verification run.
+    baseline_run = load_verification(plan.verification_runs[0], cwd=root)
+    baseline_map = baseline_run.environment.get("baseline_import_map")
+    if not isinstance(baseline_map, dict):
+        return []  # pre-structural-snapshot verification — no data to compare
+
+    current_map = build_import_map(root)
+    findings: list[DriftFinding] = []
+
+    # Collect non-goal keywords for matching.
+    non_goal_keywords: dict[str, list[str]] = {}
+    for non_goal in plan.non_goals:
+        keywords = _extract_keywords(non_goal)
+        if keywords:
+            non_goal_keywords[non_goal] = keywords
+
+    # Find new imports (in current but not in baseline).
+    for module, current_imports in current_map.items():
+        baseline_imports = set(baseline_map.get(module, []))
+        new_imports = [imp for imp in current_imports if imp not in baseline_imports]
+        for imp in new_imports:
+            # Check against non-goal keywords (bidirectional match).
+            lowered = imp.lower()
+            for non_goal, keywords in non_goal_keywords.items():
+                if any(kw in lowered or lowered in kw for kw in keywords):
+                    findings.append(
+                        DriftFinding(
+                            drift_type="dependency_drift",
+                            evidence=f"New import {imp!r} in {module} matches non-goal: {non_goal}",
+                            recommendation=f"Review plan '{plan_id}' non-goal: {non_goal}. Revert the import or update the plan scope.",
+                            severity="high",
+                            confidence="high",
+                            rule_id=f"plan_non_goal:{plan_id}",
+                            source_excerpt=f"{module} newly imports {imp}",
+                            evidence_path=str(root / (module.replace(".", "/") + ".py")),
+                        )
+                    )
+
+    # Find new modules (not in baseline at all).
+    baseline_modules = set(baseline_map.keys())
+    new_modules = set(current_map.keys()) - baseline_modules
+    for module in sorted(new_modules):
+        all_imports = set(current_map[module])
+        for non_goal, keywords in non_goal_keywords.items():
+            lowered = module.lower() + " " + " ".join(all_imports).lower()
+            if any(kw in lowered for kw in keywords):
+                findings.append(
+                    DriftFinding(
+                        drift_type="boundary_drift",
+                        evidence=f"New module {module} (imports: {', '.join(sorted(all_imports)[:5])}) matches non-goal: {non_goal}",
+                        recommendation=f"Review plan '{plan_id}' non-goal: {non_goal}.",
+                        severity="medium",
+                        confidence="medium",
+                        rule_id=f"plan_non_goal:{plan_id}",
+                        source_excerpt=f"New module {module}",
+                        evidence_path=str(root / (module.replace(".", "/") + ".py")),
+                    )
+                )
+
+    return findings

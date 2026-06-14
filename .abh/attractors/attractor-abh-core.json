@@ -18,55 +18,5 @@
   ],
   "created_at": "2026-05-26T10:04:22.147001+00:00",
   "updated_at": "2026-06-14T12:00:00.000000+00:00",
-  "doc_path": "docs/architecture/attractors/abh-core-attractor.md",
-  "boundary_rules": [
-    {
-      "rule_id": "abh-foundation-no-cli",
-      "description": "Foundation modules (models, storage, errors) must not import CLI or MCP adapter modules",
-      "source_dir": "abh.models",
-      "forbidden_dir": "abh.cli",
-      "severity": "high",
-      "recommendation": "Models are pure data. Move adapter-specific logic to core.py or the adapter."
-    },
-    {
-      "rule_id": "abh-foundation-no-mcp",
-      "description": "Foundation modules must not import MCP server adapter",
-      "source_dir": "abh.models",
-      "forbidden_dir": "abh.mcp_server",
-      "severity": "high",
-      "recommendation": "Models must not depend on transport adapters."
-    },
-    {
-      "rule_id": "abh-storage-no-adapters",
-      "description": "Storage layer must not import CLI or MCP adapters",
-      "source_dir": "abh.storage",
-      "forbidden_dir": "abh.cli",
-      "severity": "high",
-      "recommendation": "Storage is infrastructure. Keep adapter imports in core.py."
-    },
-    {
-      "rule_id": "abh-cli-no-mcp",
-      "description": "CLI adapter must not directly import MCP server (use core.py)",
-      "source_dir": "abh.cli",
-      "forbidden_dir": "abh.mcp_server",
-      "severity": "medium",
-      "recommendation": "CLI and MCP are peer adapters. Route shared logic through core.py or commands.py."
-    },
-    {
-      "rule_id": "abh-mcp-no-cli",
-      "description": "MCP adapter must not directly import CLI adapter (use core.py)",
-      "source_dir": "abh.mcp_server",
-      "forbidden_dir": "abh.cli",
-      "severity": "medium",
-      "recommendation": "CLI and MCP are peer adapters. Route shared logic through core.py."
-    }
-  ],
-  "dependency_rules": [
-    {
-      "rule_id": "abh-plan-depends-attractor",
-      "description": "Plan modules must depend on attractor concepts",
-      "from_module": "abh.plans",
-      "to_module": "abh.attractors"
-    }
-  ]
+  "doc_path": "docs/architecture/attractors/abh-core-attractor.md"
 }

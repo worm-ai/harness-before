@@ -182,6 +182,14 @@ def record_verification(
     ensure_workspace(cwd)
     metadata = dict(environment or {})
     metadata.setdefault("plan", plan_verification_snapshot(plan))
+    # Embed structural baseline for plan-bound drift analysis.
+    root = Path.cwd() if cwd is None else Path(cwd)
+    try:
+        from .boundary import compute_structure_hash, build_import_map as _bim
+        metadata.setdefault("structure_hash", compute_structure_hash(root))
+        metadata.setdefault("baseline_import_map", _bim(root))
+    except Exception:
+        pass
     run = VerificationRun(
         id=f"ver-{uuid.uuid4().hex[:12]}",
         plan_id=plan_id,
@@ -333,10 +341,12 @@ def environment_snapshot(*, root: Path, commands: list[str], timeout_seconds: in
         "environment_variables": env_allowlist,
     }
     try:
-        from .boundary import compute_structure_hash
+        from .boundary import compute_structure_hash, build_import_map
         snapshot["structure_hash"] = compute_structure_hash(root)
+        # Save full import map on the first verification as the plan's structural baseline.
+        snapshot["baseline_import_map"] = build_import_map(root)
     except Exception:
-        pass  # best-effort; structural hash is optional
+        pass  # best-effort; structural data is optional
     return snapshot
 
 

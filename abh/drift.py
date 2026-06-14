@@ -7,7 +7,7 @@ from .memory import add_memory
 from .models import DRIFT_TYPES, DriftFinding, DriftReport, utc_now
 from .plans import load_plan
 from .storage import drift_doc_path, drift_json_path, drift_dir, ensure_workspace, read_json, write_json, write_json_markdown_pair
-from .boundary import analyze_structural_drift
+from .boundary import analyze_plan_drift
 
 
 DRIFT_RULES: dict[str, dict[str, object]] = {
@@ -100,29 +100,16 @@ def analyze_drift(
     evidence: list[str] | None = None,
     memory_id: str | None = None,
     plan_id: str | None = None,
-    structural: bool = False,
-    project_root: str | None = None,
     cwd: Path | None = None,
 ) -> DriftReport:
     validate_identifier(drift_id, "drift id")
     source_path = Path(source)
+    if not source_path.exists():
+        raise AbhError(f"drift source not found: {source}")
+    source_text = source_path.read_text(encoding="utf-8")
     evidence_values = list(evidence or [source])
     primary_evidence = evidence_values[0] if evidence_values else source
-    findings: list[DriftFinding] = []
-    source_text = ""
-    if source_path.exists() and source_path.is_file():
-        source_text = source_path.read_text(encoding="utf-8")
-        findings = analyze_drift_text(source_text, evidence_path=primary_evidence)
-    if structural:
-        root = Path(project_root) if project_root else Path.cwd() if cwd is None else Path(cwd)
-        from .attractors import active_attractor
-
-        try:
-            attractor = active_attractor(root)
-            structural_findings = analyze_structural_drift(project_root=root, attractor=attractor)
-            findings.extend(structural_findings)
-        except Exception:
-            pass  # structural analysis is best-effort; keyword findings still reported
+    findings = analyze_drift_text(source_text, evidence_path=primary_evidence)
     if plan_id:
         plan = load_plan(plan_id, cwd)
         negation_prefixes = ("不", "不要", "无需", "禁止", "避免", "no ", "not ")

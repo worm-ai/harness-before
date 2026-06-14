@@ -24,7 +24,7 @@ from .attractors import (
     seed_active_attractor_from_document,
     supersede_attractor,
 )
-from .boundary import analyze_structural_drift
+from .boundary import analyze_plan_drift, build_import_map, compute_structure_hash
 from .drift import (
     DRIFT_RULES,
     analyze_drift,
