@@ -10,7 +10,7 @@ VERIFICATION_TRUST_LEVELS = ("unknown", "manual_record", "local_shell", "isolate
 AUDIT_RESULTS = ("pass", "fail", "partial", "need_info")
 MEMORY_TYPES = ("false_assumption", "rejected_path", "divergent_pattern", "overturned_completion")
 MEMORY_STATUSES = ("active", "resolved", "superseded", "dismissed")
-DRIFT_TYPES = ("boundary_drift", "dependency_drift", "test_drift", "terminology_drift")
+DRIFT_TYPES = ("boundary_drift", "dependency_drift", "test_drift", "terminology_drift", "import_boundary_drift")
 SCHEMA_VERSION = "2"
 CURRENT_VERSION = 2
 RECORD_SCHEMAS: dict[str, dict[str, set[str]]] = {
@@ -61,6 +61,8 @@ RECORD_SCHEMAS: dict[str, dict[str, set[str]]] = {
             "impact",
             "migration_strategy",
             "invariants",
+            "boundary_rules",
+            "dependency_rules",
             "created_at",
             "updated_at",
             "doc_path",
@@ -158,6 +160,8 @@ class AttractorRecord:
     impact: str = ""
     migration_strategy: str = ""
     invariants: list[str] = field(default_factory=list)
+    boundary_rules: list[dict[str, str]] = field(default_factory=list)
+    dependency_rules: list[dict[str, str]] = field(default_factory=list)
     created_at: str = field(default_factory=utc_now)
     updated_at: str = field(default_factory=utc_now)
     doc_path: str = ""
@@ -177,6 +181,8 @@ class AttractorRecord:
             "migration_strategy": self.migration_strategy,
             "intent": self.intent,
             "invariants": list(self.invariants),
+            "boundary_rules": [dict(item) for item in self.boundary_rules],
+            "dependency_rules": [dict(item) for item in self.dependency_rules],
             "created_at": self.created_at,
             "updated_at": self.updated_at,
             "doc_path": self.doc_path,
@@ -198,6 +204,8 @@ class AttractorRecord:
             impact=data.get("impact", ""),
             migration_strategy=data.get("migration_strategy", ""),
             invariants=list(data.get("invariants", [])),
+            boundary_rules=[dict(item) for item in data.get("boundary_rules", []) if isinstance(item, dict)],
+            dependency_rules=[dict(item) for item in data.get("dependency_rules", []) if isinstance(item, dict)],
             created_at=data.get("created_at", utc_now()),
             updated_at=data.get("updated_at", utc_now()),
             doc_path=data.get("doc_path", ""),
@@ -667,6 +675,41 @@ class RoadmapQueue:
 
 
 # ---------------------------------------------------------------------------
+# Boundary rule for structural drift detection
+# ---------------------------------------------------------------------------
+
+@dataclass(slots=True)
+class BoundaryRule:
+    rule_id: str
+    description: str
+    source_dir: str
+    forbidden_dir: str
+    severity: str = "high"
+    recommendation: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "rule_id": self.rule_id,
+            "description": self.description,
+            "source_dir": self.source_dir,
+            "forbidden_dir": self.forbidden_dir,
+            "severity": self.severity,
+            "recommendation": self.recommendation,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "BoundaryRule":
+        return cls(
+            rule_id=str(data.get("rule_id", "")),
+            description=str(data.get("description", "")),
+            source_dir=str(data.get("source_dir", "")),
+            forbidden_dir=str(data.get("forbidden_dir", "")),
+            severity=str(data.get("severity", "high")),
+            recommendation=str(data.get("recommendation", "")),
+        )
+
+
+# ---------------------------------------------------------------------------
 # Schema migration infrastructure
 # ---------------------------------------------------------------------------
 
@@ -695,6 +738,9 @@ def migrate_v1_to_v2(record_type: str, data: dict[str, Any]) -> dict[str, Any]:
             "conversion_proof": [],
             "residual_pressure": [],
         })
+    elif record_type == "attractor":
+        migrated.setdefault("boundary_rules", [])
+        migrated.setdefault("dependency_rules", [])
     elif record_type == "verification":
         migrated.setdefault("failed_checks", [])
         migrated.setdefault("failure_classifications", [])

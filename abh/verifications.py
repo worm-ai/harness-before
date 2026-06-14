@@ -315,7 +315,7 @@ def failure_classification(
 
 def environment_snapshot(*, root: Path, commands: list[str], timeout_seconds: int) -> dict[str, object]:
     env_allowlist = {name: os.environ[name] for name in ("CI", "VIRTUAL_ENV") if name in os.environ}
-    return {
+    snapshot: dict[str, object] = {
         "cwd": str(root.resolve()),
         "git": git_metadata(root),
         "abh": {"version": __version__},
@@ -332,6 +332,12 @@ def environment_snapshot(*, root: Path, commands: list[str], timeout_seconds: in
         "commands": [{"command": command, "argv": split_command(command)} for command in commands],
         "environment_variables": env_allowlist,
     }
+    try:
+        from .boundary import compute_structure_hash
+        snapshot["structure_hash"] = compute_structure_hash(root)
+    except Exception:
+        pass  # best-effort; structural hash is optional
+    return snapshot
 
 
 def run_verification(

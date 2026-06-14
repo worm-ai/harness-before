@@ -16,6 +16,7 @@ from .core import (
     AbhError,
     add_memory,
     analyze_drift,
+    analyze_structural_drift,
     active_attractor,
     close_plan,
     create_plan,
@@ -408,8 +409,15 @@ def build_parser() -> argparse.ArgumentParser:
     drift_analyze.add_argument("--evidence", action="append", default=[])
     drift_analyze.add_argument("--memory-id")
     drift_analyze.add_argument("--plan")
+    drift_analyze.add_argument("--structural", action="store_true", help="also run structural (import boundary) analysis")
+    drift_analyze.add_argument("--project-root", help="project root for structural analysis")
     add_json_argument(drift_analyze)
     drift_analyze.set_defaults(handler=handle_drift_analyze)
+
+    drift_structure = drift_sub.add_parser("structure", help="analyze structural drift from import boundaries")
+    drift_structure.add_argument("--project-root", default=".", help="project root directory")
+    add_json_argument(drift_structure)
+    drift_structure.set_defaults(handler=handle_drift_structure)
 
     return parser
 
@@ -937,6 +945,8 @@ def handle_drift_analyze(args: argparse.Namespace) -> int:
         evidence=args.evidence,
         memory_id=args.memory_id,
         plan_id=args.plan,
+        structural=args.structural,
+        project_root=args.project_root,
     )
     if args.json:
         print_json_envelope(ok=True, command=command_name(args), data={"drift_report": report.to_dict()})
@@ -945,6 +955,36 @@ def handle_drift_analyze(args: argparse.Namespace) -> int:
     for finding in report.findings:
         print(f"- {finding.drift_type}: {finding.evidence}")
     return 0
+
+
+def handle_drift_structure(args: argparse.Namespace) -> int:
+    from pathlib import Path
+
+    from .attractors import active_attractor
+
+    root = Path(args.project_root).resolve()
+    try:
+        attractor = active_attractor(root)
+    except Exception:
+        attractor = None
+    findings = analyze_structural_drift(project_root=root, attractor=attractor)
+    if args.json:
+        print_json_envelope(
+            ok=True,
+            command=command_name(args),
+            data={
+                "findings": [f.to_dict() for f in findings],
+                "total": len(findings),
+            },
+        )
+        return 0
+    if not findings:
+        print("structural drift: ok (no boundary violations)")
+        return 0
+    print(f"structural drift: {len(findings)} boundary violation(s)")
+    for f in findings:
+        print(f"- [{f.severity}] {f.evidence}")
+    return 0 if not findings else 1
 
 
 def main(argv: list[str] | None = None) -> int:

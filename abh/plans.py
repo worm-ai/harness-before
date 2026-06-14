@@ -463,6 +463,20 @@ def changed_git_status_paths(run, cwd: Path | None = None) -> list[str] | None:
     return sorted(set(paths))
 
 
+def append_structure_stale_reasons(reasons: list[str], run, cwd: Path | None = None) -> None:
+    """Append ``structure_changed`` to reasons if the import topology changed."""
+    recorded_hash = run.environment.get("structure_hash")
+    if not isinstance(recorded_hash, str):
+        return
+    root = Path.cwd() if cwd is None else Path(cwd)
+    try:
+        from .boundary import compute_structure_hash
+        if compute_structure_hash(root) != recorded_hash:
+            reasons.append("structure_changed")
+    except Exception:
+        pass
+
+
 POST_CLOSE_DOC_SYNC_PATHS = {
     "docs/development-roadmap.md",
     "docs/task-board.md",
@@ -520,6 +534,8 @@ def stale_reason_detail(
         trigger = "repository_commit"
     elif reason == "validation_checklist_changed":
         trigger = "validation_checklist"
+    elif reason == "structure_changed":
+        trigger = "structural_topology"
     elif reason == "no_verification_runs":
         trigger = "missing_verification"
     detail = {
@@ -575,6 +591,7 @@ def verification_freshness_summary(plan: PlanRecord, cwd: Path | None = None) ->
     if verification_commands(latest) != list(plan.validation_checklist):
         reasons.append("validation_checklist_changed")
     append_git_stale_reasons(reasons, latest, cwd)
+    append_structure_stale_reasons(reasons, latest, cwd)
     git_status_paths = changed_git_status_paths(latest, cwd) if "git_status_changed" in reasons else None
     details = [
         stale_reason_detail(
