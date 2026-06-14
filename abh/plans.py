@@ -286,7 +286,13 @@ def close_plan(plan_id: str, cwd: Path | None = None) -> PlanRecord:
     scope_findings = check_plan_scope(plan_id=plan_id, cwd=cwd)
     if scope_findings:
         lines = "\n".join(f"  - [{f.severity}] {f.evidence}" for f in scope_findings)
-        raise AbhError(f"plan scope violations detected; cannot close:\n{lines}")
+        recs = "\n".join(f"  → {f.recommendation}" for f in scope_findings if f.recommendation)
+        raise AbhError(
+            f"plan scope check failed; cannot close:\n{lines}\n\n"
+            f"Actions:\n{recs}\n\n"
+            f"To bypass (if you are certain these changes are within scope): re-run with explicit --scope, "
+            f"or update plan goals to cover the changed files, or revert out-of-scope changes."
+        )
     plan.status = "closed"
     if passing_audit.id not in plan.closure_evidence:
         plan.closure_evidence.append(passing_audit.id)

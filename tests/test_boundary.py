@@ -314,6 +314,43 @@ class CloseGateIntegrationTests(unittest.TestCase):
         findings = check_plan_scope(plan_id="plan-scope-close", cwd=self.root)
         self.assertGreaterEqual(len(findings), 1, f"Expected scope violation, got {len(findings)} findings")
 
+    def test_close_with_explicit_scope_passes(self) -> None:
+        """Plan with explicit scope, all changes inside scope → clean."""
+        import subprocess
+        self._write("src/auth/mod.py", "import os\n")
+        subprocess.run(["git", "add", "-A"], cwd=self.root, capture_output=True, check=False)
+        subprocess.run(["git", "commit", "-m", "baseline"], cwd=self.root, capture_output=True, check=False)
+        create_plan(plan_id="plan-scope-explicit", title="Explicit Scope",
+                    attractor="docs/architecture/attractors/test.md", baseline="b",
+                    status="draft", goals=["add auth"], non_goals=[],
+                    exit_criteria=["ec"], validation_checklist=["echo ok"],
+                    closure_evidence=["test.md"], scope_paths=["src/auth"], cwd=self.root)
+        # record_verification to capture the structural baseline
+        record_verification(plan_id="plan-scope-explicit", command="echo ok", result="pass", cwd=self.root)
+        # Change inside scope only.
+        self._write("src/auth/mod.py", "import os\nimport json\n")
+        findings = check_plan_scope(plan_id="plan-scope-explicit", cwd=self.root)
+        self.assertEqual(findings, [])
+
+    def test_empty_scope_returns_need_info(self) -> None:
+        """Plan without scope, changes made → need_info, not all-files-violation."""
+        import subprocess
+        self._write("src/app/main.py", "import os\n")
+        subprocess.run(["git", "add", "-A"], cwd=self.root, capture_output=True, check=False)
+        subprocess.run(["git", "commit", "-m", "baseline"], cwd=self.root, capture_output=True, check=False)
+        create_plan(plan_id="plan-no-scope", title="No Scope",
+                    attractor="docs/architecture/attractors/test.md", baseline="b",
+                    status="draft", goals=["improve performance"], non_goals=[],
+                    exit_criteria=["ec"], validation_checklist=["echo ok"],
+                    closure_evidence=["test.md"], cwd=self.root)
+        record_verification(plan_id="plan-no-scope", command="echo ok", result="pass", cwd=self.root)
+        # Change a file.
+        self._write("src/app/main.py", "import os\nimport json\n")
+        findings = check_plan_scope(plan_id="plan-no-scope", cwd=self.root)
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0].severity, "need_info")
+        self.assertIn("no scope declared", findings[0].evidence)
+
 
 if __name__ == "__main__":
     unittest.main()

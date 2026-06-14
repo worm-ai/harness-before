@@ -285,6 +285,24 @@ def check_plan_scope(*, plan_id: str, cwd: Path | None = None) -> list[DriftFind
 
     findings: list[DriftFinding] = []
 
+    # Empty scope with baseline → user needs to declare scope; don't flag everything.
+    if not scope and git_status_paths:
+        non_abh = [p for p in git_status_paths if not p.startswith((".abh/", "docs/audits/", "docs/plans/", "docs/memory/"))]
+        if non_abh:
+            findings.append(
+                DriftFinding(
+                    drift_type="boundary_drift",
+                    evidence=f"Plan has no scope declared and {len(non_abh)} file(s) changed since baseline",
+                    recommendation=f"Re-run 'abh plan update {plan_id} --scope <dirs>' to declare which directories this plan is allowed to touch, or add path-like goals to the plan.",
+                    severity="need_info",
+                    confidence="high",
+                    rule_id=f"plan_scope_missing:{plan_id}",
+                    source_excerpt=f"Changed files: {', '.join(non_abh[:5])}",
+                    evidence_path="",
+                )
+            )
+            return findings
+
     # Check each changed file against scope.
     for path in git_status_paths:
         if path.startswith((".abh/", "docs/audits/", "docs/plans/", "docs/memory/")):
