@@ -226,6 +226,7 @@ def build_parser() -> argparse.ArgumentParser:
     update.add_argument("--validation", action="append", default=[])
     update.add_argument("--remove-validation", action="append", default=[])
     update.add_argument("--closure-evidence", action="append", default=[])
+    update.add_argument("--scope", action="append", default=[], help="directory scope for structural drift check at close")
     add_commitment_phase_state_arguments(update)
     add_json_argument(update)
     update.set_defaults(handler=handle_plan_update)
@@ -567,6 +568,7 @@ def handle_plan_update(args: argparse.Namespace) -> int:
         remove_validation_checklist=args.remove_validation,
         closure_evidence=args.closure_evidence,
         commitment_phase_state=commitment_phase_state_from_args(args),
+        scope=args.scope,
     )
     if args.json:
         print_json_envelope(ok=True, command=command_name(args), data={"plan": plan.to_dict()})
@@ -956,7 +958,11 @@ def handle_drift_analyze(args: argparse.Namespace) -> int:
 
 
 def handle_drift_plan_check(args: argparse.Namespace) -> int:
+    from .boundary import check_plan_scope
+
     findings = analyze_plan_drift(plan_id=args.plan_id)
+    scope_findings = check_plan_scope(plan_id=args.plan_id)
+    findings = list(findings) + list(scope_findings)
     if args.json:
         print_json_envelope(
             ok=True, command=command_name(args),

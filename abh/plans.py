@@ -24,7 +24,7 @@ ALLOWED_TRANSITIONS: dict[str, set[str]] = {
     "ready": {"running", "blocked"},
     "running": {"blocked", "closing"},
     "blocked": {"running", "closing"},
-    "closing": {"closed"},
+    "closing": set(),
     "closed": set(),
 }
 
@@ -174,6 +174,7 @@ def update_plan_record(
     remove_validation_checklist: list[str] | None = None,
     closure_evidence: list[str] | None = None,
     commitment_phase_state: CommitmentPhaseState | None = None,
+    scope: list[str] | None = None,
     cwd: Path | None = None,
 ) -> PlanRecord:
     plan = load_plan(plan_id, cwd)
@@ -186,6 +187,7 @@ def update_plan_record(
             remove_validation_checklist,
             closure_evidence,
             commitment_phase_state,
+            scope,
         )
     ):
         raise AbhError("plan update requires at least one field to append")
@@ -196,6 +198,8 @@ def update_plan_record(
     for item in remove_validation_checklist or []:
         plan.validation_checklist = [value for value in plan.validation_checklist if value != item]
     plan.closure_evidence = append_unique(plan.closure_evidence, closure_evidence)
+    if scope is not None:
+        plan.scope = append_unique(list(getattr(plan, "scope", []) or []), scope)
     if commitment_phase_state is not None:
         state = plan.commitment_phase_state
         state.stable_state_now = append_unique(state.stable_state_now, commitment_phase_state.stable_state_now)
@@ -257,6 +261,13 @@ def transition_plan(plan_id: str, target_status: str, cwd: Path | None = None) -
         latest = load_verification(plan.verification_runs[-1], cwd)
         if latest.result != "pass":
             raise AbhError("cannot move to closing without a passing verification run")
+    if target_status == "running":
+        from .verifications import git_metadata
+
+        root = Path.cwd() if cwd is None else Path(cwd)
+        git_meta = git_metadata(root)
+        if git_meta.get("available") and isinstance(git_meta.get("commit"), str):
+            plan.baseline_commit = str(git_meta["commit"])
     plan.status = target_status
     return save_plan(plan, cwd)
 

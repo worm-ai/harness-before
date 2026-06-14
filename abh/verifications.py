@@ -185,9 +185,10 @@ def record_verification(
     # Embed structural baseline for plan-bound drift analysis.
     root = Path.cwd() if cwd is None else Path(cwd)
     try:
-        from .boundary import compute_structure_hash, build_import_map as _bim
-        metadata.setdefault("structure_hash", compute_structure_hash(root))
-        metadata.setdefault("baseline_import_map", _bim(root))
+        from .boundary import _import_map_hash, build_import_map as _bim
+        import_map = _bim(root)
+        metadata.setdefault("structure_hash", _import_map_hash(import_map))
+        metadata.setdefault("baseline_import_map", import_map)
         metadata.setdefault("git", git_metadata(root))
     except Exception:
         pass

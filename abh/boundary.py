@@ -76,7 +76,8 @@ def build_import_map(root: Path, *, glob_pattern: str = "**/*.py", exclude: set[
     exclude_patterns = exclude if exclude is not None else DEFAULT_EXCLUDE_PATTERNS
     import_map: dict[str, list[str]] = {}
     for py_file in sorted(root.glob(glob_pattern)):
-        if any(part in exclude_patterns for part in py_file.parts):
+        rel = py_file.relative_to(root)
+        if any(part in exclude_patterns for part in rel.parts):
             continue
         module = _relative_module(py_file, root)
         imports = extract_module_imports(py_file, parent_module=module)
@@ -85,12 +86,17 @@ def build_import_map(root: Path, *, glob_pattern: str = "**/*.py", exclude: set[
     return import_map
 
 
-def compute_structure_hash(root: Path, *, glob_pattern: str = "**/*.py") -> str:
-    """Compute a deterministic SHA-256 hash of the project's import topology."""
-    import_map = build_import_map(root, glob_pattern=glob_pattern)
+def _import_map_hash(import_map: dict[str, list[str]]) -> str:
+    """Compute a deterministic SHA-256 hash of an import map."""
     canonical = {module: sorted(set(imports)) for module, imports in sorted(import_map.items())}
     payload = json.dumps(canonical, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def compute_structure_hash(root: Path, *, glob_pattern: str = "**/*.py") -> str:
+    """Compute a deterministic SHA-256 hash of the project's import topology."""
+    import_map = build_import_map(root, glob_pattern=glob_pattern)
+    return _import_map_hash(import_map)
 
 
 def _strip_negation(text: str) -> str:
@@ -225,13 +231,14 @@ def infer_plan_scope(plan, cwd: Path) -> set[str]:
             word = word.strip(".,;:'\"/")
             if not word:
                 continue
-            # Path-like: contains / or ends with .py
-            if "/" in word:
+            # Path-like: ends with .py (check before general "/" so full file paths
+            # like "src/module.py" extract the directory, not the full path)
+            if word.endswith(".py"):
+                scopes.add(word.rsplit("/", 1)[0] if "/" in word else word[:-3])
+            elif "/" in word:
                 # Use full path prefix, not just the first component.
                 path_part = word.rstrip("/")
                 scopes.add(path_part)
-            elif word.endswith(".py"):
-                scopes.add(word.rsplit("/", 1)[0] if "/" in word else word[:-3])
             else:
                 # Check if it matches an existing directory
                 candidate = cwd / word
@@ -301,25 +308,24 @@ def check_plan_scope(*, plan_id: str, cwd: Path | None = None) -> list[DriftFind
                     evidence_path="",
                 )
             )
-            return findings
-
-    # Check each changed file against scope.
-    for path in git_status_paths:
-        if path.startswith((".abh/", "docs/audits/", "docs/plans/", "docs/memory/")):
-            continue
-        if scope and not _file_in_scope(path, scope):
-            findings.append(
-                DriftFinding(
-                    drift_type="boundary_drift",
-                    evidence=f"Changed file {path!r} is outside plan scope {sorted(scope)}",
-                    recommendation=f"Review plan '{plan_id}' scope. If this change is intentional, update the plan scope. Otherwise, revert the out-of-scope change.",
-                    severity="medium",
-                    confidence="high",
-                    rule_id=f"plan_scope:{plan_id}",
-                    source_excerpt=f"git diff {baseline_commit[:8]}..HEAD includes {path}",
-                    evidence_path=str(root / path),
+    else:
+        # Check each changed file against scope.
+        for path in git_status_paths:
+            if path.startswith((".abh/", "docs/audits/", "docs/plans/", "docs/memory/")):
+                continue
+            if scope and not _file_in_scope(path, scope):
+                findings.append(
+                    DriftFinding(
+                        drift_type="boundary_drift",
+                        evidence=f"Changed file {path!r} is outside plan scope {sorted(scope)}",
+                        recommendation=f"Review plan '{plan_id}' scope. If this change is intentional, update the plan scope. Otherwise, revert the out-of-scope change.",
+                        severity="medium",
+                        confidence="high",
+                        rule_id=f"plan_scope:{plan_id}",
+                        source_excerpt=f"git diff {baseline_commit[:8]}..HEAD includes {path}",
+                        evidence_path=str(root / path),
+                    )
                 )
-            )
 
     # Also check import changes against non-goals.
     if plan.verification_runs:
@@ -345,6 +351,7 @@ def _no_git_finding(plan_id: str) -> DriftFinding:
 def _changed_files_since(commit: str, root: Path) -> list[str] | None:
     """Return files changed since a given commit, or None if unavailable."""
     import subprocess
+    import sys
     try:
         result = subprocess.run(
             ["git", "diff", "--name-only", commit],
@@ -353,5 +360,8 @@ def _changed_files_since(commit: str, root: Path) -> list[str] | None:
         if result.returncode != 0:
             return None
         return [p.strip().replace("\\", "/") for p in result.stdout.splitlines() if p.strip()]
-    except (OSError, subprocess.TimeoutExpired):
+    except subprocess.TimeoutExpired:
+        print(f"warning: git diff timed out after 10s (commit={commit[:8]})", file=sys.stderr)
+        return None
+    except OSError:
         return None

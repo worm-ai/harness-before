@@ -7,7 +7,6 @@ from .memory import add_memory
 from .models import DRIFT_TYPES, DriftFinding, DriftReport, utc_now
 from .plans import load_plan
 from .storage import drift_doc_path, drift_json_path, drift_dir, ensure_workspace, read_json, write_json, write_json_markdown_pair
-from .boundary import analyze_plan_drift
 
 
 DRIFT_RULES: dict[str, dict[str, object]] = {
