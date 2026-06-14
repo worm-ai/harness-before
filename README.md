@@ -418,6 +418,44 @@ abh memory search --type divergent_pattern --query dependency
 abh drift analyze --id drift-002 --source drift-source.txt --plan plan-007
 ```
 
+### 11b. 结构化范围检查（plan-bound structural drift）
+
+从 plan-058 开始，`close_plan` 会在关闭前自动检查代码变更是否超出 plan 声明的范围：
+
+```bash
+# 创建一个带 scope 的计划
+abh plan create \
+  --id plan-struct-demo \
+  --title "Add auth module" \
+  --attractor docs/architecture/attractors/abh-core-attractor.md \
+  --baseline "baseline" \
+  --goal "add auth module under src/auth/" \
+  --non-goal "不引入新数据库依赖" \
+  --scope src/auth \
+  --validation "python3 -m pytest" \
+  --closure-evidence tests/
+
+# 开发完成后，close 时会自动检查：
+# 1. git diff <baseline_commit> → 列出所有变更文件
+# 2. 变更文件是否都在 scope 内（src/auth/）
+# 3. 新增 import 是否匹配 non-goal 关键词
+# 4. 违规 → 拒绝关闭，给出具体文件和建议
+
+abh close plan-struct-demo
+# 如果 src/payment/ 被改了 → AbhError:
+#   "plan scope check failed; cannot close: src/payment/handler.py outside scope ['src/auth']"
+```
+
+也可以单独运行检查：
+
+```bash
+abh drift plan-check plan-struct-demo --json
+```
+
+Plan 的 `baseline_commit` 在 `plan create` 时自动从当前 HEAD 捕获，作为 diff 比较的基线。如果 plan 创建时没有 git，scope check 会静默跳过。如果 scope 为空且 goals 中没有路径关键词，会返回 `need_info` finding 要求用户声明 `--scope`。
+
+`PlanRecord` 新增 `scope: list[str]` 字段（可选），显式声明计划允许修改的目录范围。`--scope` 参数同时支持 CLI 和 MCP。
+
 ### 12. 检查工作区一致性
 
 `doctor` 用于检查核心对象的 JSON 记录和 Markdown 文档是否一一对应：
