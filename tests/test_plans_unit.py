@@ -86,7 +86,7 @@ class PlanTransitionTests(unittest.TestCase):
         self.assertEqual(ALLOWED_TRANSITIONS["ready"], {"running", "blocked"})
         self.assertEqual(ALLOWED_TRANSITIONS["running"], {"blocked", "closing"})
         self.assertEqual(ALLOWED_TRANSITIONS["blocked"], {"running", "closing"})
-        self.assertEqual(ALLOWED_TRANSITIONS["closing"], {"closed"})
+        self.assertEqual(ALLOWED_TRANSITIONS["closing"], set())
         self.assertEqual(ALLOWED_TRANSITIONS["closed"], set())
 
     def test_closed_is_terminal(self) -> None:

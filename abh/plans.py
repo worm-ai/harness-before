@@ -6,7 +6,7 @@ from pathlib import Path
 from datetime import datetime
 
 from .errors import AbhError, require_existing_path, validate_identifier
-from .models import CommitmentPhaseState, CommitmentResidualPressure, PLAN_STATUSES, PlanRecord, utc_now
+from .models import CommitmentPhaseState, CommitmentResidualPressure, PLAN_STATUSES, PlanRecord, normalize_reference_set, utc_now
 from .storage import (
     ensure_workspace,
     plan_doc_path,
@@ -37,6 +37,7 @@ PLAN_VERIFICATION_FIELDS = (
     "exit_criteria",
     "validation_checklist",
     "closure_evidence",
+    "reference_set",
 )
 
 
@@ -113,6 +114,7 @@ def create_plan(
     closure_evidence: list[str] | None = None,
     commitment_phase_state: CommitmentPhaseState | None = None,
     scope_paths: list[str] | None = None,
+    reference_set: dict[str, list[str]] | None = None,
     cwd: Path | None = None,
 ) -> PlanRecord:
     ensure_workspace(cwd)
@@ -144,6 +146,7 @@ def create_plan(
         commitment_phase_state=commitment_phase_state or CommitmentPhaseState(),
         doc_path=str(plan_doc_path(plan_id, cwd)),
         scope=list(scope_paths or []),
+        reference_set=normalize_reference_set(reference_set),
     )
     # Capturer le commit git au moment de la creation du plan.
     from .verifications import git_metadata
@@ -175,6 +178,7 @@ def update_plan_record(
     closure_evidence: list[str] | None = None,
     commitment_phase_state: CommitmentPhaseState | None = None,
     scope: list[str] | None = None,
+    reference_set: dict[str, list[str]] | None = None,
     cwd: Path | None = None,
 ) -> PlanRecord:
     plan = load_plan(plan_id, cwd)
@@ -188,6 +192,7 @@ def update_plan_record(
             closure_evidence,
             commitment_phase_state,
             scope,
+            reference_set,
         )
     ):
         raise AbhError("plan update requires at least one field to append")
@@ -200,6 +205,12 @@ def update_plan_record(
     plan.closure_evidence = append_unique(plan.closure_evidence, closure_evidence)
     if scope is not None:
         plan.scope = append_unique(list(getattr(plan, "scope", []) or []), scope)
+    if reference_set:
+        current = normalize_reference_set(plan.reference_set)
+        additions = normalize_reference_set(reference_set)
+        for key, values in additions.items():
+            current[key] = append_unique(current[key], values)
+        plan.reference_set = current
     if commitment_phase_state is not None:
         state = plan.commitment_phase_state
         state.stable_state_now = append_unique(state.stable_state_now, commitment_phase_state.stable_state_now)
@@ -330,12 +341,21 @@ def audit_close_blocker(plan: PlanRecord, audit, cwd: Path | None = None) -> str
 def render_plan_markdown(plan: PlanRecord) -> str:
     def bullet_lines(values: list[str]) -> str:
         if not values:
-            return "- "
+            return "-"
         return "\n".join(f"- {value}" for value in values)
+
+    def heading_for(key: str) -> str:
+        return key.replace("_", " ").title()
+
+    def reference_set_markdown() -> str:
+        sections: list[str] = []
+        for key, values in normalize_reference_set(plan.reference_set).items():
+            sections.append(f"### {heading_for(key)}\n\n{bullet_lines(values)}")
+        return "\n\n".join(sections)
 
     def residual_lines(values: list[CommitmentResidualPressure]) -> str:
         if not values:
-            return "- "
+            return "-"
         return "\n".join(
             f"- {item.pressure} | Non-blocking rationale: {item.non_blocking_rationale}"
             for item in values
@@ -374,6 +394,8 @@ def render_plan_markdown(plan: PlanRecord) -> str:
         f"{bullet_lines(plan.validation_checklist)}\n\n"
         "## Closure Evidence\n\n"
         f"{bullet_lines(plan.closure_evidence)}\n\n"
+        "## Reference Set\n\n"
+        f"{reference_set_markdown()}\n\n"
         "## Verification Runs\n\n"
         f"{bullet_lines(plan.verification_runs)}\n\n"
         "## Audits\n\n"

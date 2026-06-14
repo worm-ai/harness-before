@@ -13,6 +13,31 @@ MEMORY_STATUSES = ("active", "resolved", "superseded", "dismissed")
 DRIFT_TYPES = ("boundary_drift", "dependency_drift", "test_drift", "terminology_drift", "import_boundary_drift")
 SCHEMA_VERSION = "2"
 CURRENT_VERSION = 2
+
+REFERENCE_SET_KEYS = (
+    "context_routing",
+    "active_owner_docs",
+    "live_code_routes",
+    "tests_baseline",
+    "known_issues",
+    "external_contracts",
+    "plan_audit_evidence",
+)
+
+
+def empty_reference_set() -> dict[str, list[str]]:
+    return {key: [] for key in REFERENCE_SET_KEYS}
+
+
+def normalize_reference_set(value: dict[str, Any] | None) -> dict[str, list[str]]:
+    normalized = empty_reference_set()
+    if not isinstance(value, dict):
+        return normalized
+    for key in REFERENCE_SET_KEYS:
+        raw_items = value.get(key, [])
+        if isinstance(raw_items, list):
+            normalized[key] = [str(item) for item in raw_items]
+    return normalized
 RECORD_SCHEMAS: dict[str, dict[str, set[str]]] = {
     "plan": {
         "required": {"schema_version", "id", "title", "attractor", "baseline"},
@@ -29,6 +54,7 @@ RECORD_SCHEMAS: dict[str, dict[str, set[str]]] = {
             "audit_ids",
             "baseline_commit",
             "scope",
+            "reference_set",
             "created_at",
             "updated_at",
             "doc_path",
@@ -555,6 +581,7 @@ class PlanRecord:
     audit_ids: list[str] = field(default_factory=list)
     baseline_commit: str = ""
     scope: list[str] = field(default_factory=list)
+    reference_set: dict[str, list[str]] = field(default_factory=empty_reference_set)
     created_at: str = field(default_factory=utc_now)
     updated_at: str = field(default_factory=utc_now)
     doc_path: str = ""
@@ -578,6 +605,7 @@ class PlanRecord:
             "audit_ids": list(self.audit_ids),
             "baseline_commit": self.baseline_commit,
             "scope": list(self.scope),
+            "reference_set": normalize_reference_set(self.reference_set),
             "created_at": self.created_at,
             "updated_at": self.updated_at,
             "doc_path": self.doc_path,
@@ -603,6 +631,7 @@ class PlanRecord:
             audit_ids=list(data.get("audit_ids", [])),
             baseline_commit=str(data.get("baseline_commit", "")),
             scope=list(data.get("scope", [])),
+            reference_set=normalize_reference_set(data.get("reference_set")),
             created_at=data.get("created_at", utc_now()),
             updated_at=data.get("updated_at", utc_now()),
             doc_path=data.get("doc_path", ""),
@@ -624,6 +653,7 @@ class RoadmapItem:
     closure_evidence: list[str] = field(default_factory=list)
     status: str = "queued"
     plan_id: str | None = None
+    reference_set: dict[str, list[str]] = field(default_factory=empty_reference_set)
 
     def to_dict(self) -> dict[str, Any]:
         data: dict[str, Any] = {
@@ -640,6 +670,7 @@ class RoadmapItem:
             "closure_evidence": list(self.closure_evidence),
             "status": self.status,
             "plan_id": self.plan_id,
+            "reference_set": normalize_reference_set(self.reference_set),
         }
         return data
 
@@ -659,6 +690,7 @@ class RoadmapItem:
             closure_evidence=list(data.get("closure_evidence", [])),
             status=data.get("status", "queued"),
             plan_id=data.get("plan_id"),
+            reference_set=normalize_reference_set(data.get("reference_set")),
         )
 
 

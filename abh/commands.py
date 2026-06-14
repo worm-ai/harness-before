@@ -34,6 +34,10 @@ def array_property(description: str) -> dict[str, Any]:
     return {"type": "array", "description": description, "items": {"type": "string"}}
 
 
+def object_property(description: str) -> dict[str, Any]:
+    return {"type": "object", "description": description, "additionalProperties": {"type": "array", "items": {"type": "string"}}}
+
+
 def input_schema(properties: dict[str, Any], required: list[str] | None = None) -> dict[str, Any]:
     return {
         "type": "object",
@@ -402,6 +406,7 @@ COMMANDS: tuple[CommandContract, ...] = (
                 "exit_criteria": array_property("Plan exit criteria."),
                 "validation_checklist": array_property("Validation checklist."),
                 "closure_evidence": array_property("Closure evidence paths."),
+                "reference_set": object_property("Optional plan Reference Set grouped by stable category key."),
             },
             ["confirm", "plan_id", "title", "attractor", "baseline"],
         ),
@@ -416,7 +421,7 @@ COMMANDS: tuple[CommandContract, ...] = (
         confirmation="cli write command",
         side_effects=["update .abh/plans/<plan_id>.json", "update docs/plans/<plan_id>.md"],
         description="Append or remove supported plan fields through existing core rules.",
-        input_schema=input_schema({"plan_id": text_property("Plan id.")}, ["plan_id"]),
+        input_schema=input_schema({"plan_id": text_property("Plan id."), "reference_set": object_property("Optional plan Reference Set entries to append.")}, ["plan_id"]),
         output_keys=["plan"],
         failure_categories=COMMON_FAILURES,
     ),

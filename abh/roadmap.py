@@ -151,6 +151,7 @@ def materialize_roadmap_item(key: str, cwd: Path | None = None) -> tuple[Roadmap
                 exit_criteria=item.exit_criteria,
                 validation_checklist=item.validation_checklist,
                 closure_evidence=item.closure_evidence,
+                reference_set=item.reference_set,
                 cwd=cwd,
             )
             item.plan_id = plan.id

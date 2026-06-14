@@ -31,7 +31,7 @@ from .core import (
     transition_plan,
 )
 from .drift import list_drift_reports
-from .models import SCHEMA_VERSION
+from .models import REFERENCE_SET_KEYS, SCHEMA_VERSION, normalize_reference_set
 from .plans import verification_freshness_summary
 from .reporting import project_health_report
 
@@ -97,6 +97,18 @@ def optional_string_list(arguments: dict[str, Any], key: str) -> list[str] | Non
     if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
         raise AbhError(f"invalid tool argument: {key} must be a list of strings")
     return list(value)
+
+
+def optional_reference_set(arguments: dict[str, Any]) -> dict[str, list[str]] | None:
+    value = arguments.get("reference_set")
+    if value is None:
+        return None
+    if not isinstance(value, dict):
+        raise AbhError("invalid tool argument: reference_set must be an object")
+    unknown = sorted(set(value) - set(REFERENCE_SET_KEYS))
+    if unknown:
+        raise AbhError(f"invalid reference set key: {unknown[0]}")
+    return normalize_reference_set(value)
 
 
 def require_confirm(arguments: dict[str, Any]) -> None:
@@ -217,6 +229,7 @@ def call_plan_create(arguments: dict[str, Any]) -> dict[str, Any]:
         validation_checklist=optional_string_list(arguments, "validation_checklist"),
         closure_evidence=optional_string_list(arguments, "closure_evidence"),
         scope_paths=optional_string_list(arguments, "scope"),
+        reference_set=optional_reference_set(arguments),
     )
     return {"plan": plan.to_dict()}
 

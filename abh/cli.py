@@ -10,7 +10,7 @@ from .audit_bundle import audit_bundle
 from .commands import abh_error_payload, dumps_envelope, make_envelope
 from .hooks import hook_profile, install_hooks
 from .navigation import onboarding_check, recommend_next_action
-from .models import CommitmentPhaseState, CommitmentResidualPressure, MEMORY_STATUSES
+from .models import CommitmentPhaseState, CommitmentResidualPressure, MEMORY_STATUSES, REFERENCE_SET_KEYS, empty_reference_set
 from .reporting import project_health_report
 from .core import (
     AbhError,
@@ -79,6 +79,21 @@ def add_commitment_phase_state_arguments(parser: argparse.ArgumentParser) -> Non
     parser.add_argument("--target-stable-state", action="append", default=[])
     parser.add_argument("--conversion-proof", action="append", default=[])
     parser.add_argument("--residual-pressure", action="append", default=[])
+
+
+def parse_reference_set_entries(values: list[str]) -> dict[str, list[str]]:
+    reference_set = empty_reference_set()
+    for raw in values:
+        if "=" not in raw:
+            raise AbhError("invalid reference set entry; expected KEY=VALUE")
+        key, value = raw.split("=", 1)
+        key = key.strip()
+        value = value.strip()
+        if key not in REFERENCE_SET_KEYS:
+            raise AbhError(f"invalid reference set key: {key}")
+        if value and value not in reference_set[key]:
+            reference_set[key].append(value)
+    return reference_set
 
 
 def commitment_phase_state_from_args(args: argparse.Namespace) -> CommitmentPhaseState | None:
@@ -205,6 +220,7 @@ def build_parser() -> argparse.ArgumentParser:
     create.add_argument("--validation", action="append", default=[])
     create.add_argument("--closure-evidence", action="append", default=[])
     create.add_argument("--scope", action="append", default=[], help="directory scope for structural drift check at close")
+    create.add_argument("--reference-set", action="append", default=[], metavar="KEY=VALUE")
     add_commitment_phase_state_arguments(create)
     add_json_argument(create)
     create.set_defaults(handler=handle_plan_create)
@@ -227,6 +243,7 @@ def build_parser() -> argparse.ArgumentParser:
     update.add_argument("--remove-validation", action="append", default=[])
     update.add_argument("--closure-evidence", action="append", default=[])
     update.add_argument("--scope", action="append", default=[], help="directory scope for structural drift check at close")
+    update.add_argument("--reference-set", action="append", default=[], metavar="KEY=VALUE")
     add_commitment_phase_state_arguments(update)
     add_json_argument(update)
     update.set_defaults(handler=handle_plan_update)
@@ -524,6 +541,7 @@ def handle_plan_create(args: argparse.Namespace) -> int:
         closure_evidence=args.closure_evidence,
         commitment_phase_state=commitment_phase_state_from_args(args),
         scope_paths=args.scope,
+        reference_set=parse_reference_set_entries(args.reference_set),
     )
     if args.json:
         print_json_envelope(ok=True, command=command_name(args), data={"plan": plan.to_dict()})
@@ -569,6 +587,7 @@ def handle_plan_update(args: argparse.Namespace) -> int:
         closure_evidence=args.closure_evidence,
         commitment_phase_state=commitment_phase_state_from_args(args),
         scope=args.scope,
+        reference_set=parse_reference_set_entries(args.reference_set),
     )
     if args.json:
         print_json_envelope(ok=True, command=command_name(args), data={"plan": plan.to_dict()})

@@ -3,12 +3,12 @@
 ## Metadata
 
 - ID: plan-043-plan-reference-set
-- Status: running
+- Status: closing
 - Attractor: docs/architecture/attractors/abh-core-attractor.md
 - Baseline: Plans currently declare attractor, baseline, goals, non-goals, exit criteria, validation checklist, and closure evidence, but they do not explicitly name the owner docs, code routes, tests, memory, drift, external contracts, and audit evidence that must be read for the slice.
 - Owner: platform
 - Created: 2026-05-30T12:08:07.774509+00:00
-- Updated: 2026-05-30T12:15:13.263820+00:00
+- Updated: 2026-06-14T16:51:18.874825+00:00
 
 ## Goals
 
@@ -29,6 +29,28 @@
 - Plan status JSON exposes the Reference Set.
 - Plan templates and docs explain the Reference Set categories and source-of-truth role.
 - Tests cover legacy reads, new Reference Set rendering, JSON output, and roadmap materialization behavior.
+
+## Commitment Phase State
+
+### Stable State Now
+
+- 
+
+### Active Change Pressure
+
+- 
+
+### Target Stable State
+
+- 
+
+### Conversion Proof
+
+- 
+
+### Residual Pressure
+
+- 
 
 ## Validation Checklist
 
@@ -54,9 +76,39 @@
 - abh/commands.py
 - abh/mcp_server.py
 
-## Verification Runs
+## Reference Set
+
+### Context Routing
 
 - 
+
+### Active Owner Docs
+
+- 
+
+### Live Code Routes
+
+- 
+
+### Tests Baseline
+
+- 
+
+### Known Issues
+
+- 
+
+### External Contracts
+
+- 
+
+### Plan Audit Evidence
+
+- 
+
+## Verification Runs
+
+- ver-44f91f780ece
 
 ## Audits
 
