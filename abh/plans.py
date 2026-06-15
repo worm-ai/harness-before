@@ -310,10 +310,11 @@ def close_plan(plan_id: str, cwd: Path | None = None) -> PlanRecord:
                             audit.verification_id = new_run.id
                             _save(audit, cwd)
                             plan = load_plan(plan_id, cwd)
-                            reason = audit_close_blocker(plan, audit, cwd)
-                            if not reason:
+                            new_reason = audit_close_blocker(plan, audit, cwd)
+                            if not new_reason:
                                 passing_audit = audit
                                 break
+                            reason = new_reason
                 rejection_reasons.append(f"{audit.id}: {reason}")
                 continue
             passing_audit = audit

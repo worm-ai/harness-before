@@ -164,6 +164,8 @@ def update_memory(
     if not path.exists():
         raise AbhError(f"memory not found: {memory_id}")
     memory = MemoryRecord.from_dict(read_json(path))
+    if not any((add_tags, add_related_plan_ids, add_related_audit_ids, add_related_drift_ids, status)):
+        raise AbhError("memory update requires at least one field to update")
     if add_tags:
         for tag in add_tags:
             if tag not in memory.tags:
@@ -180,7 +182,9 @@ def update_memory(
         for did in add_related_drift_ids:
             if did not in memory.related_drift_ids:
                 memory.related_drift_ids.append(did)
-    if status is not None and status in MEMORY_STATUSES:
+    if status is not None:
+        if status not in MEMORY_STATUSES:
+            raise AbhError(f"invalid memory status: {status}")
         memory.status = status
     return save_memory(memory, cwd)
 
