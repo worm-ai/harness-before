@@ -21,6 +21,30 @@ OWNER_DOCS = (
 )
 
 
+def _related_memories(plan, cwd: Path | None = None) -> list[str]:
+    """Find memory records with keyword overlap in plan goals/non-goals."""
+    from .memory import list_memories
+
+    plan_keywords: set[str] = set()
+    for text in plan.goals + plan.non_goals:
+        for word in text.lower().split():
+            if len(word) > 3:
+                plan_keywords.add(word)
+
+    if not plan_keywords:
+        return []
+
+    related: list[str] = []
+    for mem in list_memories(cwd):
+        if mem.status != "active":
+            continue
+        mem_text = (mem.summary + " " + mem.context).lower()
+        hits = sum(1 for kw in plan_keywords if kw in mem_text)
+        if hits >= 2:
+            related.append(mem.id)
+    return related
+
+
 def _health_pressure_recommendation(cwd: Path | None = None) -> dict[str, object] | None:
     """Generate a recommendation from the most actionable health report pressure signal."""
     report = project_health_report(cwd)
@@ -122,12 +146,16 @@ def recommend_next_action(*, cwd: Path | None = None) -> dict[str, object]:
 
     if active_plans:
         plan = active_plans[0]
+        related_memories = _related_memories(plan, cwd)
+        memory_hint = ""
+        if related_memories:
+            memory_hint = f" Related memories: {', '.join(related_memories[:3])}."
         if plan.status == "draft":
             return {
                 "next_action": "complete_plan_definition",
                 "recommended_command": f"abh plan status {plan.id} --json",
                 "requires_confirmation": False,
-                "rationale": f"open draft plan {plan.id} should be completed or transitioned before materializing new work",
+                "rationale": f"open draft plan {plan.id} should be completed or transitioned before materializing new work.{memory_hint}",
                 "source": {"plan_id": plan.id, "plan_status": plan.status},
                 "alternatives": ["abh plan update <plan-id> --json", "abh plan transition <plan-id> --to ready"],
             }
@@ -140,7 +168,7 @@ def recommend_next_action(*, cwd: Path | None = None) -> dict[str, object]:
                         "next_action": "request_audit",
                         "recommended_command": _audit_request_command(plan.id, latest_verification),
                         "requires_confirmation": False,
-                        "rationale": f"plan {plan.id} has fresh passing verification and needs independent audit evidence",
+                        "rationale": f"plan {plan.id} has fresh passing verification and needs independent audit evidence.{memory_hint}",
                         "source": {
                             "plan_id": plan.id,
                             "plan_status": plan.status,

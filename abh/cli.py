@@ -386,6 +386,10 @@ def build_parser() -> argparse.ArgumentParser:
     add_json_argument(report_health)
     report_health.set_defaults(handler=handle_report_health)
 
+    report_dashboard = report_sub.add_parser("dashboard", help="single-screen project overview for agents and humans")
+    add_json_argument(report_dashboard)
+    report_dashboard.set_defaults(handler=handle_dashboard)
+
     doctor_parser = subparsers.add_parser("doctor", help="check workspace consistency")
     doctor_parser.add_argument("--fix", action="store_true", help="auto-migrate outdated schema records to current version")
     add_json_argument(doctor_parser)
@@ -1009,6 +1013,77 @@ def handle_report_health(args: argparse.Namespace) -> int:
     print(f"health: {report['posture']}")
     print(report["summary"])
     return 0
+
+
+def handle_dashboard(args: argparse.Namespace) -> int:
+    """Single-screen project overview: health + plans + roadmap + memories."""
+    from .reporting import project_health_report
+    from .plans import list_plans
+    from .roadmap import list_roadmap_items
+    from .memory import triage_memories
+
+    health = project_health_report()
+    plans = list_plans()
+    roadmap = list_roadmap_items()
+    orphaned = triage_memories()
+
+    recent_plans = sorted(
+        [p for p in plans if p.status == "closed"],
+        key=lambda p: p.updated_at, reverse=True,
+    )[:5]
+    queued = [i for i in roadmap if i.status == "queued"]
+    high_signals = [s for s in health.get("semantic_pressure", []) if s.get("severity") == "high"]
+
+    if args.json:
+        print_json_envelope(ok=True, command=command_name(args), data={
+            "posture": health["posture"],
+            "summary": health["summary"],
+            "metrics": health.get("metrics", {}),
+            "recent_plans": [{"id": p.id, "title": p.title, "status": p.status, "updated_at": p.updated_at} for p in recent_plans],
+            "queued_roadmap": [{"key": i.key, "title": i.title, "stage": i.stage} for i in queued],
+            "orphaned_memories": orphaned,
+            "high_signals_count": len(high_signals),
+            "top_signals": [{"type": s["type"], "severity": s["severity"], "summary": s["summary"]} for s in high_signals[:5]],
+            "recommended_action": _dashboard_recommendation(health, queued, orphaned),
+        })
+        return 0
+
+    print(f" ABH Dashboard")
+    print(f" ─────────────────────────────────────────")
+    print(f" Posture: {health['posture']}     Plans: {len(plans)}     Memory: {health['metrics']['memory']['total']}")
+    print(f" Roadmap: {len(queued)} queued  Audits: {health['metrics']['audit']['total']} ({health['metrics']['audit']['pass']} pass)")
+    print(f" ─────────────────────────────────────────")
+    if queued:
+        print(f" Queued Roadmap:")
+        for i in queued[:5]:
+            print(f"  ▸ {i.key}  [{i.stage}]  {i.title[:60]}")
+    print(f" ─────────────────────────────────────────")
+    if recent_plans:
+        print(f" Recent Activity:")
+        for p in recent_plans[:5]:
+            print(f"  {p.id}  [{p.status}]  {p.title[:50]}")
+    print(f" ─────────────────────────────────────────")
+    print(f" Top Signals:")
+    if high_signals:
+        for s in high_signals[:3]:
+            print(f"  ⚠ [{s['severity']}] {s['summary'][:80]}")
+    else:
+        print(f"  ✓ No high-severity signals")
+    if orphaned:
+        print(f"  ⚡ {len(orphaned)} orphaned memories → abh memory triage")
+    rec = _dashboard_recommendation(health, queued, orphaned)
+    if rec:
+        print(f" ─────────────────────────────────────────")
+        print(f" Next: {rec}")
+    return 0
+
+
+def _dashboard_recommendation(health: dict, queued: list, orphaned: list) -> str | None:
+    if queued:
+        return f"materialize next roadmap item: abh roadmap materialize {queued[0].key}"
+    if orphaned:
+        return f"triage orphaned memories: abh memory triage"
+    return None
 
 
 def handle_doctor(args: argparse.Namespace) -> int:
