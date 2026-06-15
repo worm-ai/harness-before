@@ -1,0 +1,32 @@
+{
+  "schema_version": "2",
+  "id": "mem-audit-audit-043-plan-reference-set",
+  "type": "divergent_pattern",
+  "summary": "Audit audit-043-plan-reference-set rejected plan plan-043-plan-reference-set: partial",
+  "context": "Plan: Plan Reference Set (attractor: docs/architecture/attractors/abh-core-attractor.md). Auditor: claude-sonnet-4-6 independent audit. Independence: independent. Rationale: Goals G1-G3 and non-goals NG1-NG3 are satisfied. However, exit criterion EC4 is NOT met: zero tests for reference_set exist anywhere in tests/.",
+  "implication": "Plan plan-043-plan-reference-set was rejected by independent audit. Missing reference_set tests (EC4). Add tests to tests/test_cli.py for legacy reads, JSON output, Markdown rendering, and roadmap materialization.",
+  "status": "active",
+  "related": [
+    "audit-043-plan-reference-set"
+  ],
+  "evidence": [
+    "docs/audits/audit-043-plan-reference-set.md"
+  ],
+  "tags": [
+    "auto-generated",
+    "audit-rejection",
+    "partial"
+  ],
+  "related_plan_ids": [
+    "plan-043-plan-reference-set"
+  ],
+  "related_audit_ids": [
+    "audit-043-plan-reference-set"
+  ],
+  "related_drift_ids": [],
+  "superseded_by": "",
+  "deprecation_policy": "Mark deprecated when evidence no longer applies.",
+  "created_at": "2026-06-15T00:54:47.719452+00:00",
+  "updated_at": "2026-06-15T00:54:47.719826+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/memory/mem-audit-audit-043-plan-reference-set.md"
+}

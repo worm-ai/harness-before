@@ -1050,3 +1050,130 @@ class CliTests(TestCase):
         self.assertIn("plan-list-a  [draft]  Plan A for list test", out)
         self.assertIn("plan-list-b  [draft]  Plan B for list test", out)
         self.assertIn("total: 2 plan(s)", out)
+
+    # ── Reference Set tests ──
+
+    def test_plan_status_json_includes_reference_set_legacy_defaults(self) -> None:
+        (self.root / ".abh" / "plans").mkdir(parents=True, exist_ok=True)
+        write_json(
+            self.root / ".abh" / "plans" / "plan-109-legacy-reference.json",
+            {
+                "schema_version": "2",
+                "id": "plan-109-legacy-reference",
+                "title": "Legacy Reference",
+                "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+                "baseline": "baseline",
+                "owner": "platform",
+                "status": "draft",
+                "goals": ["goal"],
+                "non_goals": ["non-goal"],
+                "exit_criteria": ["exit"],
+                "validation_checklist": ["python3 -m abh doctor"],
+                "closure_evidence": ["tests/test_cli.py"],
+                "verification_runs": [],
+                "audit_ids": [],
+            },
+        )
+        code, out, err = self.run_cli("plan", "status", "plan-109-legacy-reference", "--json")
+        self.assertEqual(code, 0, err)
+        reference_set = json.loads(out)["data"]["plan"]["reference_set"]
+        self.assertEqual(
+            reference_set,
+            {
+                "context_routing": [],
+                "active_owner_docs": [],
+                "live_code_routes": [],
+                "tests_baseline": [],
+                "known_issues": [],
+                "external_contracts": [],
+                "plan_audit_evidence": [],
+            },
+        )
+
+    def test_plan_create_and_update_reference_set_json_and_markdown(self) -> None:
+        code, out, err = self.run_cli(
+            "plan", "create",
+            "--id", "plan-110-reference-set",
+            "--title", "Reference Set",
+            "--attractor", "docs/architecture/attractors/abh-core-attractor.md",
+            "--baseline", "baseline",
+            "--goal", "bind context",
+            "--non-goal", "mandatory policy",
+            "--exit-criterion", "reference set is visible",
+            "--validation", "python3 -m abh doctor",
+            "--closure-evidence", "tests/test_cli.py",
+            "--reference-set", "active_owner_docs=docs/context/source-of-truth.md",
+            "--reference-set", "live_code_routes=abh/plans.py",
+            "--reference-set", "tests_baseline=tests/test_cli.py",
+        )
+        self.assertEqual(code, 0, err)
+
+        code, out, err = self.run_cli(
+            "plan", "update", "plan-110-reference-set",
+            "--reference-set", "known_issues=mem-post-close-doc-sync-001",
+            "--reference-set", "plan_audit_evidence=docs/audits/audit-042-project-health-report.md",
+            "--json",
+        )
+        self.assertEqual(code, 0, err)
+        plan = json.loads(out)["data"]["plan"]
+        self.assertEqual(plan["reference_set"]["active_owner_docs"], ["docs/context/source-of-truth.md"])
+        self.assertEqual(plan["reference_set"]["live_code_routes"], ["abh/plans.py"])
+        self.assertEqual(plan["reference_set"]["tests_baseline"], ["tests/test_cli.py"])
+        self.assertEqual(plan["reference_set"]["known_issues"], ["mem-post-close-doc-sync-001"])
+        self.assertEqual(plan["reference_set"]["plan_audit_evidence"], ["docs/audits/audit-042-project-health-report.md"])
+
+        doc = (self.root / "docs" / "plans" / "plan-110-reference-set.md").read_text(encoding="utf-8")
+        self.assertIn("## Reference Set", doc)
+        self.assertIn("### Active Owner Docs", doc)
+        self.assertIn("- docs/context/source-of-truth.md", doc)
+        self.assertIn("### Live Code Routes", doc)
+        self.assertIn("- abh/plans.py", doc)
+        self.assertIn("### Known Issues", doc)
+        self.assertIn("- mem-post-close-doc-sync-001", doc)
+
+    def test_plan_reference_set_rejects_unknown_keys(self) -> None:
+        code, out, err = self.run_cli(
+            "plan", "create",
+            "--id", "plan-111-bad-reference",
+            "--title", "Bad Reference",
+            "--attractor", "docs/architecture/attractors/abh-core-attractor.md",
+            "--baseline", "baseline",
+            "--reference-set", "random_key=docs/context/source-of-truth.md",
+        )
+        self.assertNotEqual(code, 0)
+        self.assertIn("invalid reference set key", err)
+
+    def test_roadmap_materialize_carries_reference_set(self) -> None:
+        (self.root / ".abh").mkdir(parents=True, exist_ok=True)
+        write_json(
+            self.root / ".abh" / "roadmap.json",
+            {
+                "schema_version": "2",
+                "items": [
+                    {
+                        "key": "stage6.reference-alpha",
+                        "title": "Reference Alpha",
+                        "stage": "stage6",
+                        "summary": "Reference alpha",
+                        "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+                        "baseline": "baseline",
+                        "goals": ["goal"],
+                        "non_goals": ["non-goal"],
+                        "exit_criteria": ["exit"],
+                        "validation_checklist": ["python3 -m abh doctor"],
+                        "closure_evidence": ["tests/test_cli.py"],
+                        "reference_set": {
+                            "active_owner_docs": ["docs/context/source-of-truth.md"],
+                            "live_code_routes": ["abh/roadmap.py"],
+                        },
+                        "status": "queued",
+                        "plan_id": None,
+                    }
+                ],
+            },
+        )
+        code, out, err = self.run_cli("roadmap", "materialize", "stage6.reference-alpha", "--json")
+        self.assertEqual(code, 0, err)
+        plan = json.loads(out)["data"]["plan"]
+        self.assertEqual(plan["reference_set"]["active_owner_docs"], ["docs/context/source-of-truth.md"])
+        self.assertEqual(plan["reference_set"]["live_code_routes"], ["abh/roadmap.py"])

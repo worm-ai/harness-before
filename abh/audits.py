@@ -123,7 +123,7 @@ def record_audit(
     audit.findings = [parse_finding(value) for value in (findings or [])]
     audit.follow_ups = list(follow_ups or [])
     saved = save_audit(audit, cwd)
-    if result in ("fail", "need_info"):
+    if result in ("fail", "partial", "need_info"):
         _auto_memory_from_audit_rejection(saved, cwd)
     return saved
 

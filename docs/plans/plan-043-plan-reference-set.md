@@ -3,12 +3,12 @@
 ## Metadata
 
 - ID: plan-043-plan-reference-set
-- Status: closing
+- Status: closed
 - Attractor: docs/architecture/attractors/abh-core-attractor.md
 - Baseline: Plans currently declare attractor, baseline, goals, non-goals, exit criteria, validation checklist, and closure evidence, but they do not explicitly name the owner docs, code routes, tests, memory, drift, external contracts, and audit evidence that must be read for the slice.
 - Owner: platform
 - Created: 2026-05-30T12:08:07.774509+00:00
-- Updated: 2026-06-14T16:51:18.874825+00:00
+- Updated: 2026-06-15T00:56:09.497946+00:00
 
 ## Goals
 
@@ -75,6 +75,7 @@
 - README.md
 - abh/commands.py
 - abh/mcp_server.py
+- audit-043-plan-reference-set
 
 ## Reference Set
 
@@ -109,7 +110,9 @@
 ## Verification Runs
 
 - ver-44f91f780ece
+- ver-702ba004f859
+- ver-25ca0d5205ec
 
 ## Audits
 
-- 
+- audit-043-plan-reference-set
