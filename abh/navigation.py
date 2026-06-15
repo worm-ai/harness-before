@@ -45,6 +45,22 @@ def _related_memories(plan, cwd: Path | None = None) -> list[str]:
     return related
 
 
+def inject_related_memories(plan, cwd: Path | None = None) -> tuple[list[dict[str, object]], list[str]]:
+    """Build related_memories and warnings for a plan. Shared by CLI and MCP."""
+    from .memory import load_memory as _load_mem
+
+    related_memories: list[dict[str, object]] = []
+    warnings: list[str] = []
+    for mem_id in _related_memories(plan, cwd)[:5]:
+        try:
+            mem = _load_mem(mem_id, cwd)
+            related_memories.append({"id": mem.id, "summary": mem.summary, "memory_type": mem.memory_type})
+            warnings.append(f"Related memory {mem.id}: {mem.summary[:100]}")
+        except Exception:
+            pass
+    return related_memories, warnings
+
+
 def _health_pressure_recommendation(cwd: Path | None = None) -> dict[str, object] | None:
     """Generate a recommendation from the most actionable health report pressure signal."""
     report = project_health_report(cwd)
