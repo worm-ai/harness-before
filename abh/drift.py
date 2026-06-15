@@ -175,7 +175,7 @@ def analyze_drift(
 def render_drift_markdown(report: DriftReport) -> str:
     def bullet_lines(values: list[str]) -> str:
         if not values:
-            return "- "
+            return "-"
         return "\n".join(f"- {value}" for value in values)
 
     if report.findings:

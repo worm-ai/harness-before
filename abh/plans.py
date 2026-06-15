@@ -279,6 +279,8 @@ def transition_plan(plan_id: str, target_status: str, cwd: Path | None = None) -
         git_meta = git_metadata(root)
         if git_meta.get("available") and isinstance(git_meta.get("commit"), str):
             plan.baseline_commit = str(git_meta["commit"])
+        if plan.status in ("closing", "blocked"):
+            _auto_memory_from_plan_reopen(plan, cwd)
     plan.status = target_status
     return save_plan(plan, cwd)
 
@@ -557,6 +559,36 @@ def close_bookkeeping_only(snapshot: dict[str, object], plan: PlanRecord, change
     current_values = [str(item) for item in plan.closure_evidence]
     added = [item for item in current_values if item not in prior_values]
     return bool(added) and all(item in plan.audit_ids for item in added)
+
+
+def _auto_memory_from_plan_reopen(plan: PlanRecord, cwd: Path | None = None) -> None:
+    """Auto-create a memory entry when a plan is reopened from closing/blocked."""
+    from .memory import add_memory
+
+    memory_id = f"mem-reopen-{plan.id}"
+    try:
+        add_memory(
+            memory_id=memory_id,
+            memory_type="divergent_pattern",
+            summary=f"Plan {plan.id} reopened from {plan.status} to running",
+            context=(
+                f"Plan: {plan.title} (attractor: {plan.attractor}). "
+                f"Previous status: {plan.status}. "
+                f"Verification runs: {len(plan.verification_runs)}, audits: {len(plan.audit_ids)}."
+            ),
+            implication=(
+                f"Plan {plan.id} was reopened. Review why the plan failed to close — "
+                f"audit rejection, verification failure, or scope mismatch. "
+                f"Consider updating goals, exit criteria, or scope before re-attempting close."
+            ),
+            evidence=[str(plan.doc_path)],
+            related=[plan.id],
+            tags=["auto-generated", "plan-reopen"],
+            related_plan_ids=[plan.id],
+            cwd=cwd,
+        )
+    except Exception:
+        pass  # best-effort
 
 
 def stale_reason_detail(

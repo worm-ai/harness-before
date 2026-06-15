@@ -155,7 +155,7 @@ def is_active_attractor_reference(value: str, cwd: Path | None = None) -> bool:
 def render_attractor_markdown(attractor: AttractorRecord) -> str:
     def bullet_lines(values: list[str]) -> str:
         if not values:
-            return "- "
+            return "-"
         return "\n".join(f"- {value}" for value in values)
 
     return (

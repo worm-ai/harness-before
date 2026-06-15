@@ -151,7 +151,7 @@ def list_memories(cwd: Path | None = None, *, limit: int | None = None, offset: 
 def render_memory_markdown(memory: MemoryRecord) -> str:
     def bullet_lines(values: list[str]) -> str:
         if not values:
-            return "- "
+            return "-"
         return "\n".join(f"- {value}" for value in values)
 
     return (
