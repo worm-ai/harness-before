@@ -493,6 +493,24 @@ COMMANDS: tuple[CommandContract, ...] = (
         failure_categories=COMMON_FAILURES,
     ),
     CommandContract(
+        id="plan.complete",
+        cli_command=None,
+        mcp_tool="abh_plan_complete",
+        read_only=False,
+        confirmation="confirm=true",
+        side_effects=["may run verification", "may update audit verification_id", "may close plan"],
+        description="End-to-end plan completion: verify, audit-check, scope-check, close. Returns structured blockers if any gate fails.",
+        input_schema=input_schema(
+            {
+                "confirm": bool_property("Must be true to permit repository writes."),
+                "plan_id": text_property("Plan id to complete."),
+            },
+            ["confirm", "plan_id"],
+        ),
+        output_keys=["status", "plan", "blockers"],
+        failure_categories=COMMON_FAILURES,
+    ),
+    CommandContract(
         id="verification.record",
         cli_command="verify record",
         mcp_tool="abh_verify_record",

@@ -12,6 +12,159 @@ def evidence_path(path: Path) -> str:
     return path.as_posix()
 
 
+def audit_protocol_v2(plan_id: str, cwd: Path | None = None) -> dict[str, object]:
+    """Self-contained audit package for agent-to-agent handoff.
+
+    Includes everything an independent audit agent needs without
+    exploring the repository: plan details, attractor invariants,
+    changed files, verification breakdown, related memories, and
+    pre-computed self-check results.
+    """
+    root = root_dir(cwd)
+    plan = load_plan(plan_id, cwd)
+    verification_summary = verification_freshness_summary(plan, cwd)
+
+    # Attractor invariants
+    from .attractors import active_attractor
+    attractor = active_attractor(cwd)
+
+    # Changed files since baseline
+    changed_files: list[str] = []
+    diff_summary = ""
+    if getattr(plan, "baseline_commit", ""):
+        import subprocess
+        try:
+            r = subprocess.run(
+                ["git", "diff", "--name-only", plan.baseline_commit],
+                cwd=root, text=True, capture_output=True, timeout=10,
+            )
+            if r.returncode == 0:
+                changed_files = [p.strip() for p in r.stdout.splitlines() if p.strip()]
+            r2 = subprocess.run(
+                ["git", "diff", "--stat", plan.baseline_commit],
+                cwd=root, text=True, capture_output=True, timeout=10,
+            )
+            if r2.returncode == 0:
+                diff_summary = r2.stdout.strip().split("\n")[-1] if r2.stdout.strip() else ""
+        except Exception:
+            pass
+
+    # Related memories
+    from .navigation import _related_memories
+    from .memory import load_memory as _load_mem
+    related_memories = []
+    for mem_id in _related_memories(plan, cwd)[:5]:
+        try:
+            mem = _load_mem(mem_id, cwd)
+            related_memories.append({"id": mem.id, "summary": mem.summary, "memory_type": mem.memory_type})
+        except Exception:
+            pass
+
+    # Self-check
+    self_check = _compute_self_check(plan, verification_summary, changed_files)
+
+    # Evidence paths
+    evidence_paths: list[str] = []
+    evidence_paths.append(evidence_path(plan_doc_path(plan.id, cwd)))
+    evidence_paths.append(evidence_path(plan_json_path(plan.id, cwd)))
+    latest_id = verification_summary.get("latest_id")
+    if latest_id:
+        evidence_paths.append(evidence_path(verification_path(str(latest_id), cwd)))
+    for audit_id in plan.audit_ids:
+        evidence_paths.append(evidence_path(audit_json_path(audit_id, cwd)))
+
+    return {
+        "protocol_version": "2",
+        "plan": {
+            "id": plan.id,
+            "title": plan.title,
+            "status": plan.status,
+            "goals": list(plan.goals),
+            "non_goals": list(plan.non_goals),
+            "exit_criteria": list(plan.exit_criteria),
+            "closure_evidence": list(plan.closure_evidence),
+        },
+        "attractor": {
+            "id": attractor.id,
+            "title": attractor.title,
+            "invariants": list(attractor.invariants),
+        },
+        "verification": {
+            "id": latest_id,
+            "result": verification_summary.get("result"),
+            "stale": verification_summary.get("stale"),
+            "reasons": verification_summary.get("reasons", []),
+        },
+        "changed_files": changed_files,
+        "diff_summary": diff_summary,
+        "related_memories": related_memories,
+        "self_check": self_check,
+        "evidence_paths": evidence_paths,
+        "instructions": (
+            "Read the evidence paths. Check goals against code changes, "
+            "non-goals against implementation, exit criteria against verification. "
+            "Verify the self_check claims adversarially. "
+            "Return a JSON object: "
+            '{"result": "pass|fail|partial|need_info", "rationale": "...", '
+            '"independence": "independent|self_review|unknown", '
+            '"findings": [{"severity": "low|medium|high", "title": "...", '
+            '"evidence": "...", "recommendation": "..."}], '
+            '"follow_ups": ["..."]}. '
+            "Do NOT modify files. Return ONLY the JSON object."
+        ),
+    }
+
+
+def _compute_self_check(plan, verification_summary, changed_files: list[str]) -> dict[str, object]:
+    """Pre-audit self-check: exit criteria, non-goals, scope, evidence."""
+    checks: list[dict[str, object]] = []
+
+    # Exit criteria coverage
+    exit_ok = len(plan.exit_criteria) > 0 and verification_summary.get("result") == "pass"
+    checks.append({
+        "check": "exit_criteria_covered",
+        "status": "pass" if exit_ok else "fail",
+        "detail": f"{len(plan.exit_criteria)} criteria, verification={verification_summary.get('result')}",
+    })
+
+    # Closure evidence
+    evidence_ok = len(plan.closure_evidence) > 0
+    checks.append({
+        "check": "closure_evidence_present",
+        "status": "pass" if evidence_ok else "fail",
+        "detail": f"{len(plan.closure_evidence)} evidence items",
+    })
+
+    # Verification freshness
+    stale = verification_summary.get("stale")
+    reasons = verification_summary.get("reasons", [])
+    git_only = set(reasons) <= {"git_commit_changed", "git_status_changed"} if reasons else True
+    fresh_ok = not stale or git_only
+    checks.append({
+        "check": "verification_fresh",
+        "status": "pass" if fresh_ok else "fail",
+        "detail": f"stale={stale}, reasons={reasons}",
+    })
+
+    # Non-goal check: scan changed files against plan non-goals
+    non_goal_violations = []
+    for f in changed_files:
+        for ng in plan.non_goals:
+            if any(kw in f.lower() for kw in ng.lower().split() if len(kw) > 3):
+                non_goal_violations.append(f"File {f} may violate non-goal: {ng}")
+    checks.append({
+        "check": "non_goals_intact",
+        "status": "pass" if not non_goal_violations else "fail",
+        "detail": f"{len(non_goal_violations)} potential violations" if non_goal_violations else "no violations detected",
+        "violations": non_goal_violations[:5],
+    })
+
+    return {
+        "all_pass": all(c["status"] == "pass" for c in checks),
+        "checks": checks,
+    }
+
+
 def audit_bundle(plan_id: str, cwd: Path | None = None) -> dict[str, object]:
     validate_identifier(plan_id, "plan id")
     root = root_dir(cwd)

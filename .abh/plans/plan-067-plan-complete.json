@@ -1,0 +1,63 @@
+{
+  "schema_version": "2",
+  "id": "plan-067-plan-complete",
+  "title": "abh plan complete: End-to-End Intent Execution",
+  "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+  "baseline": "Auto-generated baseline. Recent commits: 34d2cd4 fix: _auto_reverify_if_git_only sentinel handling for non-git staleness; dc54be5 fix: extract auto-reverify into shared _auto_reverify_if_git_only; 53a9178 chore: remove stray test.md",
+  "owner": "wangming",
+  "status": "closed",
+  "goals": [
+    "Single MCP tool abh_plan_complete executes the full plan closing flow: verify freshness → check audit → auto-fix git staleness → scope check → close.",
+    "Returns structured result: either {status: closed, plan: {...}} or {status: blocked, blockers: [...], recommendations: [...]}.",
+    "Only pauses for human/agent when: audit not pass, product proof drift, or scope violation requiring explicit override."
+  ],
+  "non_goals": [
+    "Do not bypass close_plan invariants — audit gate, closure evidence, and scope check remain enforced."
+  ],
+  "exit_criteria": [
+    "abh_plan_complete succeeds when plan has passing audit, fresh verification, clean scope, and complete evidence.",
+    "abh_plan_complete returns structured blockers when any gate fails, with specific fix recommendations.",
+    "MCP tool abh_plan_complete is registered and callable."
+  ],
+  "validation_checklist": [
+    "python3 -m pytest tests/ -q",
+    "python3 -m abh doctor",
+    "git diff --check"
+  ],
+  "closure_evidence": [
+    "abh/plans.py",
+    "abh/cli.py",
+    "abh/mcp_server.py",
+    "abh/commands.py",
+    "audit-067-plan-complete"
+  ],
+  "commitment_phase_state": {
+    "stable_state_now": [],
+    "active_change_pressure": [],
+    "target_stable_state": [],
+    "conversion_proof": [],
+    "residual_pressure": []
+  },
+  "verification_runs": [
+    "ver-353097eec123"
+  ],
+  "audit_ids": [
+    "audit-067-plan-complete"
+  ],
+  "baseline_commit": "34d2cd419ce4c13f31adc465d04d4d135de4f33e",
+  "scope": [
+    "abh/"
+  ],
+  "reference_set": {
+    "context_routing": [],
+    "active_owner_docs": [],
+    "live_code_routes": [],
+    "tests_baseline": [],
+    "known_issues": [],
+    "external_contracts": [],
+    "plan_audit_evidence": []
+  },
+  "created_at": "2026-06-15T16:47:23.244076+00:00",
+  "updated_at": "2026-06-15T16:51:22.132926+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-067-plan-complete.md"
+}

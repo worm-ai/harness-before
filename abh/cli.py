@@ -887,29 +887,8 @@ def handle_audit_list(args: argparse.Namespace) -> int:
 def handle_audit_bundle(args: argparse.Namespace) -> int:
     bundle = audit_bundle(args.plan_id)
     if args.protocol:
-        protocol = {
-            "protocol_version": "1",
-            "plan_id": bundle["plan"]["id"],
-            "plan_title": bundle["plan"]["title"],
-            "goals": bundle["plan"]["goals"],
-            "non_goals": bundle["plan"]["non_goals"],
-            "exit_criteria": bundle["plan"]["exit_criteria"],
-            "verification_id": bundle["latest_verification"].get("latest_id"),
-            "evidence_paths": [
-                p for v in bundle["evidence"].values()
-                for p in (v if isinstance(v, list) else [v]) if p
-            ],
-            "expected_response": {
-                "result": "pass|fail|partial|need_info",
-                "rationale": "<concise explanation>",
-                "independence": "independent|self_review|unknown",
-                "findings": [
-                    {"severity": "low|medium|high", "title": "...", "evidence": "...", "recommendation": "..."}
-                ],
-                "follow_ups": ["<action item>"],
-            },
-            "instructions": "Read the evidence paths. Check goals against code, non-goals against implementation, exit criteria against verification. Return a JSON object matching expected_response. Do NOT modify files. Return ONLY the JSON object.",
-        }
+        from .audit_bundle import audit_protocol_v2
+        protocol = audit_protocol_v2(args.plan_id)
         if args.json:
             print_json_envelope(ok=True, command=command_name(args), data={"audit_protocol": protocol})
             return 0

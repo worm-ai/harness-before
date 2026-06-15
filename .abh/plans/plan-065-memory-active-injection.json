@@ -5,7 +5,7 @@
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",
   "baseline": "Auto-generated baseline. Recent commits: 34d2cd4 fix: _auto_reverify_if_git_only sentinel handling for non-git staleness; dc54be5 fix: extract auto-reverify into shared _auto_reverify_if_git_only; 53a9178 chore: remove stray test.md",
   "owner": "wangming",
-  "status": "running",
+  "status": "closed",
   "goals": [
     "abh plan status and MCP abh_plan_status automatically include related memories in response, not as optional hint but as first-class field.",
     "Related memories are matched by keyword overlap between plan goals/non-goals and memory summary+context.",
@@ -30,7 +30,8 @@
     "abh/plans.py",
     "abh/navigation.py",
     "abh/cli.py",
-    "abh/mcp_server.py"
+    "abh/mcp_server.py",
+    "audit-065-memory-active-injection"
   ],
   "commitment_phase_state": {
     "stable_state_now": [],
@@ -39,8 +40,12 @@
     "conversion_proof": [],
     "residual_pressure": []
   },
-  "verification_runs": [],
-  "audit_ids": [],
+  "verification_runs": [
+    "ver-66f6d782a25e"
+  ],
+  "audit_ids": [
+    "audit-065-memory-active-injection"
+  ],
   "baseline_commit": "34d2cd419ce4c13f31adc465d04d4d135de4f33e",
   "scope": [
     "abh/"
@@ -55,6 +60,6 @@
     "plan_audit_evidence": []
   },
   "created_at": "2026-06-15T16:47:05.096541+00:00",
-  "updated_at": "2026-06-15T16:47:28.808841+00:00",
+  "updated_at": "2026-06-15T16:51:06.282269+00:00",
   "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-065-memory-active-injection.md"
 }

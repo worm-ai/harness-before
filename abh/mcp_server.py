@@ -251,6 +251,67 @@ def call_plan_create(arguments: dict[str, Any]) -> dict[str, Any]:
     return {"plan": plan.to_dict()}
 
 
+def call_plan_complete(arguments: dict[str, Any]) -> dict[str, Any]:
+    """End-to-end plan completion: verify + audit check + scope check + close."""
+    require_confirm(arguments)
+    from .plans import load_plan, close_plan, verification_freshness_summary, audit_close_blocker
+    from .audits import load_audit as _load_audit, save_audit as _save_audit
+
+    plan_id = require_string(arguments, "plan_id")
+    plan = load_plan(plan_id)
+    blockers: list[dict[str, str]] = []
+
+    if not plan.closure_evidence:
+        blockers.append({"gate": "closure_evidence", "reason": "no closure evidence", "fix": "abh plan update <id> --closure-evidence <path>"})
+
+    if not plan.audit_ids:
+        blockers.append({"gate": "audit", "reason": "no audit requested", "fix": "abh audit request <plan-id> --id <audit-id> --auditor <auditor> --scope <scope> --evidence <path>"})
+    else:
+        passing = False
+        for audit_id in plan.audit_ids:
+            audit = _load_audit(audit_id)
+            if audit.result == "pass" and audit.status == "complete":
+                reason = audit_close_blocker(plan, audit)
+                if reason:
+                    if "stale" in reason:
+                        from .plans import _auto_reverify_if_git_only
+                        plan, new_reason = _auto_reverify_if_git_only(plan, audit, audit_id)
+                        if new_reason is None:
+                            passing = True
+                            break
+                        if new_reason != "__skipped__":
+                            blockers.append({"gate": "audit", "reason": new_reason, "fix": "resolve audit blocker then re-run"})
+                            break
+                    blockers.append({"gate": "audit", "reason": reason, "fix": "resolve audit blocker above"})
+                else:
+                    passing = True
+                    break
+            else:
+                blockers.append({"gate": "audit", "reason": f"audit {audit_id} result={audit.result} status={audit.status}", "fix": "record passing audit or request new one"})
+        if not passing and not blockers:
+            blockers.append({"gate": "audit", "reason": "no passing audit found", "fix": "request and record a passing independent audit"})
+
+    # Scope check
+    if not blockers:
+        from .boundary import check_plan_scope
+        scope_findings = check_plan_scope(plan_id=plan_id)
+        if scope_findings:
+            for f in scope_findings[:3]:
+                blockers.append({"gate": "scope", "reason": f.evidence, "fix": f.recommendation})
+
+    if blockers:
+        return {
+            "status": "blocked",
+            "plan_id": plan_id,
+            "blockers": blockers,
+            "recommendation": blockers[0]["fix"] if blockers else "",
+        }
+
+    close_plan(plan_id)
+    plan = load_plan(plan_id)
+    return {"status": "closed", "plan": plan.to_dict()}
+
+
 def call_plan_transition(arguments: dict[str, Any]) -> dict[str, Any]:
     require_confirm(arguments)
     plan = transition_plan(require_string(arguments, "plan_id"), require_string(arguments, "to"))
@@ -352,6 +413,7 @@ TOOL_HANDLERS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
     "abh_report_health": call_report_health,
     "abh_plan_create": call_plan_create,
     "abh_plan_transition": call_plan_transition,
+    "abh_plan_complete": call_plan_complete,
     "abh_verify_record": call_verify_record,
     "abh_audit_request": call_audit_request,
     "abh_audit_record": call_audit_record,

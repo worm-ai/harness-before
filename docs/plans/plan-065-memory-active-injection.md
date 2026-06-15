@@ -3,12 +3,12 @@
 ## Metadata
 
 - ID: plan-065-memory-active-injection
-- Status: running
+- Status: closed
 - Attractor: docs/architecture/attractors/abh-core-attractor.md
 - Baseline: Auto-generated baseline. Recent commits: 34d2cd4 fix: _auto_reverify_if_git_only sentinel handling for non-git staleness; dc54be5 fix: extract auto-reverify into shared _auto_reverify_if_git_only; 53a9178 chore: remove stray test.md
 - Owner: wangming
 - Created: 2026-06-15T16:47:05.096541+00:00
-- Updated: 2026-06-15T16:47:28.808841+00:00
+- Updated: 2026-06-15T16:51:06.282269+00:00
 
 ## Goals
 
@@ -62,6 +62,7 @@
 - abh/navigation.py
 - abh/cli.py
 - abh/mcp_server.py
+- audit-065-memory-active-injection
 
 ## Reference Set
 
@@ -69,8 +70,8 @@
 
 ## Verification Runs
 
--
+- ver-66f6d782a25e
 
 ## Audits
 
--
+- audit-065-memory-active-injection
