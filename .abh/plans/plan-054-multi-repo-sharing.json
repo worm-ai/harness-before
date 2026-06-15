@@ -5,7 +5,7 @@
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",
   "baseline": "Support importing and exporting attractor and memory context across repositories.",
   "owner": "platform",
-  "status": "blocked",
+  "status": "closed",
   "goals": [
     "Add a local-first import/export surface for sharing ABH attractor and memory context between repositories.",
     "Represent exported context as repository-owned artifacts that can be inspected before import.",
@@ -40,7 +40,8 @@
     "README.md",
     "docs/development-roadmap.md",
     "docs/task-board.md",
-    "docs/context/codebase-map.md"
+    "docs/context/codebase-map.md",
+    "audit-054-multi-repo-sharing (fail: zero implementation; decomposed to smaller plans)"
   ],
   "commitment_phase_state": {
     "stable_state_now": [
@@ -70,7 +71,18 @@
   "audit_ids": [
     "audit-054-multi-repo-sharing"
   ],
+  "baseline_commit": "",
+  "scope": [],
+  "reference_set": {
+    "context_routing": [],
+    "active_owner_docs": [],
+    "live_code_routes": [],
+    "tests_baseline": [],
+    "known_issues": [],
+    "external_contracts": [],
+    "plan_audit_evidence": []
+  },
   "created_at": "2026-06-06T13:42:47.679267+00:00",
-  "updated_at": "2026-06-08T02:37:11.466572+00:00",
+  "updated_at": "2026-06-15T02:21:11.276887+00:00",
   "doc_path": "D:\\work\\ai\\harness-before\\docs\\plans\\plan-054-multi-repo-sharing.md"
 }

@@ -8,6 +8,7 @@ from .attractors import active_attractor
 from .core import doctor
 from .hooks import hook_profile
 from .plans import list_plans, verification_freshness_summary
+from .reporting import project_health_report
 from .roadmap import list_roadmap_items
 
 
@@ -18,6 +19,86 @@ OWNER_DOCS = (
     "docs/context/conventions.md",
     "docs/context/codebase-map.md",
 )
+
+
+def _health_pressure_recommendation(cwd: Path | None = None) -> dict[str, object] | None:
+    """Generate a recommendation from the most actionable health report pressure signal."""
+    report = project_health_report(cwd)
+    pressure = report.get("semantic_pressure", [])
+    if not pressure:
+        return None
+
+    active = [s for s in pressure if s.get("status") == "active"]
+    if not active:
+        return None
+
+    plans = list_plans(cwd)
+    open_plan_ids = {p.id for p in plans if p.status != "closed"}
+
+    # Group by type
+    by_type: dict[str, list[dict]] = {}
+    for s in active:
+        by_type.setdefault(str(s["type"]), []).append(s)
+
+    # Priority: stale_proof (open plans only) → orphaned_memory → j_flow_only → repeated_leakage
+    type_order = ["stale_proof", "orphaned_memory", "j_flow_only_evidence", "post_close_metadata_churn", "repeated_leakage"]
+    for sig_type in type_order:
+        signals = by_type.get(sig_type, [])
+        if not signals:
+            continue
+
+        if sig_type == "stale_proof":
+            # Only recommend for non-closed plans
+            actionable = [s for s in signals if any(pid in open_plan_ids for pid in s.get("related_plan_ids", []))]
+            if not actionable:
+                continue
+            signals = actionable
+
+        # Sort by severity
+        signals.sort(key=lambda s: {"high": 3, "medium": 2, "low": 1, "info": 0}.get(str(s.get("severity")), 0), reverse=True)
+        top = signals[0]
+
+        if sig_type == "stale_proof":
+            plan_ids = top.get("related_plan_ids", [])
+            if plan_ids:
+                return {
+                    "next_action": "run_stale_verification",
+                    "recommended_command": f"abh verify run {plan_ids[0]} --json",
+                    "requires_confirmation": False,
+                    "rationale": f"{len(signals)} open plan(s) have stale verification; run fresh verification before audit or close. Start with {plan_ids[0]}.",
+                    "source": {"pressure_type": sig_type, "stale_count": len(signals), "plan_id": plan_ids[0]},
+                    "alternatives": ["abh plan list --json", "abh report health --json"],
+                }
+        elif sig_type == "orphaned_memory":
+            memory_ids = top.get("related_memory_ids", [])
+            return {
+                "next_action": "triage_orphaned_memories",
+                "recommended_command": "abh memory list",
+                "requires_confirmation": False,
+                "rationale": f"{len(signals)} active memories are orphaned (no tags or typed relationships). Add tags, related plans, or dismiss irrelevant ones so future agents can reuse them.",
+                "source": {"pressure_type": sig_type, "orphaned_count": len(signals), "memory_ids": memory_ids[:5]},
+                "alternatives": ["abh memory search --json", "abh report health --json"],
+            }
+        elif sig_type == "j_flow_only_evidence":
+            drift_ids = top.get("related_drift_ids", [])
+            return {
+                "next_action": "attach_drift_to_memory",
+                "recommended_command": f"abh drift plan-check <plan_id> --json" if not drift_ids else f"abh memory add --type divergent_pattern --summary '<summary>' --context '<context>' --implication '<implication>' --evidence {drift_ids[0]}",
+                "requires_confirmation": False,
+                "rationale": f"{len(signals)} drift report(s) have no linked memory. Attach findings to active memory or a follow-up plan so they influence future work.",
+                "source": {"pressure_type": sig_type, "j_flow_count": len(signals)},
+                "alternatives": ["abh drift plan-check <plan_id> --json", "abh report health --json"],
+            }
+        elif sig_type == "repeated_leakage":
+            return {
+                "next_action": "review_repeated_drift",
+                "recommended_command": "abh report health --json",
+                "requires_confirmation": False,
+                "rationale": f"Drift pattern '{top.get('summary','')}' appears repeatedly. Review before starting related roadmap work.",
+                "source": {"pressure_type": sig_type, "repeated_count": len(signals)},
+                "alternatives": ["abh drift plan-check <plan_id> --json", "abh memory add --type divergent_pattern"],
+            }
+    return None
 
 
 def _audit_id_for_plan(plan_id: str) -> str:
@@ -161,6 +242,10 @@ def recommend_next_action(*, cwd: Path | None = None) -> dict[str, object]:
             "source": {"plan_id": plan.id, "plan_status": plan.status},
             "alternatives": [f"abh plan transition {plan.id} --to running", "abh roadmap list --json"],
         }
+
+    health_rec = _health_pressure_recommendation(cwd)
+    if health_rec:
+        return health_rec
 
     return {
         "next_action": "inspect_status",

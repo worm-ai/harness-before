@@ -45,7 +45,16 @@
         ".abh/roadmap.json"
       ],
       "status": "materialized",
-      "plan_id": "plan-031-truth-precedence-and-age-docs"
+      "plan_id": "plan-031-truth-precedence-and-age-docs",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage4.abh-init-active-attractor",
@@ -78,7 +87,16 @@
         "docs/阶段规划.md"
       ],
       "status": "materialized",
-      "plan_id": "plan-032-abh-init-active-attractor"
+      "plan_id": "plan-032-abh-init-active-attractor",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage4.agent-contract-setup",
@@ -121,7 +139,16 @@
         "tests/test_cli.py"
       ],
       "status": "materialized",
-      "plan_id": "plan-033-agent-contract-setup"
+      "plan_id": "plan-033-agent-contract-setup",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage4.git-hooks-guardrails",
@@ -172,7 +199,16 @@
         "tests/test_cli.py"
       ],
       "status": "materialized",
-      "plan_id": "plan-034-git-hooks-guardrails"
+      "plan_id": "plan-034-git-hooks-guardrails",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage4.abh-next-and-onboarding-check",
@@ -224,7 +260,16 @@
         "tests/test_cli.py"
       ],
       "status": "materialized",
-      "plan_id": "plan-035-abh-next-and-onboarding-check"
+      "plan_id": "plan-035-abh-next-and-onboarding-check",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage4.quickstart-recipes-and-distribution",
@@ -281,7 +326,16 @@
         "docs/context/codebase-map.md"
       ],
       "status": "materialized",
-      "plan_id": "plan-036-quickstart-recipes-and-distribution"
+      "plan_id": "plan-036-quickstart-recipes-and-distribution",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage5.audit-prompt-bundle",
@@ -330,7 +384,16 @@
         "docs/plans/plan-037-audit-prompt-bundle.md"
       ],
       "status": "materialized",
-      "plan_id": "plan-037-audit-prompt-bundle"
+      "plan_id": "plan-037-audit-prompt-bundle",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage5.independent-audit-gate",
@@ -384,7 +447,16 @@
         "docs/plans/plan-038-independent-audit-gate.md"
       ],
       "status": "materialized",
-      "plan_id": "plan-038-independent-audit-gate"
+      "plan_id": "plan-038-independent-audit-gate",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage6.quality-signal-model",
@@ -431,7 +503,16 @@
         "docs/plans/plan-039-quality-signal-model.md"
       ],
       "status": "materialized",
-      "plan_id": "plan-039-quality-signal-model"
+      "plan_id": "plan-039-quality-signal-model",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage6.drift-quality",
@@ -477,7 +558,16 @@
         "docs/context/codebase-map.md"
       ],
       "status": "materialized",
-      "plan_id": "plan-040-drift-quality"
+      "plan_id": "plan-040-drift-quality",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage6.memory-index",
@@ -522,7 +612,16 @@
         "docs/context/codebase-map.md"
       ],
       "status": "materialized",
-      "plan_id": "plan-041-memory-index"
+      "plan_id": "plan-041-memory-index",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage6.project-health-report",
@@ -571,7 +670,16 @@
         "docs/context/codebase-map.md"
       ],
       "status": "materialized",
-      "plan_id": "plan-042-project-health-report"
+      "plan_id": "plan-042-project-health-report",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage6.plan-reference-set",
@@ -616,7 +724,16 @@
         "docs/context/codebase-map.md"
       ],
       "status": "materialized",
-      "plan_id": "plan-043-plan-reference-set"
+      "plan_id": "plan-043-plan-reference-set",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage6.command-contract-runtime-registry",
@@ -659,7 +776,16 @@
         "tests/test_cli.py"
       ],
       "status": "materialized",
-      "plan_id": "plan-044-command-contract-runtime-registry"
+      "plan_id": "plan-044-command-contract-runtime-registry",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage6.repository-write-transaction-boundary",
@@ -703,7 +829,16 @@
         "docs/task-board.md"
       ],
       "status": "materialized",
-      "plan_id": "plan-045-repository-write-transaction-boundary"
+      "plan_id": "plan-045-repository-write-transaction-boundary",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage6.schema-validation-and-migration",
@@ -743,7 +878,16 @@
         "docs/task-board.md"
       ],
       "status": "materialized",
-      "plan_id": "plan-046-schema-validation-and-migration"
+      "plan_id": "plan-046-schema-validation-and-migration",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage6.verification-runner-trust-policy",
@@ -784,7 +928,16 @@
         "docs/task-board.md"
       ],
       "status": "materialized",
-      "plan_id": "plan-047-verification-runner-trust-policy"
+      "plan_id": "plan-047-verification-runner-trust-policy",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage6.test-suite-domain-split",
@@ -823,7 +976,16 @@
         "docs/task-board.md"
       ],
       "status": "materialized",
-      "plan_id": "plan-048-test-suite-domain-split"
+      "plan_id": "plan-048-test-suite-domain-split",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage6.commitment-phase-state",
@@ -867,7 +1029,16 @@
         "docs/context/codebase-map.md"
       ],
       "status": "materialized",
-      "plan_id": "plan-049-commitment-phase-state"
+      "plan_id": "plan-049-commitment-phase-state",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage6.audit-semantic-conservation",
@@ -910,7 +1081,16 @@
         "docs/context/codebase-map.md"
       ],
       "status": "materialized",
-      "plan_id": "plan-050-audit-semantic-conservation"
+      "plan_id": "plan-050-audit-semantic-conservation",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage6.owner-doc-stable-commitments",
@@ -953,7 +1133,16 @@
         "docs/task-board.md"
       ],
       "status": "materialized",
-      "plan_id": "plan-051-owner-doc-stable-commitments"
+      "plan_id": "plan-051-owner-doc-stable-commitments",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage6.post-close-freshness-semantics",
@@ -995,7 +1184,16 @@
         "docs/context/codebase-map.md"
       ],
       "status": "materialized",
-      "plan_id": "plan-052-post-close-freshness-semantics"
+      "plan_id": "plan-052-post-close-freshness-semantics",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage7.ci-templates",
@@ -1040,13 +1238,22 @@
         "docs/context/codebase-map.md"
       ],
       "status": "materialized",
-      "plan_id": "plan-053-ci-templates"
+      "plan_id": "plan-053-ci-templates",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage7.multi-repo-sharing",
       "title": "Multi Repo Sharing",
       "stage": "stage7",
-      "summary": "Support importing and exporting attractor and memory context across repositories.",
+      "summary": "DECOMPOSED: Split into 3 slices — (1) attractor export/import bundle, (2) memory sharing format, (3) cross-repo preview and confirm workflow",
       "attractor": "docs/architecture/attractors/abh-core-attractor.md",
       "baseline": "Support importing and exporting attractor and memory context across repositories.",
       "goals": [
@@ -1085,8 +1292,17 @@
         "docs/task-board.md",
         "docs/context/codebase-map.md"
       ],
-      "status": "blocked",
-      "plan_id": "plan-054-multi-repo-sharing"
+      "status": "materialized",
+      "plan_id": "plan-054-multi-repo-sharing (abandoned: audit fail, decomposed)",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "adoption.abh-workflow-skill",
@@ -1130,7 +1346,16 @@
         "tests/test_command_contracts.py"
       ],
       "status": "materialized",
-      "plan_id": "plan-055-abh-workflow-skill"
+      "plan_id": "plan-055-abh-workflow-skill",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     },
     {
       "key": "stage7.team-policy-and-release-automation",
@@ -1145,7 +1370,95 @@
       "validation_checklist": [],
       "closure_evidence": [],
       "status": "queued",
-      "plan_id": null
+      "plan_id": null,
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
+    },
+    {
+      "key": "stage7.attractor-export-import",
+      "title": "Attractor Export/Import Bundle MVP",
+      "stage": "stage7",
+      "summary": "Local-first abh export/import for attractors: bundle attractor + invariants + version chain into a portable artifact with preview before import.",
+      "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+      "baseline": "plan-054 audit proved zero implementation; start with minimal attractor-only sharing",
+      "goals": [
+        "Export active attractor as a versioned portable JSON bundle artifact.",
+        "Preview import in target repo: detect conflicts, show planned writes.",
+        "Confirmed import preserves source metadata and avoids silent overwrite."
+      ],
+      "non_goals": [
+        "No memory sharing (separate plan).",
+        "No cloud sync or remote services.",
+        "No multi-attractor batch export."
+      ],
+      "exit_criteria": [
+        "abh export creates a valid bundle artifact.",
+        "abh import --preview shows conflicts without writing.",
+        "abh import --confirm preserves source repo metadata."
+      ],
+      "validation_checklist": [
+        "python3 -m pytest tests/ -q",
+        "python3 -m abh doctor",
+        "git diff --check"
+      ],
+      "closure_evidence": [],
+      "status": "queued",
+      "plan_id": null,
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
+    },
+    {
+      "key": "stage7.memory-sharing-format",
+      "title": "Memory Sharing Format",
+      "stage": "stage7",
+      "summary": "Extend export/import to memory records: preserve relationship metadata, evidence refs, and source-of-truth boundaries when moving between repos.",
+      "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+      "baseline": "plan-054 audit proved zero implementation; build on attractor export bundle format.",
+      "goals": [
+        "Export selected active memories as portable artifacts with relationship metadata.",
+        "Import preserves related_plan_ids, related_audit_ids, and evidence refs as repo-relative paths.",
+        "Preview shows conflicts: existing memory with same ID, missing referenced objects."
+      ],
+      "non_goals": [
+        "No cross-repo memory search.",
+        "No automatic memory sync or background daemons."
+      ],
+      "exit_criteria": [
+        "abh export --memories creates bundle with relationship metadata.",
+        "abh import --preview detects memory ID conflicts.",
+        "Confirmed import maps evidence refs to local repo paths."
+      ],
+      "validation_checklist": [
+        "python3 -m pytest tests/ -q",
+        "python3 -m abh doctor",
+        "git diff --check"
+      ],
+      "closure_evidence": [],
+      "status": "queued",
+      "plan_id": null,
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [],
+        "live_code_routes": [],
+        "tests_baseline": [],
+        "known_issues": [],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     }
   ]
 }
