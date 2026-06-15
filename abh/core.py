@@ -40,6 +40,8 @@ from .memory import (
     render_memory_markdown,
     save_memory,
     search_memory,
+    triage_memories,
+    update_memory,
 )
 from .models import schema_issue_messages, migrate_record, CURRENT_VERSION
 from .plans import (

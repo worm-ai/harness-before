@@ -148,6 +148,43 @@ def list_memories(cwd: Path | None = None, *, limit: int | None = None, offset: 
     return memories
 
 
+def update_memory(
+    *,
+    memory_id: str,
+    add_tags: list[str] | None = None,
+    add_related_plan_ids: list[str] | None = None,
+    add_related_audit_ids: list[str] | None = None,
+    add_related_drift_ids: list[str] | None = None,
+    status: str | None = None,
+    cwd: Path | None = None,
+) -> MemoryRecord:
+    """Update an existing memory record by appending tags and/or relationships."""
+    validate_identifier(memory_id, "memory id")
+    path = memory_json_path(memory_id, cwd)
+    if not path.exists():
+        raise AbhError(f"memory not found: {memory_id}")
+    memory = MemoryRecord.from_dict(read_json(path))
+    if add_tags:
+        for tag in add_tags:
+            if tag not in memory.tags:
+                memory.tags.append(tag)
+    if add_related_plan_ids:
+        for pid in add_related_plan_ids:
+            if pid not in memory.related_plan_ids:
+                memory.related_plan_ids.append(pid)
+    if add_related_audit_ids:
+        for aid in add_related_audit_ids:
+            if aid not in memory.related_audit_ids:
+                memory.related_audit_ids.append(aid)
+    if add_related_drift_ids:
+        for did in add_related_drift_ids:
+            if did not in memory.related_drift_ids:
+                memory.related_drift_ids.append(did)
+    if status is not None and status in MEMORY_STATUSES:
+        memory.status = status
+    return save_memory(memory, cwd)
+
+
 def triage_memories(cwd: Path | None = None) -> list[dict[str, object]]:
     """Return orphaned active memories with triage guidance.
 

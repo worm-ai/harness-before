@@ -420,6 +420,16 @@ def build_parser() -> argparse.ArgumentParser:
     add_json_argument(memory_triage)
     memory_triage.set_defaults(handler=handle_memory_triage)
 
+    memory_update = memory_sub.add_parser("update", help="update a memory record (append tags, relationships, or change status)")
+    memory_update.add_argument("memory_id")
+    memory_update.add_argument("--add-tags", action="append", default=[], help="append tags to memory")
+    memory_update.add_argument("--add-related-plan", action="append", default=[], dest="add_related_plans", help="append related plan id")
+    memory_update.add_argument("--add-related-audit", action="append", default=[], dest="add_related_audits", help="append related audit id")
+    memory_update.add_argument("--add-related-drift", action="append", default=[], dest="add_related_drifts", help="append related drift id")
+    memory_update.add_argument("--status", choices=MEMORY_STATUSES, help="change memory status")
+    add_json_argument(memory_update)
+    memory_update.set_defaults(handler=handle_memory_update)
+
     route = subparsers.add_parser("route", help="recommend reading order for a question")
     route.add_argument("--question", required=True)
     add_json_argument(route)
@@ -975,8 +985,29 @@ def handle_memory_triage(args: argparse.Namespace) -> int:
             flags.append("no relations")
         print(f"  {mem['id']}  [{mem['memory_type']}]  ({', '.join(flags)})")
         print(f"    summary: {mem['summary'][:100]}")
-        print(f"    action:  abh memory update {mem['id']} --{mem['recommended_action'].replace('_','-')}")
+        if not mem["has_tags"]:
+            print(f"    action:  abh memory update {mem['id']} --add-tags <tag>")
+        if not mem["has_relations"]:
+            print(f"    action:  abh memory update {mem['id']} --add-related-plan <plan-id>")
         print()
+    return 0
+
+
+def handle_memory_update(args: argparse.Namespace) -> int:
+    from .memory import update_memory
+
+    memory = update_memory(
+        memory_id=args.memory_id,
+        add_tags=args.add_tags or None,
+        add_related_plan_ids=args.add_related_plans or None,
+        add_related_audit_ids=args.add_related_audits or None,
+        add_related_drift_ids=args.add_related_drifts or None,
+        status=args.status,
+    )
+    if args.json:
+        print_json_envelope(ok=True, command=command_name(args), data={"memory": memory.to_dict()})
+        return 0
+    print(f"updated memory {memory.id}: tags={memory.tags}, related_plans={memory.related_plan_ids}")
     return 0
 
 

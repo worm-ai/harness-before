@@ -296,6 +296,24 @@ def close_plan(plan_id: str, cwd: Path | None = None) -> PlanRecord:
         if audit.result == "pass" and audit.status == "complete":
             reason = audit_close_blocker(plan, audit, cwd)
             if reason:
+                # Auto-reverify if staleness is only git-level (no product proof drift).
+                if "stale" in reason:
+                    summary = verification_freshness_summary(plan, cwd)
+                    stale_reasons = set(summary.get("reasons", []))
+                    git_only = {"git_commit_changed", "git_status_changed"}
+                    if stale_reasons and stale_reasons <= git_only:
+                        from .verifications import run_verification
+                        new_run = run_verification(plan_id=plan_id, cwd=cwd)
+                        if new_run.result == "pass":
+                            from .audits import load_audit as _load, save_audit as _save
+                            audit = _load(audit_id, cwd)
+                            audit.verification_id = new_run.id
+                            _save(audit, cwd)
+                            plan = load_plan(plan_id, cwd)
+                            reason = audit_close_blocker(plan, audit, cwd)
+                            if not reason:
+                                passing_audit = audit
+                                break
                 rejection_reasons.append(f"{audit.id}: {reason}")
                 continue
             passing_audit = audit
