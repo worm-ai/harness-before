@@ -672,7 +672,7 @@ def handle_plan_run(args: argparse.Namespace) -> int:
 
 def handle_plan_finish(args: argparse.Namespace) -> int:
     """Pre-close completeness check with auto-fix for git staleness."""
-    from .plans import load_plan, verification_freshness_summary, audit_close_blocker
+    from .plans import load_plan, verification_freshness_summary, audit_close_blocker, _auto_reverify_if_git_only
     from .audits import load_audit
 
     plan = load_plan(args.plan_id)
@@ -692,21 +692,12 @@ def handle_plan_finish(args: argparse.Namespace) -> int:
             if audit.result == "pass" and audit.status == "complete":
                 reason = audit_close_blocker(plan, audit)
                 if reason:
-                    # Auto-fix git-only staleness
-                    summary = verification_freshness_summary(plan)
-                    stale_reasons = set(summary.get("reasons", []))
-                    if "stale" in reason and stale_reasons <= {"git_commit_changed", "git_status_changed"}:
-                        from .verifications import run_verification
-                        new_run = run_verification(plan_id=args.plan_id)
-                        if new_run.result == "pass":
-                            from .audits import save_audit
-                            audit.verification_id = new_run.id
-                            save_audit(audit)
-                            plan = load_plan(args.plan_id)
-                            reason = audit_close_blocker(plan, audit)
-                            if not reason:
-                                ok_checks.append(f"audit {audit_id} pass (auto-reverified)")
-                                break
+                    if "stale" in reason:
+                        plan, new_reason = _auto_reverify_if_git_only(plan, audit, audit_id)
+                        if new_reason is None:
+                            ok_checks.append(f"audit {audit_id} pass (auto-reverified)")
+                            break
+                        reason = new_reason
                     issues.append(f"audit {audit_id}: {reason}")
                 else:
                     ok_checks.append(f"audit {audit_id} pass")

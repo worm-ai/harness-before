@@ -285,6 +285,23 @@ def transition_plan(plan_id: str, target_status: str, cwd: Path | None = None) -
     return save_plan(plan, cwd)
 
 
+def _auto_reverify_if_git_only(plan, audit, audit_id: str, cwd: Path | None = None) -> tuple[object, str | None]:
+    """Auto-reverify if staleness is only git-level. Returns (plan, blocker_reason_or_None)."""
+    summary = verification_freshness_summary(plan, cwd)
+    stale_reasons = set(summary.get("reasons", []))
+    if stale_reasons and stale_reasons <= {"git_commit_changed", "git_status_changed"}:
+        from .verifications import run_verification
+        new_run = run_verification(plan_id=plan.id, cwd=cwd)
+        if new_run.result == "pass":
+            from .audits import load_audit as _load, save_audit as _save
+            audit = _load(audit_id, cwd)
+            audit.verification_id = new_run.id
+            _save(audit, cwd)
+            plan = load_plan(plan.id, cwd)
+            return plan, audit_close_blocker(plan, audit, cwd)
+    return plan, None
+
+
 def close_plan(plan_id: str, cwd: Path | None = None) -> PlanRecord:
     plan = load_plan(plan_id, cwd)
     passing_audit = None
@@ -298,23 +315,11 @@ def close_plan(plan_id: str, cwd: Path | None = None) -> PlanRecord:
             if reason:
                 # Auto-reverify if staleness is only git-level (no product proof drift).
                 if "stale" in reason:
-                    summary = verification_freshness_summary(plan, cwd)
-                    stale_reasons = set(summary.get("reasons", []))
-                    git_only = {"git_commit_changed", "git_status_changed"}
-                    if stale_reasons and stale_reasons <= git_only:
-                        from .verifications import run_verification
-                        new_run = run_verification(plan_id=plan_id, cwd=cwd)
-                        if new_run.result == "pass":
-                            from .audits import load_audit as _load, save_audit as _save
-                            audit = _load(audit_id, cwd)
-                            audit.verification_id = new_run.id
-                            _save(audit, cwd)
-                            plan = load_plan(plan_id, cwd)
-                            new_reason = audit_close_blocker(plan, audit, cwd)
-                            if not new_reason:
-                                passing_audit = audit
-                                break
-                            reason = new_reason
+                    plan, new_reason = _auto_reverify_if_git_only(plan, audit, audit_id, cwd)
+                    if new_reason is None:
+                        passing_audit = audit
+                        break
+                    reason = new_reason
                 rejection_reasons.append(f"{audit.id}: {reason}")
                 continue
             passing_audit = audit
