@@ -5,7 +5,7 @@
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",
   "baseline": "Auto-generated baseline. Recent commits: 16b52fa feat(Phase B): dashboard + memory injection in abh next; 766e0e5 feat(Phase A): smart defaults + plan run/finish compound commands; 6de2da2 fix: address 3 code review findings",
   "owner": "wangming",
-  "status": "running",
+  "status": "closed",
   "goals": [
     "abh audit bundle --protocol outputs structured JSON instead of Markdown prompt, with explicit fields for plan goals, non-goals, exit criteria, evidence paths, and verification id.",
     "abh audit record --from-protocol <file.json> consumes a structured JSON verdict from the audit agent and records it directly."
@@ -25,7 +25,8 @@
   "closure_evidence": [
     "abh/audit_bundle.py",
     "abh/cli.py",
-    "abh/audits.py"
+    "abh/audits.py",
+    "audit-064-agent-ux-phase-c"
   ],
   "commitment_phase_state": {
     "stable_state_now": [],
@@ -34,8 +35,13 @@
     "conversion_proof": [],
     "residual_pressure": []
   },
-  "verification_runs": [],
-  "audit_ids": [],
+  "verification_runs": [
+    "ver-5aef17fdb738",
+    "ver-6b137db9d6be"
+  ],
+  "audit_ids": [
+    "audit-064-agent-ux-phase-c"
+  ],
   "baseline_commit": "16b52fabbf8c133bc3e69b346012f543ef6a894a",
   "scope": [
     "abh/"
@@ -50,6 +56,6 @@
     "plan_audit_evidence": []
   },
   "created_at": "2026-06-15T16:31:05.841460+00:00",
-  "updated_at": "2026-06-15T16:31:13.513340+00:00",
+  "updated_at": "2026-06-15T16:34:11.519169+00:00",
   "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-064-agent-ux-phase-c.md"
 }

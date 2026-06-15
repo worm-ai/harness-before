@@ -5,7 +5,7 @@
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",
   "baseline": "Auto-generated baseline. Recent commits: 766e0e5 feat(Phase A): smart defaults + plan run/finish compound commands; 6de2da2 fix: address 3 code review findings; e09f7d5 fix: auto-reverify on git-only staleness + add abh memory update command",
   "owner": "wangming",
-  "status": "running",
+  "status": "closed",
   "goals": [
     "Add 'abh dashboard' command: single-call overview replacing plan list + roadmap list + report health + memory triage.",
     "Memory injection in abh next: automatically surface related memories when recommending next actions.",
@@ -30,7 +30,8 @@
     "abh/cli.py",
     "abh/navigation.py",
     "abh/reporting.py",
-    "abh/plans.py"
+    "abh/plans.py",
+    "audit-063-agent-ux-phase-b"
   ],
   "commitment_phase_state": {
     "stable_state_now": [],
@@ -39,8 +40,13 @@
     "conversion_proof": [],
     "residual_pressure": []
   },
-  "verification_runs": [],
-  "audit_ids": [],
+  "verification_runs": [
+    "ver-f29dc67f92b9",
+    "ver-1132923c8015"
+  ],
+  "audit_ids": [
+    "audit-063-agent-ux-phase-b"
+  ],
   "baseline_commit": "766e0e553e573832a5176329b7ed2e8e840664cf",
   "scope": [
     "abh/"
@@ -55,6 +61,6 @@
     "plan_audit_evidence": []
   },
   "created_at": "2026-06-15T15:35:09.811892+00:00",
-  "updated_at": "2026-06-15T15:35:21.182546+00:00",
+  "updated_at": "2026-06-15T16:34:11.033435+00:00",
   "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-063-agent-ux-phase-b.md"
 }

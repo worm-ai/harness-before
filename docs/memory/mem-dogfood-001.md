@@ -5,9 +5,14 @@
 - ID: mem-dogfood-001
 - Type: false_assumption
 - Status: active
+- Tags: dogfooding, abh-cli, verified
 - Created: 2026-05-22T16:05:42.124963+00:00
-- Updated: 2026-05-22T16:05:42.125250+00:00
-- Related: 
+- Updated: 2026-06-15T15:17:45.442976+00:00
+- Related:
+- Related Plans: plan-006-stabilize
+- Related Audits:
+- Related Drift Reports:
+- Superseded By:
 
 ## Summary
 

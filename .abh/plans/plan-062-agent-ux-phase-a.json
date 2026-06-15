@@ -5,7 +5,7 @@
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",
   "baseline": "Agent currently needs ~18 tool calls per plan lifecycle. Smart defaults and compound commands can cut this to ~12. Primary user is AI Agent, not human CLI operator.",
   "owner": "platform",
-  "status": "running",
+  "status": "closed",
   "goals": [
     "Smart defaults: plan create auto-detects active attractor, generates baseline from git status, uses standard validation checklist, infers owner from git config.",
     "Compound command 'abh plan run <id>': transitions draft→ready→running if needed, runs verification, returns result.",
@@ -30,7 +30,8 @@
   "closure_evidence": [
     "abh/cli.py",
     "abh/plans.py",
-    "abh/commands.py"
+    "abh/commands.py",
+    "audit-062-agent-ux-phase-a"
   ],
   "commitment_phase_state": {
     "stable_state_now": [],
@@ -39,8 +40,13 @@
     "conversion_proof": [],
     "residual_pressure": []
   },
-  "verification_runs": [],
-  "audit_ids": [],
+  "verification_runs": [
+    "ver-80e1ab90e39b",
+    "ver-b6d5ed98bcb0"
+  ],
+  "audit_ids": [
+    "audit-062-agent-ux-phase-a"
+  ],
   "baseline_commit": "6de2da2d5bf18d0a26a02b6a117f2a5e4a38aaba",
   "scope": [
     "abh/"
@@ -55,6 +61,6 @@
     "plan_audit_evidence": []
   },
   "created_at": "2026-06-15T15:32:17.318053+00:00",
-  "updated_at": "2026-06-15T15:32:22.212807+00:00",
+  "updated_at": "2026-06-15T16:34:10.503991+00:00",
   "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-062-agent-ux-phase-a.md"
 }

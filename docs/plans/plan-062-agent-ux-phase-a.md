@@ -3,12 +3,12 @@
 ## Metadata
 
 - ID: plan-062-agent-ux-phase-a
-- Status: running
+- Status: closed
 - Attractor: docs/architecture/attractors/abh-core-attractor.md
 - Baseline: Agent currently needs ~18 tool calls per plan lifecycle. Smart defaults and compound commands can cut this to ~12. Primary user is AI Agent, not human CLI operator.
 - Owner: platform
 - Created: 2026-06-15T15:32:17.318053+00:00
-- Updated: 2026-06-15T15:32:22.212807+00:00
+- Updated: 2026-06-15T16:34:10.503991+00:00
 
 ## Goals
 
@@ -62,6 +62,7 @@
 - abh/cli.py
 - abh/plans.py
 - abh/commands.py
+- audit-062-agent-ux-phase-a
 
 ## Reference Set
 
@@ -69,8 +70,9 @@
 
 ## Verification Runs
 
--
+- ver-80e1ab90e39b
+- ver-b6d5ed98bcb0
 
 ## Audits
 
--
+- audit-062-agent-ux-phase-a

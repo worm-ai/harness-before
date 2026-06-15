@@ -3,12 +3,12 @@
 ## Metadata
 
 - ID: plan-063-agent-ux-phase-b
-- Status: running
+- Status: closed
 - Attractor: docs/architecture/attractors/abh-core-attractor.md
 - Baseline: Auto-generated baseline. Recent commits: 766e0e5 feat(Phase A): smart defaults + plan run/finish compound commands; 6de2da2 fix: address 3 code review findings; e09f7d5 fix: auto-reverify on git-only staleness + add abh memory update command
 - Owner: wangming
 - Created: 2026-06-15T15:35:09.811892+00:00
-- Updated: 2026-06-15T15:35:21.182546+00:00
+- Updated: 2026-06-15T16:34:11.033435+00:00
 
 ## Goals
 
@@ -62,6 +62,7 @@
 - abh/navigation.py
 - abh/reporting.py
 - abh/plans.py
+- audit-063-agent-ux-phase-b
 
 ## Reference Set
 
@@ -69,8 +70,9 @@
 
 ## Verification Runs
 
--
+- ver-f29dc67f92b9
+- ver-1132923c8015
 
 ## Audits
 
--
+- audit-063-agent-ux-phase-b

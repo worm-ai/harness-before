@@ -4,10 +4,15 @@
 
 - ID: mem-abh-write-concurrency-001
 - Type: divergent_pattern
-- Status: active
+- Status: dismissed
+- Tags: concurrency
 - Created: 2026-05-24T11:07:14.039717+00:00
-- Updated: 2026-05-24T11:07:14.039908+00:00
-- Related: 
+- Updated: 2026-06-15T15:05:32.756811+00:00
+- Related:
+- Related Plans:
+- Related Audits:
+- Related Drift Reports:
+- Superseded By:
 
 ## Summary
 

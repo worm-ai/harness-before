@@ -3,12 +3,12 @@
 ## Metadata
 
 - ID: plan-064-agent-ux-phase-c
-- Status: running
+- Status: closed
 - Attractor: docs/architecture/attractors/abh-core-attractor.md
 - Baseline: Auto-generated baseline. Recent commits: 16b52fa feat(Phase B): dashboard + memory injection in abh next; 766e0e5 feat(Phase A): smart defaults + plan run/finish compound commands; 6de2da2 fix: address 3 code review findings
 - Owner: wangming
 - Created: 2026-06-15T16:31:05.841460+00:00
-- Updated: 2026-06-15T16:31:13.513340+00:00
+- Updated: 2026-06-15T16:34:11.519169+00:00
 
 ## Goals
 
@@ -57,6 +57,7 @@
 - abh/audit_bundle.py
 - abh/cli.py
 - abh/audits.py
+- audit-064-agent-ux-phase-c
 
 ## Reference Set
 
@@ -64,8 +65,9 @@
 
 ## Verification Runs
 
--
+- ver-5aef17fdb738
+- ver-6b137db9d6be
 
 ## Audits
 
--
+- audit-064-agent-ux-phase-c
