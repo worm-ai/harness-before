@@ -697,7 +697,8 @@ def handle_plan_finish(args: argparse.Namespace) -> int:
                         if new_reason is None:
                             ok_checks.append(f"audit {audit_id} pass (auto-reverified)")
                             break
-                        reason = new_reason
+                        if new_reason != "__skipped__":
+                            reason = new_reason
                     issues.append(f"audit {audit_id}: {reason}")
                 else:
                     ok_checks.append(f"audit {audit_id} pass")

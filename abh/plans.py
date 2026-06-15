@@ -286,20 +286,27 @@ def transition_plan(plan_id: str, target_status: str, cwd: Path | None = None) -
 
 
 def _auto_reverify_if_git_only(plan, audit, audit_id: str, cwd: Path | None = None) -> tuple[object, str | None]:
-    """Auto-reverify if staleness is only git-level. Returns (plan, blocker_reason_or_None)."""
+    """Auto-reverify if staleness is only git-level.
+
+    Returns (plan, blocker_reason_or_None):
+    - None: auto-reverify succeeded, audit now passes
+    - \"__skipped__\": staleness was not git-only, caller should use original reason
+    - <reason string>: auto-reverify ran but a new or remaining blocker exists
+    """
     summary = verification_freshness_summary(plan, cwd)
     stale_reasons = set(summary.get("reasons", []))
-    if stale_reasons and stale_reasons <= {"git_commit_changed", "git_status_changed"}:
-        from .verifications import run_verification
-        new_run = run_verification(plan_id=plan.id, cwd=cwd)
-        if new_run.result == "pass":
-            from .audits import load_audit as _load, save_audit as _save
-            audit = _load(audit_id, cwd)
-            audit.verification_id = new_run.id
-            _save(audit, cwd)
-            plan = load_plan(plan.id, cwd)
-            return plan, audit_close_blocker(plan, audit, cwd)
-    return plan, None
+    if not stale_reasons or not stale_reasons <= {"git_commit_changed", "git_status_changed"}:
+        return plan, "__skipped__"
+    from .verifications import run_verification
+    new_run = run_verification(plan_id=plan.id, cwd=cwd)
+    if new_run.result != "pass":
+        return plan, f"auto-reverify failed: verification result is {new_run.result}"
+    from .audits import load_audit as _load, save_audit as _save
+    audit = _load(audit_id, cwd)
+    audit.verification_id = new_run.id
+    _save(audit, cwd)
+    plan = load_plan(plan.id, cwd)
+    return plan, audit_close_blocker(plan, audit, cwd)
 
 
 def close_plan(plan_id: str, cwd: Path | None = None) -> PlanRecord:
@@ -319,7 +326,8 @@ def close_plan(plan_id: str, cwd: Path | None = None) -> PlanRecord:
                     if new_reason is None:
                         passing_audit = audit
                         break
-                    reason = new_reason
+                    if new_reason != "__skipped__":
+                        reason = new_reason
                 rejection_reasons.append(f"{audit.id}: {reason}")
                 continue
             passing_audit = audit
