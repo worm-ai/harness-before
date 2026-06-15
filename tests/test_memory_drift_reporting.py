@@ -472,6 +472,20 @@ class MemoryDriftReportingTests(WorkspaceCliTestCase):
         churn = [item for item in report["semantic_pressure"] if item["type"] == "post_close_metadata_churn"]
         self.assertEqual(churn, [])
 
+    def test_memory_triage_json_lists_orphaned_memories_with_guidance(self) -> None:
+        code, out, err = self.run_cli("memory", "triage", "--json")
+        self.assertEqual(code, 0, err)
+        data = json.loads(out)["data"]
+        self.assertIn("memories", data)
+        self.assertIn("total", data)
+        self.assertGreaterEqual(data["total"], 0)
+        for mem in data["memories"]:
+            self.assertIn("id", mem)
+            self.assertIn("has_tags", mem)
+            self.assertIn("has_relations", mem)
+            self.assertIn("recommended_action", mem)
+            self.assertIn(mem["recommended_action"], ("dismiss", "add_tags", "add_relations"))
+
     def test_report_health_aggregates_drift_memory_and_semantic_pressure(self) -> None:
         drift_source_a = self.root / "drift-a.txt"
         drift_source_b = self.root / "drift-b.txt"

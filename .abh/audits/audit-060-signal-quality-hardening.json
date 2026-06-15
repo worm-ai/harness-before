@@ -1,0 +1,23 @@
+{
+  "schema_version": "2",
+  "id": "audit-060-signal-quality-hardening",
+  "plan_id": "plan-060-signal-quality-hardening",
+  "auditor": "claude-sonnet-4-6 independent audit",
+  "scope": "Independent audit of plan-060 Signal Quality Hardening",
+  "auditor_context": "",
+  "independence": "independent",
+  "verification_id": "ver-da0583e53630",
+  "status": "complete",
+  "result": "pass",
+  "rationale": "All goals, non-goals, and exit criteria are satisfied. EC4 triage test added (test_memory_triage_json_lists_orphaned_memories_with_guidance). 210 tests pass. Stale severity correctly reclassified (info for closed, high for open). Memory triage JSON output validated. Posture calculation excludes info-level signals.",
+  "evidence": [
+    "docs/plans/plan-060-signal-quality-hardening.md",
+    ".abh/plans/plan-060-signal-quality-hardening.json",
+    ".abh/verifications/ver-da0583e53630.json"
+  ],
+  "findings": [],
+  "follow_ups": [],
+  "created_at": "2026-06-15T14:26:59.403552+00:00",
+  "updated_at": "2026-06-15T14:26:59.458737+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/audits/audit-060-signal-quality-hardening.md"
+}

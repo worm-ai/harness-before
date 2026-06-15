@@ -5,7 +5,7 @@
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",
   "baseline": "Health report posture is at_risk but 59/74 signals are stale_proof from closed plans — noise masking real risks. 11/13 memories are orphaned with no triage tooling.",
   "owner": "platform",
-  "status": "blocked",
+  "status": "closed",
   "goals": [
     "Distinguish closed-plan stale_proof from open-plan in health report severity: closed-plan stale downgraded to info, open-plan stays high.",
     "Add 'abh memory triage' subcommand: interactive listing of orphaned memories with guided prompts to add tags, relate to plans/audits/drifts, or mark dismissed.",
@@ -34,7 +34,8 @@
     "abh/commands.py",
     "abh/models.py",
     "abh/navigation.py",
-    "tests/test_cli.py"
+    "tests/test_cli.py",
+    "audit-060-signal-quality-hardening"
   ],
   "commitment_phase_state": {
     "stable_state_now": [],
@@ -45,12 +46,17 @@
   },
   "verification_runs": [
     "ver-db12cfe8c982",
-    "ver-bfc825c02271"
+    "ver-bfc825c02271",
+    "ver-91f5db213269",
+    "ver-da0583e53630"
   ],
-  "audit_ids": [],
+  "audit_ids": [
+    "audit-060-signal-quality-hardening"
+  ],
   "baseline_commit": "242e1f928d26b3570799395240565b47223c8ddb",
   "scope": [
-    "abh/"
+    "abh/",
+    "tests/"
   ],
   "reference_set": {
     "context_routing": [],
@@ -62,6 +68,6 @@
     "plan_audit_evidence": []
   },
   "created_at": "2026-06-15T14:18:20.637515+00:00",
-  "updated_at": "2026-06-15T14:23:40.591219+00:00",
+  "updated_at": "2026-06-15T14:27:08.415572+00:00",
   "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-060-signal-quality-hardening.md"
 }

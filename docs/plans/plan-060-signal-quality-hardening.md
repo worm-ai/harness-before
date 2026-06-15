@@ -3,12 +3,12 @@
 ## Metadata
 
 - ID: plan-060-signal-quality-hardening
-- Status: blocked
+- Status: closed
 - Attractor: docs/architecture/attractors/abh-core-attractor.md
 - Baseline: Health report posture is at_risk but 59/74 signals are stale_proof from closed plans — noise masking real risks. 11/13 memories are orphaned with no triage tooling.
 - Owner: platform
 - Created: 2026-06-15T14:18:20.637515+00:00
-- Updated: 2026-06-15T14:23:40.591219+00:00
+- Updated: 2026-06-15T14:27:08.415572+00:00
 
 ## Goals
 
@@ -66,6 +66,7 @@
 - abh/models.py
 - abh/navigation.py
 - tests/test_cli.py
+- audit-060-signal-quality-hardening
 
 ## Reference Set
 
@@ -75,7 +76,9 @@
 
 - ver-db12cfe8c982
 - ver-bfc825c02271
+- ver-91f5db213269
+- ver-da0583e53630
 
 ## Audits
 
--
+- audit-060-signal-quality-hardening
