@@ -1,0 +1,55 @@
+{
+  "schema_version": "2",
+  "id": "plan-064-agent-ux-phase-c",
+  "title": "Phase C: Agent-to-Agent Audit Protocol",
+  "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+  "baseline": "Auto-generated baseline. Recent commits: 16b52fa feat(Phase B): dashboard + memory injection in abh next; 766e0e5 feat(Phase A): smart defaults + plan run/finish compound commands; 6de2da2 fix: address 3 code review findings",
+  "owner": "wangming",
+  "status": "running",
+  "goals": [
+    "abh audit bundle --protocol outputs structured JSON instead of Markdown prompt, with explicit fields for plan goals, non-goals, exit criteria, evidence paths, and verification id.",
+    "abh audit record --from-protocol <file.json> consumes a structured JSON verdict from the audit agent and records it directly."
+  ],
+  "non_goals": [
+    "Do not remove the existing Markdown bundle — protocol is additive."
+  ],
+  "exit_criteria": [
+    "audit bundle --protocol outputs valid JSON with all fields required for an independent agent to audit.",
+    "audit record --from-protocol accepts valid JSON verdict and records audit correctly."
+  ],
+  "validation_checklist": [
+    "python3 -m pytest tests/ -q",
+    "python3 -m abh doctor",
+    "git diff --check"
+  ],
+  "closure_evidence": [
+    "abh/audit_bundle.py",
+    "abh/cli.py",
+    "abh/audits.py"
+  ],
+  "commitment_phase_state": {
+    "stable_state_now": [],
+    "active_change_pressure": [],
+    "target_stable_state": [],
+    "conversion_proof": [],
+    "residual_pressure": []
+  },
+  "verification_runs": [],
+  "audit_ids": [],
+  "baseline_commit": "16b52fabbf8c133bc3e69b346012f543ef6a894a",
+  "scope": [
+    "abh/"
+  ],
+  "reference_set": {
+    "context_routing": [],
+    "active_owner_docs": [],
+    "live_code_routes": [],
+    "tests_baseline": [],
+    "known_issues": [],
+    "external_contracts": [],
+    "plan_audit_evidence": []
+  },
+  "created_at": "2026-06-15T16:31:05.841460+00:00",
+  "updated_at": "2026-06-15T16:31:13.513340+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-064-agent-ux-phase-c.md"
+}

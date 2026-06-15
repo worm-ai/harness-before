@@ -302,6 +302,7 @@ def build_parser() -> argparse.ArgumentParser:
     audit_record.add_argument("--verification-id")
     audit_record.add_argument("--finding", action="append", default=[])
     audit_record.add_argument("--follow-up", action="append", default=[])
+    audit_record.add_argument("--from-protocol", help="read verdict from structured JSON file (agent-to-agent protocol)")
     audit_record.set_defaults(handler=handle_audit_record)
 
     audit_list = audit_sub.add_parser("list", help="list all audits")
@@ -310,6 +311,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     audit_bundle_parser = audit_sub.add_parser("bundle", help="generate a read-only audit prompt bundle")
     audit_bundle_parser.add_argument("plan_id")
+    audit_bundle_parser.add_argument("--protocol", action="store_true", help="output structured JSON protocol for agent-to-agent audit")
     add_json_argument(audit_bundle_parser)
     audit_bundle_parser.set_defaults(handler=handle_audit_bundle)
 
@@ -822,15 +824,33 @@ def handle_audit_request(args: argparse.Namespace) -> int:
 
 
 def handle_audit_record(args: argparse.Namespace) -> int:
+    result = args.result
+    rationale = args.rationale
+    findings = args.finding
+    follow_ups = args.follow_up
+
+    if args.from_protocol:
+        import json as _json
+        with open(args.from_protocol, "r", encoding="utf-8") as f:
+            protocol = _json.load(f)
+        result = protocol.get("result", result)
+        rationale = protocol.get("rationale", rationale)
+        findings = protocol.get("findings", [])
+        if isinstance(findings, list) and findings and isinstance(findings[0], dict):
+            findings = [f"{f.get('severity','')}|{f.get('title','')}|{f.get('evidence','')}|{f.get('recommendation','')}" for f in findings]
+        follow_ups = protocol.get("follow_ups", follow_ups)
+        if args.independence is None:
+            args.independence = protocol.get("independence")
+
     audit = record_audit(
         audit_id=args.audit_id,
-        result=args.result,
-        rationale=args.rationale,
+        result=result,
+        rationale=rationale,
         auditor_context=args.auditor_context,
         independence=args.independence,
         verification_id=args.verification_id,
-        findings=args.finding,
-        follow_ups=args.follow_up,
+        findings=findings,
+        follow_ups=follow_ups,
     )
     print(f"recorded audit {audit.id}: {audit.result}")
     return 0
@@ -855,6 +875,36 @@ def handle_audit_list(args: argparse.Namespace) -> int:
 
 def handle_audit_bundle(args: argparse.Namespace) -> int:
     bundle = audit_bundle(args.plan_id)
+    if args.protocol:
+        protocol = {
+            "protocol_version": "1",
+            "plan_id": bundle["plan"]["id"],
+            "plan_title": bundle["plan"]["title"],
+            "goals": bundle["plan"]["goals"],
+            "non_goals": bundle["plan"]["non_goals"],
+            "exit_criteria": bundle["plan"]["exit_criteria"],
+            "verification_id": bundle["latest_verification"].get("latest_id"),
+            "evidence_paths": [
+                p for v in bundle["evidence"].values()
+                for p in (v if isinstance(v, list) else [v]) if p
+            ],
+            "expected_response": {
+                "result": "pass|fail|partial|need_info",
+                "rationale": "<concise explanation>",
+                "independence": "independent|self_review|unknown",
+                "findings": [
+                    {"severity": "low|medium|high", "title": "...", "evidence": "...", "recommendation": "..."}
+                ],
+                "follow_ups": ["<action item>"],
+            },
+            "instructions": "Read the evidence paths. Check goals against code, non-goals against implementation, exit criteria against verification. Return a JSON object matching expected_response. Do NOT modify files. Return ONLY the JSON object.",
+        }
+        if args.json:
+            print_json_envelope(ok=True, command=command_name(args), data={"audit_protocol": protocol})
+            return 0
+        import json as _json
+        print(_json.dumps(protocol, indent=2))
+        return 0
     if args.json:
         print_json_envelope(ok=True, command=command_name(args), data={"audit_bundle": bundle})
         return 0
