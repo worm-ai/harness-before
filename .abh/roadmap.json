@@ -1292,8 +1292,8 @@
         "docs/task-board.md",
         "docs/context/codebase-map.md"
       ],
-      "status": "materialized",
-      "plan_id": "plan-054-multi-repo-sharing (abandoned: audit fail, decomposed)",
+      "status": "queued",
+      "plan_id": null,
       "reference_set": {
         "context_routing": [],
         "active_owner_docs": [],

@@ -400,10 +400,10 @@ class MemoryDriftReportingTests(WorkspaceCliTestCase):
         stale_proof = [item for item in report["semantic_pressure"] if item["type"] == "stale_proof"]
         self.assertEqual(len(stale_proof), 1)
         self.assertEqual(stale_proof[0]["related_plan_ids"], ["plan-health-proof-drift"])
-        self.assertEqual(stale_proof[0]["severity"], "high")
+        self.assertEqual(stale_proof[0]["severity"], "info")
         churn = [item for item in report["semantic_pressure"] if item["type"] == "post_close_metadata_churn"]
         self.assertEqual(churn, [])
-        self.assertEqual(report["posture"], "at_risk")
+        self.assertEqual(report["posture"], "healthy")
 
     def test_report_health_keeps_other_closed_plan_git_changes_as_stale_proof(self) -> None:
         command = f'"{sys.executable}" -c "print(\'product-sync-ok\')"'

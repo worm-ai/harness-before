@@ -99,11 +99,14 @@ def project_health_report(cwd: Path | None = None) -> dict[str, Any]:
                     )
                 )
             else:
+                # Closed plans with stale verification are expected (git moves forward);
+                # only open plans with stale proofs represent real risk.
+                severity = "info" if plan.status == "closed" else "high"
                 pressure.append(
                     pressure_signal(
                         signal_id=f"pressure-stale-proof-{plan.id}",
                         signal_type="stale_proof",
-                        severity="high",
+                        severity=severity,
                         confidence="high",
                         summary=f"{plan.id} latest verification is stale.",
                         evidence_refs=evidence_refs,
@@ -244,11 +247,12 @@ def sorted_risks(signals: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def posture_for(signals: list[dict[str, Any]]) -> str:
-    if any(item["severity"] == "critical" for item in signals):
+    actionable = [s for s in signals if s.get("severity") not in ("info",)]
+    if any(item["severity"] == "critical" for item in actionable):
         return "blocked"
-    if any(item["severity"] == "high" for item in signals):
+    if any(item["severity"] == "high" for item in actionable):
         return "at_risk"
-    if signals:
+    if actionable:
         return "watch"
     return "healthy"
 

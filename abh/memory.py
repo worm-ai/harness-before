@@ -148,6 +148,41 @@ def list_memories(cwd: Path | None = None, *, limit: int | None = None, offset: 
     return memories
 
 
+def triage_memories(cwd: Path | None = None) -> list[dict[str, object]]:
+    """Return orphaned active memories with triage guidance.
+
+    An orphaned memory is active but has no tags or no typed relationships
+    (related_plan_ids, related_audit_ids, related_drift_ids all empty).
+    """
+    all_memories = list_memories(cwd)
+    orphaned: list[dict[str, object]] = []
+    for mem in all_memories:
+        if mem.status != "active":
+            continue
+        has_tags = bool(mem.tags)
+        has_relations = bool(mem.related_plan_ids or mem.related_audit_ids or mem.related_drift_ids)
+        if not has_tags or not has_relations:
+            orphaned.append({
+                "id": mem.id,
+                "memory_type": mem.memory_type,
+                "summary": mem.summary,
+                "has_tags": has_tags,
+                "has_relations": has_relations,
+                "tags": mem.tags,
+                "related_plan_ids": mem.related_plan_ids,
+                "related_audit_ids": mem.related_audit_ids,
+                "related_drift_ids": mem.related_drift_ids,
+                "recommended_action": (
+                    "dismiss" if not has_tags and not has_relations
+                    else "add_tags" if not has_tags
+                    else "add_relations"
+                ),
+            })
+    # Sort: most orphaned first (no tags AND no relations)
+    orphaned.sort(key=lambda m: (m["has_tags"], m["has_relations"]))
+    return orphaned
+
+
 def render_memory_markdown(memory: MemoryRecord) -> str:
     def bullet_lines(values: list[str]) -> str:
         if not values:

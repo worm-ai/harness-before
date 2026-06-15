@@ -416,6 +416,10 @@ def build_parser() -> argparse.ArgumentParser:
     add_json_argument(memory_list)
     memory_list.set_defaults(handler=handle_memory_list)
 
+    memory_triage = memory_sub.add_parser("triage", help="list orphaned active memories with triage guidance")
+    add_json_argument(memory_triage)
+    memory_triage.set_defaults(handler=handle_memory_triage)
+
     route = subparsers.add_parser("route", help="recommend reading order for a question")
     route.add_argument("--question", required=True)
     add_json_argument(route)
@@ -945,6 +949,34 @@ def handle_memory_list(args: argparse.Namespace) -> int:
         evidence_count = len(mem.evidence)
         print(f"{mem.id}  [{mem.memory_type}]  {mem.summary}  (evidence: {evidence_count})")
     print(f"\ntotal: {len(memories)} memory record(s)")
+    return 0
+
+
+def handle_memory_triage(args: argparse.Namespace) -> int:
+    from .memory import triage_memories
+
+    orphaned = triage_memories()
+    if args.json:
+        print_json_envelope(
+            ok=True,
+            command=command_name(args),
+            data={"memories": orphaned, "total": len(orphaned)},
+        )
+        return 0
+    if not orphaned:
+        print("no orphaned active memories found")
+        return 0
+    print(f"{len(orphaned)} orphaned active memor(y|ies):\n")
+    for mem in orphaned:
+        flags = []
+        if not mem["has_tags"]:
+            flags.append("no tags")
+        if not mem["has_relations"]:
+            flags.append("no relations")
+        print(f"  {mem['id']}  [{mem['memory_type']}]  ({', '.join(flags)})")
+        print(f"    summary: {mem['summary'][:100]}")
+        print(f"    action:  abh memory update {mem['id']} --{mem['recommended_action'].replace('_','-')}")
+        print()
     return 0
 
 
