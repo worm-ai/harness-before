@@ -212,8 +212,8 @@ def build_parser() -> argparse.ArgumentParser:
     create = plan_sub.add_parser("create", help="create a plan")
     create.add_argument("--id", required=True)
     create.add_argument("--title", required=True)
-    create.add_argument("--attractor", required=True)
-    create.add_argument("--baseline", required=True)
+    create.add_argument("--attractor", help="attractor path; defaults to active attractor")
+    create.add_argument("--baseline", help="baseline description; auto-generated if omitted")
     create.add_argument("--owner", default="platform")
     create.add_argument("--status", choices=["draft", "ready"], default="draft")
     create.add_argument("--goal", action="append", default=[])
@@ -254,6 +254,16 @@ def build_parser() -> argparse.ArgumentParser:
     transition.add_argument("plan_id")
     transition.add_argument("--to", required=True, choices=["draft", "ready", "running", "blocked", "closing", "closed"])
     transition.set_defaults(handler=handle_plan_transition)
+
+    plan_run = plan_sub.add_parser("run", help="compound: transition to running + verify in one step")
+    plan_run.add_argument("plan_id")
+    add_json_argument(plan_run)
+    plan_run.set_defaults(handler=handle_plan_run)
+
+    plan_finish = plan_sub.add_parser("finish", help="pre-close completeness check with auto-fix for git staleness")
+    plan_finish.add_argument("plan_id")
+    add_json_argument(plan_finish)
+    plan_finish.set_defaults(handler=handle_plan_finish)
 
     verify_parser = subparsers.add_parser("verify", help="record verification runs")
     verify_sub = verify_parser.add_subparsers(dest="verify_command", required=True)
@@ -543,17 +553,44 @@ def handle_onboarding_check(args: argparse.Namespace) -> int:
 
 
 def handle_plan_create(args: argparse.Namespace) -> int:
+    # Smart defaults for agent UX: auto-populate attractor, baseline, validation.
+    attractor = args.attractor
+    if not attractor:
+        from .attractors import active_attractor
+        attractor = active_attractor().path
+    baseline = args.baseline
+    if not baseline:
+        import subprocess
+        try:
+            r = subprocess.run(["git", "log", "--oneline", "-3"], text=True, capture_output=True, timeout=5)
+            recent = r.stdout.strip().replace("\n", "; ") if r.returncode == 0 else "baseline"
+        except Exception:
+            recent = "baseline"
+        baseline = f"Auto-generated baseline. Recent commits: {recent}"
+    validation = list(args.validation)
+    if not validation:
+        validation = ["python3 -m pytest tests/ -q", "python3 -m abh doctor", "git diff --check"]
+    owner = args.owner
+    if owner == "platform":
+        import subprocess
+        try:
+            r = subprocess.run(["git", "config", "user.name"], text=True, capture_output=True, timeout=5)
+            if r.returncode == 0 and r.stdout.strip():
+                owner = r.stdout.strip()
+        except Exception:
+            pass
+
     plan = create_plan(
         plan_id=args.id,
         title=args.title,
-        attractor=args.attractor,
-        baseline=args.baseline,
-        owner=args.owner,
+        attractor=attractor,
+        baseline=baseline,
+        owner=owner,
         status=args.status,
         goals=args.goal,
         non_goals=args.non_goal,
         exit_criteria=args.exit_criterion,
-        validation_checklist=args.validation,
+        validation_checklist=validation,
         closure_evidence=args.closure_evidence,
         commitment_phase_state=commitment_phase_state_from_args(args),
         scope_paths=args.scope,
@@ -590,6 +627,112 @@ def handle_plan_transition(args: argparse.Namespace) -> int:
     transition_plan(args.plan_id, args.to)
     print(f"transitioned {args.plan_id} -> {args.to}")
     return 0
+
+
+def handle_plan_run(args: argparse.Namespace) -> int:
+    """Compound: transition plan to running and run verification in one step."""
+    from .plans import load_plan, transition_plan as _transition
+    plan = load_plan(args.plan_id)
+    steps: list[str] = []
+
+    # Auto-transition through draft→ready→running
+    if plan.status == "draft":
+        _transition(args.plan_id, "ready")
+        steps.append("draft→ready")
+        plan = load_plan(args.plan_id)
+    if plan.status == "ready":
+        _transition(args.plan_id, "running")
+        steps.append("ready→running")
+        plan = load_plan(args.plan_id)
+    if plan.status == "running":
+        from .verifications import run_verification
+        run = run_verification(plan_id=args.plan_id)
+        steps.append(f"verified={run.result}")
+    else:
+        steps.append(f"status={plan.status} (no verification needed)")
+
+    plan = load_plan(args.plan_id)
+    if args.json:
+        from .plans import verification_freshness_summary
+        print_json_envelope(
+            ok=plan.status == "running",
+            command=command_name(args),
+            data={"plan": plan.to_dict(), "steps": steps, "verification_summary": verification_freshness_summary(plan)},
+        )
+        return 0 if plan.status == "running" else 1
+    print(f"plan run {args.plan_id}: {' → '.join(steps)}")
+    return 0 if plan.status == "running" else 1
+
+
+def handle_plan_finish(args: argparse.Namespace) -> int:
+    """Pre-close completeness check with auto-fix for git staleness."""
+    from .plans import load_plan, verification_freshness_summary, audit_close_blocker
+    from .audits import load_audit
+
+    plan = load_plan(args.plan_id)
+    issues: list[str] = []
+    ok_checks: list[str] = []
+
+    if not plan.closure_evidence:
+        issues.append("no closure evidence")
+    else:
+        ok_checks.append("closure evidence present")
+
+    if not plan.audit_ids:
+        issues.append("no audit — request one with: abh audit request <plan-id> ...")
+    else:
+        for audit_id in plan.audit_ids:
+            audit = load_audit(audit_id)
+            if audit.result == "pass" and audit.status == "complete":
+                reason = audit_close_blocker(plan, audit)
+                if reason:
+                    # Auto-fix git-only staleness
+                    summary = verification_freshness_summary(plan)
+                    stale_reasons = set(summary.get("reasons", []))
+                    if "stale" in reason and stale_reasons <= {"git_commit_changed", "git_status_changed"}:
+                        from .verifications import run_verification
+                        new_run = run_verification(plan_id=args.plan_id)
+                        if new_run.result == "pass":
+                            from .audits import save_audit
+                            audit.verification_id = new_run.id
+                            save_audit(audit)
+                            plan = load_plan(args.plan_id)
+                            reason = audit_close_blocker(plan, audit)
+                            if not reason:
+                                ok_checks.append(f"audit {audit_id} pass (auto-reverified)")
+                                break
+                    issues.append(f"audit {audit_id}: {reason}")
+                else:
+                    ok_checks.append(f"audit {audit_id} pass")
+                    break
+            else:
+                issues.append(f"audit {audit_id}: result={audit.result}, status={audit.status}")
+
+    if args.json:
+        ready = not issues
+        print_json_envelope(
+            ok=ready,
+            command=command_name(args),
+            data={
+                "plan_id": args.plan_id,
+                "ready_to_close": ready,
+                "issues": issues,
+                "ok_checks": ok_checks,
+                "next_action": "abh close " + args.plan_id if ready else "fix issues above then re-run abh plan finish " + args.plan_id,
+            },
+        )
+        return 0 if ready else 1
+
+    print(f"plan finish {args.plan_id}:")
+    for check in ok_checks:
+        print(f"  ✓ {check}")
+    for issue in issues:
+        print(f"  ✗ {issue}")
+    if not issues:
+        print(f"\nReady to close. Run: abh close {args.plan_id}")
+    else:
+        print(f"\n{len(issues)} blocker(s) to resolve before close.")
+    return 0 if not issues else 1
 
 
 def handle_plan_update(args: argparse.Namespace) -> int:

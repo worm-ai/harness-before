@@ -1,0 +1,60 @@
+{
+  "schema_version": "2",
+  "id": "plan-062-agent-ux-phase-a",
+  "title": "Phase A: Zero-Friction Agent UX",
+  "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+  "baseline": "Agent currently needs ~18 tool calls per plan lifecycle. Smart defaults and compound commands can cut this to ~12. Primary user is AI Agent, not human CLI operator.",
+  "owner": "platform",
+  "status": "running",
+  "goals": [
+    "Smart defaults: plan create auto-detects active attractor, generates baseline from git status, uses standard validation checklist, infers owner from git config.",
+    "Compound command 'abh plan run <id>': transitions draft→ready→running if needed, runs verification, returns result.",
+    "Compound command 'abh plan finish <id>': pre-close completeness check (audit exists? verification fresh? scope ok?), fixes git-only staleness, outputs actionable next step."
+  ],
+  "non_goals": [
+    "Do not remove existing fine-grained commands — compound commands are conveniences, not replacements.",
+    "Do not auto-create plans without human/agent intent.",
+    "Do not auto-close — human/agent must still confirm close."
+  ],
+  "exit_criteria": [
+    "plan create with only --id --title --goal succeeds with all other fields auto-populated.",
+    "abh plan run <id> goes from draft/ready to running+verified in one command.",
+    "abh plan finish <id> checks audit/verification/scope, auto-fixes git staleness, reports ready-to-close or blocker.",
+    "Tests cover smart defaults, plan run, and plan finish."
+  ],
+  "validation_checklist": [
+    "python3 -m pytest tests/ -q",
+    "python3 -m abh doctor",
+    "git diff --check"
+  ],
+  "closure_evidence": [
+    "abh/cli.py",
+    "abh/plans.py",
+    "abh/commands.py"
+  ],
+  "commitment_phase_state": {
+    "stable_state_now": [],
+    "active_change_pressure": [],
+    "target_stable_state": [],
+    "conversion_proof": [],
+    "residual_pressure": []
+  },
+  "verification_runs": [],
+  "audit_ids": [],
+  "baseline_commit": "6de2da2d5bf18d0a26a02b6a117f2a5e4a38aaba",
+  "scope": [
+    "abh/"
+  ],
+  "reference_set": {
+    "context_routing": [],
+    "active_owner_docs": [],
+    "live_code_routes": [],
+    "tests_baseline": [],
+    "known_issues": [],
+    "external_contracts": [],
+    "plan_audit_evidence": []
+  },
+  "created_at": "2026-06-15T15:32:17.318053+00:00",
+  "updated_at": "2026-06-15T15:32:22.212807+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-062-agent-ux-phase-a.md"
+}
