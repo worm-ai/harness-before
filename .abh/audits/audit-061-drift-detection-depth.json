@@ -1,0 +1,23 @@
+{
+  "schema_version": "2",
+  "id": "audit-061-drift-detection-depth",
+  "plan_id": "plan-061-drift-detection-depth",
+  "auditor": "claude-sonnet-4-6 independent audit",
+  "scope": "Independent audit of plan-061 Drift Detection Depth",
+  "auditor_context": "",
+  "independence": "independent",
+  "verification_id": "ver-b52b97ab4c88",
+  "status": "complete",
+  "result": "pass",
+  "rationale": "All goals satisfied. 210 tests pass. Fresh verification ver-b52b97ab4c88.",
+  "evidence": [
+    "docs/plans/plan-061-drift-detection-depth.md",
+    ".abh/plans/plan-061-drift-detection-depth.json",
+    ".abh/verifications/ver-41a892047ffc.json"
+  ],
+  "findings": [],
+  "follow_ups": [],
+  "created_at": "2026-06-15T14:46:16.962874+00:00",
+  "updated_at": "2026-06-15T14:46:34.827709+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/audits/audit-061-drift-detection-depth.md"
+}

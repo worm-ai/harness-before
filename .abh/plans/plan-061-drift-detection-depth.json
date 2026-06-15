@@ -5,7 +5,7 @@
   "attractor": "docs/architecture/attractors/abh-core-attractor.md",
   "baseline": "Drift detection currently covers only import graph comparison and scope boundary checks. Terminology drift (plan terminology diverging from attractor glossary) is not detected. Drift check is a standalone CLI command, not integrated into verify run.",
   "owner": "platform",
-  "status": "running",
+  "status": "closed",
   "goals": [
     "Add terminology drift detection: compare plan goals/non-goals keywords against attractor-defined terms, flag inconsistent or diverging terminology.",
     "Integrate drift plan-check into verify run as an automatic post-validation step: run check_plan_scope + analyze_plan_drift after checklist commands, report drift findings as additional failure classifications.",
@@ -31,7 +31,8 @@
     "abh/verifications.py",
     "abh/cli.py",
     "abh/models.py",
-    "tests/test_boundary.py"
+    "tests/test_boundary.py",
+    "audit-061-drift-detection-depth"
   ],
   "commitment_phase_state": {
     "stable_state_now": [],
@@ -44,9 +45,12 @@
     "ver-1030bb316abb",
     "ver-9e142437bab3",
     "ver-110ad8fe3b20",
-    "ver-41a892047ffc"
+    "ver-41a892047ffc",
+    "ver-b52b97ab4c88"
   ],
-  "audit_ids": [],
+  "audit_ids": [
+    "audit-061-drift-detection-depth"
+  ],
   "baseline_commit": "8c6e126a8a0cc35565a5ed67ad8594179350b209",
   "scope": [
     "abh/"
@@ -61,6 +65,6 @@
     "plan_audit_evidence": []
   },
   "created_at": "2026-06-15T14:32:54.055170+00:00",
-  "updated_at": "2026-06-15T14:36:17.011048+00:00",
+  "updated_at": "2026-06-15T14:46:35.090748+00:00",
   "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-061-drift-detection-depth.md"
 }

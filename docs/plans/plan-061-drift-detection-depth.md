@@ -3,12 +3,12 @@
 ## Metadata
 
 - ID: plan-061-drift-detection-depth
-- Status: running
+- Status: closed
 - Attractor: docs/architecture/attractors/abh-core-attractor.md
 - Baseline: Drift detection currently covers only import graph comparison and scope boundary checks. Terminology drift (plan terminology diverging from attractor glossary) is not detected. Drift check is a standalone CLI command, not integrated into verify run.
 - Owner: platform
 - Created: 2026-06-15T14:32:54.055170+00:00
-- Updated: 2026-06-15T14:36:17.011048+00:00
+- Updated: 2026-06-15T14:46:35.090748+00:00
 
 ## Goals
 
@@ -63,6 +63,7 @@
 - abh/cli.py
 - abh/models.py
 - tests/test_boundary.py
+- audit-061-drift-detection-depth
 
 ## Reference Set
 
@@ -74,7 +75,8 @@
 - ver-9e142437bab3
 - ver-110ad8fe3b20
 - ver-41a892047ffc
+- ver-b52b97ab4c88
 
 ## Audits
 
--
+- audit-061-drift-detection-depth
