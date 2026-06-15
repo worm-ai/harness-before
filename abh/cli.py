@@ -612,9 +612,22 @@ def handle_plan_create(args: argparse.Namespace) -> int:
 def handle_plan_status(args: argparse.Namespace) -> int:
     from .core import load_plan
     from .plans import verification_freshness_summary
+    from .navigation import _related_memories
+    from .memory import load_memory
 
     validate_identifier(args.plan_id, "plan id")
     plan = load_plan(args.plan_id)
+    related_ids = _related_memories(plan)
+    related_memories = []
+    warnings = []
+    for mem_id in related_ids[:5]:
+        try:
+            mem = load_memory(mem_id)
+            related_memories.append({"id": mem.id, "summary": mem.summary, "memory_type": mem.memory_type})
+            warnings.append(f"Related memory {mem.id}: {mem.summary[:100]}")
+        except Exception:
+            pass
+
     if args.json:
         print_json_envelope(
             ok=True,
@@ -622,10 +635,16 @@ def handle_plan_status(args: argparse.Namespace) -> int:
             data={
                 "plan": plan.to_dict(),
                 "verification_summary": verification_freshness_summary(plan),
+                "related_memories": related_memories,
+                "warnings": warnings,
             },
         )
         return 0
     print(plan_status_line(plan))
+    if warnings:
+        print(f"\nRelated memories:")
+        for w in warnings:
+            print(f"  {w}")
     return 0
 
 

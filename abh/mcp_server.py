@@ -124,7 +124,24 @@ def call_plan_list(arguments: dict[str, Any]) -> dict[str, Any]:
 def call_plan_status(arguments: dict[str, Any]) -> dict[str, Any]:
     plan_id = require_string(arguments, "plan_id")
     plan = load_plan(plan_id)
-    return {"plan": plan.to_dict(), "verification_summary": verification_freshness_summary(plan)}
+    from .navigation import _related_memories
+    from .memory import load_memory as _load_mem
+    related_ids = _related_memories(plan)
+    related_memories = []
+    warnings = []
+    for mem_id in related_ids[:5]:
+        try:
+            mem = _load_mem(mem_id)
+            related_memories.append({"id": mem.id, "summary": mem.summary, "memory_type": mem.memory_type})
+            warnings.append(f"Related memory {mem.id}: {mem.summary[:100]}")
+        except Exception:
+            pass
+    return {
+        "plan": plan.to_dict(),
+        "verification_summary": verification_freshness_summary(plan),
+        "related_memories": related_memories,
+        "warnings": warnings,
+    }
 
 
 def call_roadmap_list(arguments: dict[str, Any]) -> dict[str, Any]:
