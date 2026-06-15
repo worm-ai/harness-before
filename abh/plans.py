@@ -563,7 +563,7 @@ def close_bookkeeping_only(snapshot: dict[str, object], plan: PlanRecord, change
 
 
 def _auto_memory_from_plan_reopen(plan: PlanRecord, cwd: Path | None = None) -> None:
-    """Auto-create a memory entry when a plan is reopened from closing/blocked."""
+    """Auto-create a memory entry when a plan is reopened from blocked."""
     from .memory import add_memory
 
     import uuid

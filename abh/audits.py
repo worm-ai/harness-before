@@ -131,8 +131,9 @@ def record_audit(
 def _auto_memory_from_audit_rejection(audit: AuditRecord, cwd: Path | None = None) -> None:
     """Auto-create a divergent_pattern memory when an audit rejects a plan."""
     from .memory import add_memory
+    import uuid
 
-    memory_id = f"mem-audit-{audit.id}"
+    memory_id = f"mem-audit-{audit.id}-{uuid.uuid4().hex[:8]}"
     try:
         plan = load_plan(audit.plan_id, cwd)
         summary = f"Audit {audit.id} rejected plan {audit.plan_id}: {audit.result}"

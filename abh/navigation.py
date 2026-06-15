@@ -32,8 +32,8 @@ def _health_pressure_recommendation(cwd: Path | None = None) -> dict[str, object
     if not active:
         return None
 
-    plans = list_plans(cwd)
-    open_plan_ids = {p.id for p in plans if p.status != "closed"}
+    metrics = report.get("metrics", {})
+    open_plan_count = metrics.get("plans", {}).get("open", 0)
 
     # Group by type
     by_type: dict[str, list[dict]] = {}
@@ -49,10 +49,8 @@ def _health_pressure_recommendation(cwd: Path | None = None) -> dict[str, object
 
         if sig_type == "stale_proof":
             # Only recommend for non-closed plans
-            actionable = [s for s in signals if any(pid in open_plan_ids for pid in s.get("related_plan_ids", []))]
-            if not actionable:
+            if open_plan_count == 0:
                 continue
-            signals = actionable
 
         # Sort by severity
         signals.sort(key=lambda s: {"high": 3, "medium": 2, "low": 1, "info": 0}.get(str(s.get("severity")), 0), reverse=True)
@@ -80,14 +78,13 @@ def _health_pressure_recommendation(cwd: Path | None = None) -> dict[str, object
                 "alternatives": ["abh memory search --json", "abh report health --json"],
             }
         elif sig_type == "j_flow_only_evidence":
-            drift_ids = top.get("related_drift_ids", [])
             return {
                 "next_action": "attach_drift_to_memory",
-                "recommended_command": f"abh drift plan-check <plan_id> --json" if not drift_ids else f"abh memory add --type divergent_pattern --summary '<summary>' --context '<context>' --implication '<implication>' --evidence {drift_ids[0]}",
+                "recommended_command": "abh report health --json",
                 "requires_confirmation": False,
-                "rationale": f"{len(signals)} drift report(s) have no linked memory. Attach findings to active memory or a follow-up plan so they influence future work.",
+                "rationale": f"{len(signals)} drift report(s) have no linked memory. Review via health report, then use 'abh memory add' to attach findings to active memory.",
                 "source": {"pressure_type": sig_type, "j_flow_count": len(signals)},
-                "alternatives": ["abh drift plan-check <plan_id> --json", "abh report health --json"],
+                "alternatives": ["abh memory list", "abh drift plan-check <plan_id> --json"],
             }
         elif sig_type == "repeated_leakage":
             return {
