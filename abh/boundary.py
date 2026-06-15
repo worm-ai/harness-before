@@ -205,6 +205,71 @@ def analyze_plan_drift(*, plan_id: str, cwd: Path | None = None) -> list[DriftFi
     return findings
 
 
+# Canonical terms from the attractor — plan terminology should align with these.
+_ATTRActor_GLOSSARY: set[str] = {
+    "attractor", "plan", "verification", "audit", "memory",
+    "baseline", "goal", "non-goal", "exit criteria", "closure evidence",
+    "invariant", "boundary", "dependency", "evidence", "active attractor",
+    "validation checklist", "independent audit", "fresh session",
+}
+
+# Terms that signal potential terminology drift — plan text using these
+# may indicate the plan is treating ABH objects as something they are not.
+_TERMINOLOGY_DRIFT_PATTERNS: dict[str, str] = {
+    "task": "plan or verification checklist item",
+    "todo": "plan goal or exit criterion",
+    "ticket": "plan",
+    "feature": "plan goal",
+    "bug": "verification finding or drift finding",
+    "release": "attractor version or plan closure",
+    "sprint": "plan",
+    "test": "verification",
+    "requirement": "invariant or goal",
+    "story": "plan goal",
+    "epic": "attractor",
+    "backlog": "roadmap queue",
+}
+
+
+def analyze_terminology_drift(*, plan_id: str, cwd: Path | None = None) -> list[DriftFinding]:
+    """Detect plan terminology that diverges from attractor canonical terms.
+
+    Scans plan goals, non-goals, and exit criteria for terms that signal
+    the plan is using non-ABH vocabulary (e.g. "task" instead of "plan",
+    "test" instead of "verification"). Returns a list of DriftFinding objects.
+    """
+    from .plans import load_plan
+
+    root = Path.cwd() if cwd is None else Path(cwd)
+    plan = load_plan(plan_id, cwd=root)
+
+    findings: list[DriftFinding] = []
+    scan_texts = plan.goals + plan.non_goals + plan.exit_criteria
+    seen: set[str] = set()
+
+    for text in scan_texts:
+        lowered = text.lower()
+        for drift_term, canonical in sorted(_TERMINOLOGY_DRIFT_PATTERNS.items()):
+            if drift_term in seen:
+                continue
+            if drift_term in lowered:
+                seen.add(drift_term)
+                findings.append(
+                    DriftFinding(
+                        drift_type="terminology_drift",
+                        evidence=f"Plan uses '{drift_term}' which diverges from attractor terminology; canonical term is '{canonical}'.",
+                        recommendation=f"Replace '{drift_term}' with '{canonical}' in plan text to align with attractor terminology.",
+                        severity="medium",
+                        confidence="medium",
+                        rule_id=f"plan_terminology:{plan_id}",
+                        source_excerpt=f"'{drift_term}' found in plan text: {text[:100]}",
+                        evidence_path=str(plan.doc_path),
+                    )
+                )
+
+    return findings
+
+
 def _file_in_scope(file_path: str, scope_dirs: set[str]) -> bool:
     """Check whether a file path falls within at least one scope directory."""
     normalized = file_path.replace("\\", "/")

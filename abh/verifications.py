@@ -459,6 +459,34 @@ def run_verification(
                 )
             )
 
+    # Run drift checks as additional structural validation.
+    try:
+        from .boundary import check_plan_scope, analyze_plan_drift, analyze_terminology_drift
+        scope_findings = check_plan_scope(plan_id=plan_id, cwd=root)
+        import_findings = analyze_plan_drift(plan_id=plan_id, cwd=root)
+        term_findings = analyze_terminology_drift(plan_id=plan_id, cwd=root)
+        drift_findings = list(scope_findings) + list(import_findings) + list(term_findings)
+        if drift_findings:
+            for f in drift_findings:
+                artifacts.append(
+                    f"drift_check={f.drift_type}; severity={f.severity}; "
+                    f"evidence={f.evidence[:200]}; recommendation={f.recommendation[:200]}"
+                )
+            high_drift = [f for f in drift_findings if f.severity == "high"]
+            if high_drift:
+                for f in high_drift[:5]:
+                    failed_checks.append(f"drift:{f.drift_type}:{f.evidence[:120]}")
+                    failure_classifications.append(
+                        failure_classification(
+                            command=f"drift:{f.drift_type}",
+                            category="drift_violation",
+                            message=f.evidence[:200],
+                            details={"drift_type": f.drift_type, "severity": f.severity, "recommendation": f.recommendation},
+                        )
+                    )
+    except Exception:
+        pass  # best-effort; drift checks are supplementary
+
     result = "pass" if not failed_checks else "fail"
     return record_verification(
         plan_id=plan_id,
