@@ -85,7 +85,7 @@ def save_plan(plan: PlanRecord, cwd: Path | None = None, write_doc: bool = True)
                     if key in ("schema_version", "created_at"):
                         continue
                     if prior.get(key) != current.get(key):
-                        raise AbhError(f"cannot modify closed plan {plan.id}: field {key!r} changed; reopen via transition if intentional")
+                        raise AbhError(f"cannot modify closed plan {plan.id}: field {key!r} changed; closed plans are immutable — create a new plan to supersede this one")
     ensure_workspace(cwd)
     plan.updated_at = utc_now()
     if write_doc:
@@ -279,7 +279,7 @@ def transition_plan(plan_id: str, target_status: str, cwd: Path | None = None) -
         git_meta = git_metadata(root)
         if git_meta.get("available") and isinstance(git_meta.get("commit"), str):
             plan.baseline_commit = str(git_meta["commit"])
-        if plan.status in ("closing", "blocked"):
+        if plan.status == "blocked":
             _auto_memory_from_plan_reopen(plan, cwd)
     plan.status = target_status
     return save_plan(plan, cwd)
@@ -352,8 +352,9 @@ def render_plan_markdown(plan: PlanRecord) -> str:
     def reference_set_markdown() -> str:
         sections: list[str] = []
         for key, values in normalize_reference_set(plan.reference_set).items():
-            sections.append(f"### {heading_for(key)}\n\n{bullet_lines(values)}")
-        return "\n\n".join(sections)
+            if values:
+                sections.append(f"### {heading_for(key)}\n\n{bullet_lines(values)}")
+        return "\n\n".join(sections) if sections else "-"
 
     def residual_lines(values: list[CommitmentResidualPressure]) -> str:
         if not values:
@@ -565,7 +566,9 @@ def _auto_memory_from_plan_reopen(plan: PlanRecord, cwd: Path | None = None) -> 
     """Auto-create a memory entry when a plan is reopened from closing/blocked."""
     from .memory import add_memory
 
-    memory_id = f"mem-reopen-{plan.id}"
+    import uuid
+
+    memory_id = f"mem-reopen-{plan.id}-{uuid.uuid4().hex[:8]}"
     try:
         add_memory(
             memory_id=memory_id,

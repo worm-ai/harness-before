@@ -131,23 +131,22 @@ def record_audit(
 def _auto_memory_from_audit_rejection(audit: AuditRecord, cwd: Path | None = None) -> None:
     """Auto-create a divergent_pattern memory when an audit rejects a plan."""
     from .memory import add_memory
-    import uuid
 
-    plan = load_plan(audit.plan_id, cwd)
-    summary = f"Audit {audit.id} rejected plan {audit.plan_id}: {audit.result}"
-    context = (
-        f"Plan: {plan.title} (attractor: {plan.attractor}). "
-        f"Auditor: {audit.auditor}. "
-        f"Independence: {audit.independence or 'unknown'}. "
-        f"Rationale: {audit.rationale[:500]}"
-    )
-    implication = (
-        f"Plan {audit.plan_id} was rejected by independent audit. "
-        f"Review the audit findings and rationale before re-opening the plan. "
-        f"Update the plan's goals, exit criteria, or scope to address the audit concerns."
-    )
     memory_id = f"mem-audit-{audit.id}"
     try:
+        plan = load_plan(audit.plan_id, cwd)
+        summary = f"Audit {audit.id} rejected plan {audit.plan_id}: {audit.result}"
+        context = (
+            f"Plan: {plan.title} (attractor: {plan.attractor}). "
+            f"Auditor: {audit.auditor}. "
+            f"Independence: {audit.independence or 'unknown'}. "
+            f"Rationale: {audit.rationale[:500]}"
+        )
+        implication = (
+            f"Plan {audit.plan_id} was rejected by independent audit. "
+            f"Review the audit findings and rationale before re-opening the plan. "
+            f"Update the plan's goals, exit criteria, or scope to address the audit concerns."
+        )
         add_memory(
             memory_id=memory_id,
             memory_type="divergent_pattern",

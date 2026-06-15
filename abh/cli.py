@@ -91,7 +91,9 @@ def parse_reference_set_entries(values: list[str]) -> dict[str, list[str]]:
         value = value.strip()
         if key not in REFERENCE_SET_KEYS:
             raise AbhError(f"invalid reference set key: {key}")
-        if value and value not in reference_set[key]:
+        if not value:
+            raise AbhError(f"reference set value must not be empty: {key}")
+        if value not in reference_set[key]:
             reference_set[key].append(value)
     return reference_set
 
