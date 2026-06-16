@@ -646,17 +646,22 @@ python3 -m abh.mcp_server
 - `plan-066-audit-protocol-v2`：自包含审计包
 - `plan-067-plan-complete`：`abh plan complete` 端到端意图执行
 
-Blocked/Deferred：
-- `plan-054-multi-repo-sharing`：缺少多仓库 R-flow 实现证据，blocked/deferred
-- `plan-043-plan-reference-set`：deferred
+已关闭（实现范围受限或审计未通过）：
+- `plan-043-plan-reference-set`：已关闭，实现内容 deferred
+- `plan-054-multi-repo-sharing`：已关闭，独立审计确认缺少 R-flow 实现证据，待重新 materialize
 
-Roadmap queue 剩余待 materialize：
+Roadmap queue 剩余待 materialize（4 项）：
+- `stage7.multi-repo-sharing`
 - `stage7.team-policy-and-release-automation`
+- `stage7.attractor-export-import`
+- `stage7.memory-sharing-format`
 
 ### 未来方向
 
 - 补齐 multi-repo sharing 的 R-flow 实现证据后重新 materialize
 - 团队策略配置与发布自动化
+- Attractor 导出/导入 bundle
+- Memory 共享格式标准化
 - 从关键词漂移检测升级到更高质量的证据提取
 - 扩展 Git hook 集成到团队策略和更多 profile
 - 为验证记录增加更细粒度执行证据，与 closure evidence 形成完整可追溯链路

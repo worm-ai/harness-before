@@ -7,10 +7,9 @@
 ## 进入仓库首读
 
 1. `docs/architecture/attractors/abh-core-attractor.md` — active attractor
-2. `docs/index.md` — 文档路由入口
-3. `docs/context/source-of-truth.md` — 真相源优先级
-4. `docs/context/conventions.md` — 仓库约定
-5. `docs/context/codebase-map.md` — 代码地图
+2. `docs/index.md` — 文档路由入口（含完整 Required Reading Order: project-context、development-roadmap、agent-protocol、quickstart 等 8 份文档）
+
+以上为最小入口；完整必读清单见 `docs/index.md`。
 
 ## 关键命令
 
@@ -34,8 +33,13 @@ python3 -m pytest tests/ -v  # 运行测试
 
 ## 当前项目状态
 
-- 阶段：Stage 7（团队可用与生态集成，部分完成）
-- 版本：0.7.0
-- 已关闭计划：67 个
-- 全部计划已关闭，roadmap queue 剩余 4 个待 materialize
-- 最近完成：plan-065（memory active injection）、plan-066（audit protocol v2）、plan-067（plan complete）
+查询实时状态：
+
+```bash
+abh plan list              # 计划列表与状态统计
+abh next --json            # 下一步建议动作
+abh roadmap check --json   # roadmap queue 状态
+abh report health --json   # 语义压力报告
+```
+
+当前版本：0.7.0（阶段 7：团队可用与生态集成）

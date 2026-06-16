@@ -2,9 +2,9 @@
 
 ## 当前阶段
 
-阶段 7：团队可用与生态集成（部分完成）；全部 67 个 plan 已关闭；roadmap queue 剩余 `stage7.team-policy-and-release-automation` 待 materialize
+阶段 7：团队可用与生态集成（部分完成）；全部 67 个 plan 已关闭；roadmap queue 剩余 4 项待 materialize
 
-Current: all 67 plans closed; next queue: `stage7.team-policy-and-release-automation`
+Current: all 67 plans closed; 4 roadmap items queued
 
 ## 状态说明
 
@@ -497,7 +497,7 @@ Current: all 67 plans closed; next queue: `stage7.team-policy-and-release-automa
 | S6-F10 | Test Suite Domain Split | Done | `stage6.test-suite-domain-split` -> `plan-048-test-suite-domain-split` |
 
 | S7-F01 | CI Templates | Done | `stage7.ci-templates` -> `plan-053-ci-templates` |
-| S7-F02 | Multi Repo Sharing | Blocked | `stage7.multi-repo-sharing` -> `plan-054-multi-repo-sharing`（blocked/deferred） |
+| S7-F02 | Multi Repo Sharing | Closed（audit rejected） | `stage7.multi-repo-sharing` → `plan-054-multi-repo-sharing`（closed, audit rejected, re-materialize needed） |
 | S7-F03 | Team Policy and Release Automation | Todo | `stage7.team-policy-and-release-automation` |
 | ADOPT-F01 | ABH Workflow Skill Packaging | Done | `adoption.abh-workflow-skill` -> `plan-055-abh-workflow-skill`（closed） |
 
@@ -652,7 +652,8 @@ Current: all 67 plans closed; next queue: `stage7.team-policy-and-release-automa
 
 | ID | 计划 | 状态 | 关键产出 |
 | --- | --- | --- | --- |
-| plan-054 | Multi Repo Sharing | Blocked | 缺少 R-flow 实现证据，blocked/deferred |
+| plan-043 | Plan Reference Set | Closed（deferred） | `stage6.plan-reference-set` → `plan-043-plan-reference-set`（closed） |
+| plan-054 | Multi Repo Sharing | Closed（audit rejected） | 缺少 R-flow 实现证据，待重新 materialize |
 | plan-055 | ABH Workflow Skill | Done | `skills/abh-workflow` Codex skill |
 | plan-056 | README Zero-Python Skill Onboarding | Done | README 零基础使用说明 |
 | plan-057 | Codex Repo Toggle | Done | `abh codex on/off --write --confirm` |
