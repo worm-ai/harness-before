@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import sys
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any, TextIO
 
 from .commands import abh_error_payload, make_envelope, mcp_tool_definitions, mcp_tool_names
@@ -34,6 +35,9 @@ from .drift import list_drift_reports
 from .models import REFERENCE_SET_KEYS, SCHEMA_VERSION, normalize_reference_set
 from .plans import verification_freshness_summary
 from .reporting import project_health_report
+from .navigation import onboarding_check, recommend_next_action, unified_status
+from .audit_bundle import audit_bundle
+from .verifications import run_verification
 
 PROTOCOL_VERSION = "2025-11-25"
 
@@ -124,8 +128,8 @@ def call_plan_list(arguments: dict[str, Any]) -> dict[str, Any]:
 def call_plan_status(arguments: dict[str, Any]) -> dict[str, Any]:
     plan_id = require_string(arguments, "plan_id")
     plan = load_plan(plan_id)
-    from .navigation import inject_related_memories
-    related_memories, warnings = inject_related_memories(plan)
+    from .navigation import inject_related_memories as _nav_inject
+    related_memories, warnings = _nav_inject(plan)
     return {
         "plan": plan.to_dict(),
         "verification_summary": verification_freshness_summary(plan),
@@ -410,6 +414,11 @@ TOOL_HANDLERS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
     "abh_close_plan": call_close_plan,
     "abh_memory_add": call_memory_add,
     "abh_drift_analyze": call_drift_analyze,
+    "abh_status": lambda **kw: call_readonly(lambda: unified_status(), "status"),
+    "abh_next": lambda **kw: call_readonly(lambda: recommend_next_action(), "next"),
+    "abh_onboarding_check": lambda **kw: call_readonly(lambda: onboarding_check(), "onboarding check"),
+    "abh_verify_run": lambda **kw: call_write(lambda: run_verification(str(kw["plan_id"]), cwd=Path.cwd()), "verify run", kw),
+    "abh_audit_bundle": lambda **kw: call_readonly(lambda: audit_bundle(str(kw["plan_id"]), cwd=Path.cwd()), "audit bundle"),
 }
 
 

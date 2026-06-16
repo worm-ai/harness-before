@@ -153,6 +153,29 @@ def _audit_request_command(plan_id: str, verification_id: str) -> str:
     )
 
 
+def _roadmap_memory_warnings(item, cwd: Path | None = None) -> list[dict[str, object]]:
+    """Search memory for prior failure records related to a roadmap item key."""
+    from .memory import list_memories
+
+    keywords = item.key.replace("-", " ").replace(".", " ").replace("_", " ").split()
+    warnings: list[dict[str, object]] = []
+    seen: set[str] = set()
+
+    for mem in list_memories(cwd):
+        if mem.status != "active":
+            continue
+        mem_text = (mem.summary + " " + mem.context + " " + " ".join(mem.related_plan_ids)).lower()
+        hits = sum(1 for kw in keywords if kw in mem_text)
+        if hits >= 1 and mem.id not in seen:
+            seen.add(mem.id)
+            warnings.append({
+                "memory_id": mem.id,
+                "summary": mem.summary[:120],
+                "memory_type": mem.memory_type,
+            })
+    return warnings[:3]
+
+
 def recommend_next_action(*, cwd: Path | None = None) -> dict[str, object]:
     plans = list_plans(cwd)
     open_plans = [plan for plan in plans if plan.status != "closed"]
@@ -264,7 +287,7 @@ def recommend_next_action(*, cwd: Path | None = None) -> dict[str, object]:
         if blocked_plans:
             source["blocked_plan_ids"] = [plan.id for plan in blocked_plans]
             rationale = f"no active open plans; next queued roadmap item is {item.key}"
-        return {
+        result: dict[str, object] = {
             "next_action": "materialize_roadmap_item",
             "recommended_command": f"abh roadmap materialize {item.key} --json",
             "requires_confirmation": False,
@@ -272,6 +295,10 @@ def recommend_next_action(*, cwd: Path | None = None) -> dict[str, object]:
             "source": source,
             "alternatives": ["abh roadmap list --json", "abh roadmap next-id --json"],
         }
+        mem_warnings = _roadmap_memory_warnings(item, cwd)
+        if mem_warnings:
+            result["warnings"] = mem_warnings
+        return result
 
     if blocked_plans:
         plan = blocked_plans[0]
@@ -386,3 +413,36 @@ def onboarding_check(*, cwd: Path | None = None) -> dict[str, object]:
 
     recommended_actions = [str(check["recommended_action"]) for check in checks if not check["ok"]]
     return {"ready": not recommended_actions, "checks": checks, "recommended_actions": recommended_actions}
+
+
+def unified_status(*, cwd: Path | None = None) -> dict[str, object]:
+    """Aggregate next_action, health posture, open plans, doctor, roadmap into one dashboard."""
+    from .core import doctor as run_doctor
+    from .plans import list_plans as get_plans
+    from .roadmap import list_roadmap_items as get_roadmap_items
+
+    next_result = recommend_next_action(cwd=cwd)
+    health = project_health_report(cwd)
+    plans = get_plans(cwd)
+    roadmap_items = get_roadmap_items(cwd)
+
+    open_plans = [p for p in plans if p.status != "closed"]
+    active_pressure = health.get("semantic_pressure", [])
+    doctor_issues = run_doctor(cwd)
+    queued = [item for item in roadmap_items if item.status == "queued"]
+
+    return {
+        "repo_state": "idle" if not open_plans else "active",
+        "open_plans": len(open_plans),
+        "next_action": next_result.get("next_action"),
+        "next_recommended_command": next_result.get("recommended_command"),
+        "next_rationale": next_result.get("rationale"),
+        "next_warnings": next_result.get("warnings", []),
+        "health_posture": health.get("posture"),
+        "health_summary": health.get("summary"),
+        "active_alerts": len(active_pressure),
+        "historical_alerts": len(health.get("historical_pressure", [])),
+        "doctor_issues": len(doctor_issues),
+        "roadmap_queued": len(queued),
+        "roadmap_materialized": len([item for item in roadmap_items if item.status == "materialized"]),
+    }

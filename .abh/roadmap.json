@@ -1459,6 +1459,239 @@
         "external_contracts": [],
         "plan_audit_evidence": []
       }
+    },
+    {
+      "key": "quality.next-failure-memory",
+      "title": "abh next injects failure memory warnings",
+      "stage": "stage7",
+      "summary": "Before recommending a roadmap item, abh next searches memory for prior failures linked to that key and surfaces warnings.",
+      "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+      "baseline": "plan-065 already injects memories into plan status; this extends injection to abh next recommendations.",
+      "goals": [
+        "abh next searches memory for records related to the recommended roadmap key before returning a recommendation.",
+        "When a failure memory is found, abh next includes a warnings field with memory summary and id.",
+        "The recommendation itself is unchanged; the Agent can still proceed, but is now informed."
+      ],
+      "non_goals": [
+        "Do not block or skip roadmap items automatically based on memory.",
+        "Do not change the materialize flow itself.",
+        "Do not implement full semantic search — keyword/ID matching is sufficient."
+      ],
+      "exit_criteria": [
+        "abh next --json returns warnings when recommending stage7.multi-repo-sharing (mem-audit-audit-054 present).",
+        "python3 -m pytest tests/ -q passes.",
+        "python3 -m abh doctor passes."
+      ],
+      "validation_checklist": [
+        "python3 -m pytest tests/test_navigation_and_roadmap.py -v",
+        "python3 -m abh doctor",
+        "python3 -m abh roadmap check --json",
+        "git diff --check"
+      ],
+      "closure_evidence": [
+        "abh/navigation.py",
+        "tests/test_navigation_and_roadmap.py",
+        ".abh/roadmap.json"
+      ],
+      "status": "materialized",
+      "plan_id": "plan-068-next-failure-memory",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [
+          "abh/navigation.py",
+          "abh/memory.py"
+        ],
+        "live_code_routes": [
+          "abh/navigation.py:recommend_next_action"
+        ],
+        "tests_baseline": [
+          "tests/test_navigation_and_roadmap.py"
+        ],
+        "known_issues": [
+          "plan-054 audit rejected — memory mem-audit-audit-054-multi-repo-sharing exists"
+        ],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
+    },
+    {
+      "key": "quality.health-layering",
+      "title": "Health report layers active vs historical pressure",
+      "stage": "stage7",
+      "summary": "Health report separates active pressure (non-closed plans) from historical pressure (closed plans), and lowers posture to idle when no open plans exist.",
+      "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+      "baseline": "Current health report shows 80 signals with no filtering — 76 are from closed plans.",
+      "goals": [
+        "Health report splits pressure signals into active_pressure and historical_pressure lists.",
+        "Metrics and posture are computed from active_pressure only.",
+        "When no open plans exist, posture defaults to idle (not watch).",
+        "--verbose flag includes historical_pressure in output."
+      ],
+      "non_goals": [
+        "Do not delete or suppress historical signals — they remain accessible via --verbose.",
+        "Do not change the severity or classification of individual signals.",
+        "Do not add new signal types."
+      ],
+      "exit_criteria": [
+        "abh report health --json returns posture=idle when all plans are closed.",
+        "active_pressure is empty when no open plans exist.",
+        "historical_pressure contains closed-plan stale proofs.",
+        "python3 -m pytest tests/ -q passes.",
+        "python3 -m abh doctor passes."
+      ],
+      "validation_checklist": [
+        "python3 -m pytest tests/test_memory_drift_reporting.py -v",
+        "python3 -m abh doctor",
+        "python3 -m abh roadmap check --json",
+        "git diff --check"
+      ],
+      "closure_evidence": [
+        "abh/reporting.py",
+        "tests/test_memory_drift_reporting.py",
+        ".abh/roadmap.json"
+      ],
+      "status": "materialized",
+      "plan_id": "plan-069-health-layering",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [
+          "abh/reporting.py"
+        ],
+        "live_code_routes": [
+          "abh/reporting.py:project_health_report"
+        ],
+        "tests_baseline": [
+          "tests/test_memory_drift_reporting.py"
+        ],
+        "known_issues": [
+          "80 pressure signals, 76 from closed plans — noise ratio 95%"
+        ],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
+    },
+    {
+      "key": "quality.unified-status",
+      "title": "Unified abh status --json dashboard",
+      "stage": "stage7",
+      "summary": "New abh status --json command aggregates next_action, health posture, open plans, doctor issues, and roadmap queue into one response.",
+      "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+      "baseline": "Agent currently needs 4 commands (next, health, doctor, roadmap check) to understand repo state.",
+      "goals": [
+        "New abh status command outputs a unified JSON dashboard.",
+        "Dashboard includes: next_action, health_posture, open_plans count, doctor_issues count, roadmap_queued count, active_alerts count.",
+        "CLI and MCP both expose abh_status.",
+        "Read-only — no writes, no confirm required."
+      ],
+      "non_goals": [
+        "Do not remove or deprecate individual commands (next, health, doctor, etc.).",
+        "Do not add interactive or TUI mode.",
+        "Do not aggregate across multiple repos."
+      ],
+      "exit_criteria": [
+        "abh status --json returns a unified dashboard with all 6 fields.",
+        "abh_status MCP tool is available and read-only.",
+        "python3 -m pytest tests/ -q passes.",
+        "python3 -m abh doctor passes."
+      ],
+      "validation_checklist": [
+        "python3 -m pytest tests/test_command_contracts.py -v",
+        "python3 -m pytest tests/test_mcp_server.py -v",
+        "python3 -m abh doctor",
+        "python3 -m abh roadmap check --json",
+        "git diff --check"
+      ],
+      "closure_evidence": [
+        "abh/navigation.py",
+        "abh/cli.py",
+        "abh/commands.py",
+        "abh/mcp_server.py",
+        "tests/test_command_contracts.py",
+        "tests/test_mcp_server.py"
+      ],
+      "status": "materialized",
+      "plan_id": "plan-070-unified-status",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [
+          "abh/navigation.py",
+          "abh/reporting.py",
+          "abh/commands.py"
+        ],
+        "live_code_routes": [
+          "abh/navigation.py",
+          "abh/reporting.py",
+          "abh/core.py"
+        ],
+        "tests_baseline": [
+          "tests/test_navigation_and_roadmap.py"
+        ],
+        "known_issues": [
+          "Agent needs 4 commands to understand repo state"
+        ],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
+    },
+    {
+      "key": "quality.mcp-tool-completion",
+      "title": "MCP tool completion: next, onboarding_check, verify_run, audit_bundle",
+      "stage": "stage7",
+      "summary": "Add abh_next, abh_onboarding_check, abh_verify_run, abh_audit_bundle MCP tools so agents can complete the full plan→verify→audit loop without CLI fallback.",
+      "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+      "baseline": "5 critical CLI commands lack MCP tool counterparts, violating the Agent-First CLI/MCP dual-interface invariant.",
+      "goals": [
+        "New MCP tools: abh_next (read-only), abh_onboarding_check (read-only), abh_verify_run (write, confirm), abh_audit_bundle (read-only).",
+        "All reuse existing core functions — no new business logic in MCP layer.",
+        "Contracts registered in commands.py with mcp_tool field set."
+      ],
+      "non_goals": [
+        "Do not add abh_agent_setup MCP tool (setup bundles are repo-init actions, not runtime governance).",
+        "Do not change CLI behavior.",
+        "Do not add write tools beyond verify_run."
+      ],
+      "exit_criteria": [
+        "abh_next MCP tool returns same data as abh next --json.",
+        "abh_onboarding_check MCP tool returns readiness checks.",
+        "abh_verify_run MCP tool executes plan validation commands with confirm=true.",
+        "abh_audit_bundle MCP tool returns audit prompt + evidence.",
+        "python3 -m pytest tests/ -q passes.",
+        "python3 -m abh doctor passes."
+      ],
+      "validation_checklist": [
+        "python3 -m pytest tests/test_mcp_server.py -v",
+        "python3 -m pytest tests/test_command_contracts.py -v",
+        "python3 -m abh doctor",
+        "python3 -m abh roadmap check --json",
+        "git diff --check"
+      ],
+      "closure_evidence": [
+        "abh/mcp_server.py",
+        "abh/commands.py",
+        "tests/test_mcp_server.py",
+        "tests/test_command_contracts.py"
+      ],
+      "status": "materialized",
+      "plan_id": "plan-071-mcp-tool-completion",
+      "reference_set": {
+        "context_routing": [],
+        "active_owner_docs": [
+          "abh/mcp_server.py",
+          "abh/commands.py"
+        ],
+        "live_code_routes": [
+          "abh/mcp_server.py",
+          "abh/commands.py"
+        ],
+        "tests_baseline": [
+          "tests/test_mcp_server.py"
+        ],
+        "known_issues": [
+          "5 MCP tools missing — agents cannot complete full loop via MCP only"
+        ],
+        "external_contracts": [],
+        "plan_audit_evidence": []
+      }
     }
   ]
 }

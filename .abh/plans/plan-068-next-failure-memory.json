@@ -1,0 +1,73 @@
+{
+  "schema_version": "2",
+  "id": "plan-068-next-failure-memory",
+  "title": "abh next injects failure memory warnings",
+  "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+  "baseline": "plan-065 already injects memories into plan status; this extends injection to abh next recommendations.",
+  "owner": "platform",
+  "status": "running",
+  "goals": [
+    "abh next searches memory for records related to the recommended roadmap key before returning a recommendation.",
+    "When a failure memory is found, abh next includes a warnings field with memory summary and id.",
+    "The recommendation itself is unchanged; the Agent can still proceed, but is now informed."
+  ],
+  "non_goals": [
+    "Do not block or skip roadmap items automatically based on memory.",
+    "Do not change the materialize flow itself.",
+    "Do not implement full semantic search — keyword/ID matching is sufficient."
+  ],
+  "exit_criteria": [
+    "abh next --json returns warnings when recommending stage7.multi-repo-sharing (mem-audit-audit-054 present).",
+    "python3 -m pytest tests/ -q passes.",
+    "python3 -m abh doctor passes."
+  ],
+  "validation_checklist": [
+    "python3 -m pytest tests/test_navigation_and_roadmap.py -v",
+    "python3 -m abh doctor",
+    "python3 -m abh roadmap check --json",
+    "git diff --check"
+  ],
+  "closure_evidence": [
+    "abh/navigation.py",
+    "tests/test_navigation_and_roadmap.py",
+    ".abh/roadmap.json"
+  ],
+  "commitment_phase_state": {
+    "stable_state_now": [],
+    "active_change_pressure": [],
+    "target_stable_state": [],
+    "conversion_proof": [],
+    "residual_pressure": []
+  },
+  "verification_runs": [
+    "ver-6d6cecfd4c5f",
+    "ver-ce26ea902c29",
+    "ver-6c56bcf6f1d1",
+    "ver-8507559b8094",
+    "ver-587445da3c01"
+  ],
+  "audit_ids": [],
+  "baseline_commit": "a77a535a74b00e6f9ebb856fc37c937f1827756d",
+  "scope": [],
+  "reference_set": {
+    "context_routing": [],
+    "active_owner_docs": [
+      "abh/navigation.py",
+      "abh/memory.py"
+    ],
+    "live_code_routes": [
+      "abh/navigation.py:recommend_next_action"
+    ],
+    "tests_baseline": [
+      "tests/test_navigation_and_roadmap.py"
+    ],
+    "known_issues": [
+      "plan-054 audit rejected — memory mem-audit-audit-054-multi-repo-sharing exists"
+    ],
+    "external_contracts": [],
+    "plan_audit_evidence": []
+  },
+  "created_at": "2026-06-16T03:46:59.708445+00:00",
+  "updated_at": "2026-06-16T10:18:32.583618+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-068-next-failure-memory.md"
+}

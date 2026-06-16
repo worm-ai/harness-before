@@ -1,0 +1,73 @@
+{
+  "schema_version": "2",
+  "id": "plan-069-health-layering",
+  "title": "Health report layers active vs historical pressure",
+  "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+  "baseline": "Current health report shows 80 signals with no filtering — 76 are from closed plans.",
+  "owner": "platform",
+  "status": "blocked",
+  "goals": [
+    "Health report splits pressure signals into active_pressure and historical_pressure lists.",
+    "Metrics and posture are computed from active_pressure only.",
+    "When no open plans exist, posture defaults to idle (not watch).",
+    "--verbose flag includes historical_pressure in output."
+  ],
+  "non_goals": [
+    "Do not delete or suppress historical signals — they remain accessible via --verbose.",
+    "Do not change the severity or classification of individual signals.",
+    "Do not add new signal types."
+  ],
+  "exit_criteria": [
+    "abh report health --json returns posture=idle when all plans are closed.",
+    "active_pressure is empty when no open plans exist.",
+    "historical_pressure contains closed-plan stale proofs.",
+    "python3 -m pytest tests/ -q passes.",
+    "python3 -m abh doctor passes."
+  ],
+  "validation_checklist": [
+    "python3 -m pytest tests/test_memory_drift_reporting.py -v",
+    "python3 -m abh doctor",
+    "python3 -m abh roadmap check --json",
+    "git diff --check"
+  ],
+  "closure_evidence": [
+    "abh/reporting.py",
+    "tests/test_memory_drift_reporting.py",
+    ".abh/roadmap.json"
+  ],
+  "commitment_phase_state": {
+    "stable_state_now": [],
+    "active_change_pressure": [],
+    "target_stable_state": [],
+    "conversion_proof": [],
+    "residual_pressure": []
+  },
+  "verification_runs": [
+    "ver-9c3396cbfdeb",
+    "ver-9ba509d1a259",
+    "ver-d48d22dc627b"
+  ],
+  "audit_ids": [],
+  "baseline_commit": "a77a535a74b00e6f9ebb856fc37c937f1827756d",
+  "scope": [],
+  "reference_set": {
+    "context_routing": [],
+    "active_owner_docs": [
+      "abh/reporting.py"
+    ],
+    "live_code_routes": [
+      "abh/reporting.py:project_health_report"
+    ],
+    "tests_baseline": [
+      "tests/test_memory_drift_reporting.py"
+    ],
+    "known_issues": [
+      "80 pressure signals, 76 from closed plans — noise ratio 95%"
+    ],
+    "external_contracts": [],
+    "plan_audit_evidence": []
+  },
+  "created_at": "2026-06-16T09:44:08.099057+00:00",
+  "updated_at": "2026-06-16T10:18:34.524966+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-069-health-layering.md"
+}

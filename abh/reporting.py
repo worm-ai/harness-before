@@ -198,14 +198,41 @@ def project_health_report(cwd: Path | None = None) -> dict[str, Any]:
     metrics["roadmap"]["materialized"] = len([item for item in roadmap_items if item.status == "materialized"])
 
     top_risks = sorted_risks(pressure)[:5]
-    posture = posture_for(pressure)
-    summary = "No unresolved quality risks found." if not pressure else f"{len(pressure)} unresolved semantic pressure signal(s)."
+
+    # Split signals: active (non-closed plans + non-stale types) vs historical (closed plans)
+    closed_plan_ids = {plan.id for plan in plans if plan.status == "closed"}
+    active_pressure: list[dict[str, Any]] = []
+    historical_pressure: list[dict[str, Any]] = []
+    for sig in pressure:
+        plan_ids = set(sig.get("related_plan_ids", []))
+        # A signal is historical if ALL its related plans are closed AND it's a stale_proof/post_close type
+        is_historical = (
+            plan_ids
+            and plan_ids.issubset(closed_plan_ids)
+            and sig.get("type") in ("stale_proof", "post_close_metadata_churn")
+        )
+        if is_historical:
+            historical_pressure.append(sig)
+        else:
+            active_pressure.append(sig)
+
+    posture = posture_for(active_pressure)
+    open_count = metrics["plans"]["open"]
+    if open_count == 0 and posture in ("healthy", "watch"):
+        posture = "idle"
+
+    summary = (
+        "No active quality risks found."
+        if not active_pressure
+        else f"{len(active_pressure)} active semantic pressure signal(s)."
+    )
     return {
         "schema_version": SCHEMA_VERSION,
         "posture": posture,
         "summary": summary,
         "metrics": metrics,
-        "semantic_pressure": pressure,
+        "semantic_pressure": active_pressure,
+        "historical_pressure": historical_pressure,
         "top_risks": top_risks,
         "recommended_inspections": recommended_inspections(top_risks),
     }

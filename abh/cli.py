@@ -9,7 +9,7 @@ from .codex_setup import codex_off, codex_on, codex_status
 from .audit_bundle import audit_bundle
 from .commands import abh_error_payload, dumps_envelope, make_envelope
 from .hooks import hook_profile, install_hooks
-from .navigation import onboarding_check, recommend_next_action
+from .navigation import onboarding_check, recommend_next_action, unified_status
 from .models import CommitmentPhaseState, CommitmentResidualPressure, MEMORY_STATUSES, REFERENCE_SET_KEYS, empty_reference_set
 from .reporting import project_health_report
 from .core import (
@@ -195,6 +195,10 @@ def build_parser() -> argparse.ArgumentParser:
     codex_off_parser.add_argument("--confirm", action="store_true", help="confirm Codex config removal")
     add_json_argument(codex_off_parser)
     codex_off_parser.set_defaults(handler=handle_codex_off)
+
+    status_parser = subparsers.add_parser("status", help="show unified repo state dashboard")
+    add_json_argument(status_parser)
+    status_parser.set_defaults(handler=handle_status)
 
     next_parser = subparsers.add_parser("next", help="recommend the next ABH action")
     add_json_argument(next_parser)
@@ -537,6 +541,44 @@ def handle_codex_off(args: argparse.Namespace) -> int:
     mode = "wrote" if args.write else "preview"
     print(f"codex off {mode}: {len(result['writes'])} write(s), {len(result['blockers'])} blocker(s)")
     return 0
+
+
+def handle_status(args: argparse.Namespace) -> int:
+    """Handle `abh status` — unified dashboard."""
+    try:
+        result = unified_status()
+        if args.json:
+            print_json_envelope(ok=True, command=command_name(args), data={"status": result})
+        else:
+            _print_human_status(result)
+        return 0
+    except AbhError as exc:
+        if args.json:
+            print_json_envelope(command_name(args), {}, ok=False, errors=[abh_error_payload(exc)])
+        else:
+            print(f"status: error — {exc}", file=sys.stderr)
+        return exc.code
+    except Exception as exc:
+        if args.json:
+            print_json_envelope(command_name(args), {}, ok=False, errors=[abh_error_payload(AbhError(str(exc)))])
+        else:
+            print(f"status: unexpected error — {exc}", file=sys.stderr)
+        return 3
+
+
+def _print_human_status(result: dict) -> None:
+    """Print a human-readable status summary."""
+    print(f"repo state: {result.get('repo_state', '?')}")
+    print(f"open plans: {result.get('open_plans', 0)}")
+    print(f"health:     {result.get('health_posture', '?')}")
+    print(f"alerts:     {result.get('active_alerts', 0)} active")
+    print(f"doctor:     {result.get('doctor_issues', 0)} issue(s)")
+    print(f"roadmap:    {result.get('roadmap_queued', 0)} queued")
+    print(f"next:       {result.get('next_action', '?')} — {result.get('next_rationale', '')}")
+    warnings = result.get('next_warnings', [])
+    if warnings:
+        for w in warnings:
+            print(f"  ⚠ {w.get('summary', '')[:100]}")
 
 
 def handle_next(args: argparse.Namespace) -> int:

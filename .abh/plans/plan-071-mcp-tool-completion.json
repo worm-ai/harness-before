@@ -1,0 +1,73 @@
+{
+  "schema_version": "2",
+  "id": "plan-071-mcp-tool-completion",
+  "title": "MCP tool completion: next, onboarding_check, verify_run, audit_bundle",
+  "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+  "baseline": "5 critical CLI commands lack MCP tool counterparts, violating the Agent-First CLI/MCP dual-interface invariant.",
+  "owner": "platform",
+  "status": "running",
+  "goals": [
+    "New MCP tools: abh_next (read-only), abh_onboarding_check (read-only), abh_verify_run (write, confirm), abh_audit_bundle (read-only).",
+    "All reuse existing core functions — no new business logic in MCP layer.",
+    "Contracts registered in commands.py with mcp_tool field set."
+  ],
+  "non_goals": [
+    "Do not add abh_agent_setup MCP tool (setup bundles are repo-init actions, not runtime governance).",
+    "Do not change CLI behavior.",
+    "Do not add write tools beyond verify_run."
+  ],
+  "exit_criteria": [
+    "abh_next MCP tool returns same data as abh next --json.",
+    "abh_onboarding_check MCP tool returns readiness checks.",
+    "abh_verify_run MCP tool executes plan validation commands with confirm=true.",
+    "abh_audit_bundle MCP tool returns audit prompt + evidence.",
+    "python3 -m pytest tests/ -q passes.",
+    "python3 -m abh doctor passes."
+  ],
+  "validation_checklist": [
+    "python3 -m pytest tests/test_mcp_server.py -v",
+    "python3 -m pytest tests/test_command_contracts.py -v",
+    "python3 -m abh doctor",
+    "python3 -m abh roadmap check --json",
+    "git diff --check"
+  ],
+  "closure_evidence": [
+    "abh/mcp_server.py",
+    "abh/commands.py",
+    "tests/test_mcp_server.py",
+    "tests/test_command_contracts.py"
+  ],
+  "commitment_phase_state": {
+    "stable_state_now": [],
+    "active_change_pressure": [],
+    "target_stable_state": [],
+    "conversion_proof": [],
+    "residual_pressure": []
+  },
+  "verification_runs": [],
+  "audit_ids": [],
+  "baseline_commit": "a77a535a74b00e6f9ebb856fc37c937f1827756d",
+  "scope": [],
+  "reference_set": {
+    "context_routing": [],
+    "active_owner_docs": [
+      "abh/mcp_server.py",
+      "abh/commands.py"
+    ],
+    "live_code_routes": [
+      "abh/mcp_server.py",
+      "abh/commands.py"
+    ],
+    "tests_baseline": [
+      "tests/test_mcp_server.py"
+    ],
+    "known_issues": [
+      "5 MCP tools missing — agents cannot complete full loop via MCP only"
+    ],
+    "external_contracts": [],
+    "plan_audit_evidence": []
+  },
+  "created_at": "2026-06-16T10:18:54.653139+00:00",
+  "updated_at": "2026-06-16T10:19:18.139945+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-071-mcp-tool-completion.md"
+}

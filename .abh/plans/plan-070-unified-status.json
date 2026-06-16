@@ -1,0 +1,76 @@
+{
+  "schema_version": "2",
+  "id": "plan-070-unified-status",
+  "title": "Unified abh status --json dashboard",
+  "attractor": "docs/architecture/attractors/abh-core-attractor.md",
+  "baseline": "Agent currently needs 4 commands (next, health, doctor, roadmap check) to understand repo state.",
+  "owner": "platform",
+  "status": "running",
+  "goals": [
+    "New abh status command outputs a unified JSON dashboard.",
+    "Dashboard includes: next_action, health_posture, open_plans count, doctor_issues count, roadmap_queued count, active_alerts count.",
+    "CLI and MCP both expose abh_status.",
+    "Read-only — no writes, no confirm required."
+  ],
+  "non_goals": [
+    "Do not remove or deprecate individual commands (next, health, doctor, etc.).",
+    "Do not add interactive or TUI mode.",
+    "Do not aggregate across multiple repos."
+  ],
+  "exit_criteria": [
+    "abh status --json returns a unified dashboard with all 6 fields.",
+    "abh_status MCP tool is available and read-only.",
+    "python3 -m pytest tests/ -q passes.",
+    "python3 -m abh doctor passes."
+  ],
+  "validation_checklist": [
+    "python3 -m pytest tests/test_command_contracts.py -v",
+    "python3 -m pytest tests/test_mcp_server.py -v",
+    "python3 -m abh doctor",
+    "python3 -m abh roadmap check --json",
+    "git diff --check"
+  ],
+  "closure_evidence": [
+    "abh/navigation.py",
+    "abh/cli.py",
+    "abh/commands.py",
+    "abh/mcp_server.py",
+    "tests/test_command_contracts.py",
+    "tests/test_mcp_server.py"
+  ],
+  "commitment_phase_state": {
+    "stable_state_now": [],
+    "active_change_pressure": [],
+    "target_stable_state": [],
+    "conversion_proof": [],
+    "residual_pressure": []
+  },
+  "verification_runs": [],
+  "audit_ids": [],
+  "baseline_commit": "a77a535a74b00e6f9ebb856fc37c937f1827756d",
+  "scope": [],
+  "reference_set": {
+    "context_routing": [],
+    "active_owner_docs": [
+      "abh/navigation.py",
+      "abh/reporting.py",
+      "abh/commands.py"
+    ],
+    "live_code_routes": [
+      "abh/navigation.py",
+      "abh/reporting.py",
+      "abh/core.py"
+    ],
+    "tests_baseline": [
+      "tests/test_navigation_and_roadmap.py"
+    ],
+    "known_issues": [
+      "Agent needs 4 commands to understand repo state"
+    ],
+    "external_contracts": [],
+    "plan_audit_evidence": []
+  },
+  "created_at": "2026-06-16T10:18:54.488809+00:00",
+  "updated_at": "2026-06-16T10:19:17.878428+00:00",
+  "doc_path": "/Users/cc/ai/harness-before/docs/plans/plan-070-unified-status.md"
+}

@@ -149,12 +149,13 @@ class MemoryDriftReportingTests(WorkspaceCliTestCase):
         self.assertEqual(payload["command"], "report health")
         report = payload["data"]["health_report"]
         self.assertEqual(report["schema_version"], "2")
-        self.assertEqual(report["posture"], "healthy")
+        self.assertEqual(report["posture"], "idle")
         self.assertEqual(report["metrics"]["plans"]["total"], 0)
         self.assertEqual(report["metrics"]["doctor"]["issues"], 0)
         self.assertEqual(report["semantic_pressure"], [])
+        self.assertEqual(report.get("historical_pressure", []), [])
         self.assertEqual(report["top_risks"], [])
-        self.assertIn("no unresolved", report["summary"].lower())
+        self.assertIn("no active", report["summary"].lower())
 
     def test_report_health_flags_stale_verification_pressure(self) -> None:
         self.run_cli(
@@ -253,15 +254,16 @@ class MemoryDriftReportingTests(WorkspaceCliTestCase):
 
         self.assertEqual(code, 0, err)
         report = json.loads(out)["data"]["health_report"]
-        stale_proof = [item for item in report["semantic_pressure"] if item["type"] == "stale_proof"]
+        all_signals = report["semantic_pressure"] + report.get("historical_pressure", [])
+        stale_proof = [item for item in all_signals if item["type"] == "stale_proof"]
         self.assertEqual(stale_proof, [])
-        churn = [item for item in report["semantic_pressure"] if item["type"] == "post_close_metadata_churn"]
+        churn = [item for item in all_signals if item["type"] == "post_close_metadata_churn"]
         self.assertEqual(len(churn), 1)
         self.assertEqual(churn[0]["related_plan_ids"], ["plan-health-closed-churn"])
         self.assertEqual(churn[0]["severity"], "low")
         self.assertIn("post-close", churn[0]["recommendation"])
         self.assertNotIn("Run fresh verification", churn[0]["recommendation"])
-        self.assertEqual(report["posture"], "watch")
+        self.assertEqual(report["posture"], "idle")
 
     def test_report_health_keeps_post_close_documentation_sync_as_follow_up(self) -> None:
         command = f'"{sys.executable}" -c "print(\'doc-sync-ok\')"'
@@ -335,13 +337,14 @@ class MemoryDriftReportingTests(WorkspaceCliTestCase):
         self.assertEqual(reason_details["git_status_changed"]["trigger"], "post_close_documentation_sync")
         self.assertEqual(code, 0, err)
         report = json.loads(out)["data"]["health_report"]
-        stale_proof = [item for item in report["semantic_pressure"] if item["type"] == "stale_proof"]
+        all_signals = report["semantic_pressure"] + report.get("historical_pressure", [])
+        stale_proof = [item for item in all_signals if item["type"] == "stale_proof"]
         self.assertEqual(stale_proof, [])
-        churn = [item for item in report["semantic_pressure"] if item["type"] == "post_close_metadata_churn"]
+        churn = [item for item in all_signals if item["type"] == "post_close_metadata_churn"]
         self.assertEqual(len(churn), 1)
         self.assertEqual(churn[0]["related_plan_ids"], ["plan-health-doc-sync"])
         self.assertEqual(churn[0]["severity"], "low")
-        self.assertEqual(report["posture"], "watch")
+        self.assertEqual(report["posture"], "idle")
 
     def test_report_health_treats_closed_plan_proof_drift_as_stale_proof(self) -> None:
         self.create_ready_plan("plan-health-proof-drift")
@@ -397,13 +400,14 @@ class MemoryDriftReportingTests(WorkspaceCliTestCase):
 
         self.assertEqual(code, 0, err)
         report = json.loads(out)["data"]["health_report"]
-        stale_proof = [item for item in report["semantic_pressure"] if item["type"] == "stale_proof"]
+        all_signals = report["semantic_pressure"] + report.get("historical_pressure", [])
+        stale_proof = [item for item in all_signals if item["type"] == "stale_proof"]
         self.assertEqual(len(stale_proof), 1)
         self.assertEqual(stale_proof[0]["related_plan_ids"], ["plan-health-proof-drift"])
         self.assertEqual(stale_proof[0]["severity"], "info")
-        churn = [item for item in report["semantic_pressure"] if item["type"] == "post_close_metadata_churn"]
+        churn = [item for item in all_signals if item["type"] == "post_close_metadata_churn"]
         self.assertEqual(churn, [])
-        self.assertEqual(report["posture"], "healthy")
+        self.assertEqual(report["posture"], "idle")
 
     def test_report_health_keeps_other_closed_plan_git_changes_as_stale_proof(self) -> None:
         command = f'"{sys.executable}" -c "print(\'product-sync-ok\')"'
@@ -466,10 +470,11 @@ class MemoryDriftReportingTests(WorkspaceCliTestCase):
         self.assertEqual(reason_details["git_status_changed"]["changed_paths"], ["abh/product.py"])
         self.assertEqual(code, 0, err)
         report = json.loads(out)["data"]["health_report"]
-        stale_proof = [item for item in report["semantic_pressure"] if item["type"] == "stale_proof"]
+        all_signals = report["semantic_pressure"] + report.get("historical_pressure", [])
+        stale_proof = [item for item in all_signals if item["type"] == "stale_proof"]
         self.assertEqual(len(stale_proof), 1)
         self.assertEqual(stale_proof[0]["related_plan_ids"], ["plan-health-product-git-drift"])
-        churn = [item for item in report["semantic_pressure"] if item["type"] == "post_close_metadata_churn"]
+        churn = [item for item in all_signals if item["type"] == "post_close_metadata_churn"]
         self.assertEqual(churn, [])
 
     def test_memory_triage_json_lists_orphaned_memories_with_guidance(self) -> None:

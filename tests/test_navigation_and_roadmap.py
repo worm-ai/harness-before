@@ -334,7 +334,50 @@ class NavigationAndRoadmapTests(WorkspaceCliTestCase):
         self.assertFalse(payload["ok"])
         self.assertIn("must not preassign plan id", payload["errors"][0]["message"])
 
-    def test_roadmap_materialize_uses_allocation_lock(self) -> None:
+    def test_next_json_injects_memory_warnings_for_roadmap_item_with_prior_failures(self) -> None:
+        self.run_cli("init", "--write", "--confirm", "--json")
+        queue = self.root / ".abh" / "roadmap.json"
+        queue.write_text(
+            json.dumps(
+                {
+                    "schema_version": "2",
+                    "items": [
+                        {
+                            "key": "stage7.multi-repo-sharing",
+                            "title": "Multi Repo Sharing",
+                            "stage": "stage7",
+                            "summary": "Share attractor and memory across repos.",
+                        }
+                    ],
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+        self.run_cli(
+            "memory", "add",
+            "--id", "mem-audit-test-failure",
+            "--type", "rejected_path",
+            "--summary", "plan-054 audit rejected: zero implementation code for multi repo sharing",
+            "--context", "prior attempt at multi-repo-sharing failed audit",
+            "--implication", "re-materialize with implementation evidence",
+            "--evidence", "docs/plans/plan-001-demo.md",
+            "--tag", "quality-signal",
+            "--related-plan", "plan-054-multi-repo-sharing",
+        )
+
+        code, out, err = self.run_cli("next", "--json")
+
+        self.assertEqual(code, 0, err)
+        result = json.loads(out)["data"]["next"]
+        self.assertEqual(result["next_action"], "materialize_roadmap_item")
+        self.assertIn("warnings", result)
+        warnings = result["warnings"]
+        self.assertGreaterEqual(len(warnings), 1)
+        self.assertIn("audit rejected", warnings[0]["summary"].lower() or " ")
+        self.assertIn("mem-audit-test-failure", [w["memory_id"] for w in warnings])
         queue = self.root / ".abh" / "roadmap.json"
         queue.parent.mkdir(parents=True, exist_ok=True)
         queue.write_text(
