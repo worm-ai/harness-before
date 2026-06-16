@@ -189,7 +189,7 @@ python3 -m unittest tests/test_cli.py
 
 项目版本以 `pyproject.toml` 的 `[project].version` 和 `abh.__version__` 为准，两者必须保持一致。README 中声明的新 CLI 能力、安装方式或运行要求发生变化时，必须同步检查版本是否需要提升，并在对应 plan 的 closure evidence 中说明。
 
-当前发布版本为 `0.3.0`，对应阶段 3 Verify Runner：项目已经具备显式 JSON CLI contract、结构化错误输出、只读 MCP Server、受控 MCP 写工具、本地验证执行器、计划更新、验证环境元数据、可信等级、stale 提示、失败分类、原子写和领域模块拆分。阶段 4 Agent-First 吸引子入口层已完成：`plan-031-truth-precedence-and-age-docs` 已完成 AGE owner-doc baseline，`plan-032-abh-init-active-attractor` 已完成 `abh init` 最小初始化切片，`plan-033-agent-contract-setup` 已完成只读 setup export MVP，`plan-034-git-hooks-guardrails` 已完成本地 hook guardrail MVP，`plan-035-abh-next-and-onboarding-check` 已完成只读 navigation/readiness MVP，`plan-036-quickstart-recipes-and-distribution` 已完成 quickstart、recipes 和当前 git/editable 分发路径文档。阶段 5 独立审计支持已完成：`plan-037-audit-prompt-bundle` 已交付只读审计 bundle，`plan-038-independent-audit-gate` 已把审计上下文、独立性声明和 fresh verification basis 纳入 `audit record` 与 `close` 门禁。受控写工具必须显式传入 `confirm=true`，并复用现有 core 规则，不能绕过 plan 状态机、验证记录、审计关闭门禁或 doctor 一致性检查。
+当前发布版本为 `0.7.0`，对应阶段 7 团队可用与生态集成：项目已经具备完整的 Agent-First CLI/MCP 工具链、独立审计门禁、语义压力报告和 CI 模板。阶段 3 Verify Runner、阶段 4 Agent-First 吸引子入口层、阶段 5 独立审计支持、阶段 6 漂移与记忆质量提升均已关闭。阶段 7 的 CI templates、abh-workflow-skill、codex-repo-toggle 已完成；multi-repo-sharing 因缺少 R-flow 实现证据 blocked/deferred；team-policy-and-release-automation 仍待 materialize。受控写工具必须显式传入 `confirm=true`，并复用现有 core 规则，不能绕过 plan 状态机、验证记录、审计关闭门禁或 doctor 一致性检查。
 
 ## CI 与关闭门禁
 
@@ -618,19 +618,45 @@ python3 -m abh.mcp_server
 
 ## 后续演进
 
-当前仓库已经覆盖计划、验证、审计、关闭、记忆、路由和基础漂移分析。后续计划：
+当前仓库已覆盖计划、验证、审计、关闭、记忆、路由、漂移分析、MCP Server、Agent setup、Git hooks、health report 和 CI templates。67 个 plan 全部关闭。
 
-- 阶段 3 功能规划已收尾：`plan-016-verify-runner` 至 `plan-025-stage-3-finalization` 构成 v0.3 Verify Runner 里程碑，覆盖本地验证执行、计划更新、验证环境元数据、可信等级、stale 提示、失败分类、原子写和领域模块拆分
-- v0.3.0 发布准备由 `plan-026-v0-3-release-prep` 收口，release notes 见 `docs/releases/v0.3.0.md`
-- 阶段 4 Agent-First 吸引子入口层已完成：`plan-027-stage-4-attractor-entry-plan`、`plan-028-agent-first-command-contract`、`plan-029-attractor-registry`、`plan-030-roadmap-queue-and-plan-numbering`、`plan-031-truth-precedence-and-age-docs`、`plan-032-abh-init-active-attractor`、`plan-033-agent-contract-setup`、`plan-034-git-hooks-guardrails`、`plan-035-abh-next-and-onboarding-check` 和 `plan-036-quickstart-recipes-and-distribution` 均已完成；quickstart、recipes 和当前 git/editable 分发路径已纳入 Stage 4 adoption 入口
-- 阶段 5 独立审计支持已完成：`plan-037-audit-prompt-bundle` 已交付只读 `abh audit bundle <plan> --json`，用于生成审计提示词和证据清单；`plan-038-independent-audit-gate` 已把 audit context/source、independence 和 fresh verification basis 纳入 `abh audit record` 与 `abh close` 门禁。自动执行审计和真实身份校验仍属后续切片
-- 阶段 6 已启动：`plan-039-quality-signal-model` 定义 product-quality-first / agent-navigation-second 的质量信号模型；`plan-040-drift-quality` 已把 drift finding 提升为带 severity、matched span、source excerpt 和 confidence 的质量信号；`plan-041-memory-index` 已把 memory 提升为带 tags、status、关系索引和 supersession 的可复用质量知识；`plan-042-project-health-report` 正在把 health report 收敛为语义压力报告，优先暴露 unbound commitment pressure、stale proof、semantic leakage、J-flow-only evidence、orphaned memory 和 repeated leakage
-- Stage 6 后续 queue 已固化 Plan Reference Set、Commitment Phase State、Audit Semantic Conservation 和 Owner Doc Stable Commitments，避免后续实现遗忘 AGE/PHS 文章提出的语义承诺守恒方向
-- Stage 7 已启动：`plan-053-ci-templates` 正在把 GitHub Actions workflow 升级为可复用 ABH CI 模板，覆盖完整 unittest、doctor、roadmap、diff 和 health posture 检查，同时不实现发布自动化或团队策略
-- `plan-057-codex-repo-toggle` 正在进行中：为 Codex 桌面版补齐仓库级 ABH toggle，受管写入 `.codex/config.toml`，不实现 CLI profile 模式或多 agent toggle
-- 未来路线图不再为未创建计划预写 `plan-033` 这类具体编号；未 materialize 的事项使用 `.abh/roadmap.json` 中的稳定 key，真实 plan id 只在 `abh roadmap materialize <key>` 时分配
-- 阶段 4 的目标不是普通 onboarding，而是让 Codex、Claude Code 和 MCP 客户端默认通过 JSON/非交互命令进入 active attractor -> plan -> verification -> audit -> memory 的轨迹控制回路；人类主要负责定义吸引子、批准写入和执行独立审计
-- 后续提升漂移分析精度：从关键词匹配升级到更高质量的证据提取
-- 增加 `abh report health --json`，展示计划关闭率、审计驳回率、重复漂移、stale verification、memory 复用情况和语义压力 top risks
-- 扩展 Git hook 集成，从当前本地 pre-commit guardrail MVP 演进到团队策略和更多 profile
-- 为验证记录增加更细粒度执行证据，与计划的 closure evidence 形成完整可追溯链路
+### 已完成阶段
+
+- **阶段 1（v0.1）**：恢复权威基线 — 目录结构、模板、doctor、CI、schema version、版本策略
+- **阶段 2（v0.2）**：Agent Protocol 基础 — JSON CLI contract、结构化错误、只读 MCP、受控 MCP 写工具
+- **阶段 3（v0.3）**：Verify Runner — 本地验证执行、环境元数据、可信等级、stale 检测、失败分类、原子写、领域模块拆分
+- **阶段 4（v0.4）**：Agent-First 吸引子入口层 — attractor registry、roadmap queue、AGE owner docs、`abh init`、agent setup、git hooks、`abh next`/onboarding check、quickstart/recipes
+- **阶段 5（v0.5）**：独立审计支持 — audit prompt bundle、independent audit gate（auditor context、independence 声明、fresh verification basis）
+- **阶段 6（v0.6）**：漂移与记忆质量提升 — quality signal model、drift quality、memory index、health report、command contract runtime registry、write transaction boundary、schema validation/migration、verification runner trust policy、test suite domain split、commitment phase state、audit semantic conservation、owner doc stable commitments、post-close freshness semantics
+
+### 阶段 7（v0.7，进行中）
+
+已完成：
+- `plan-053-ci-templates`：GitHub Actions ABH CI 模板
+- `plan-055-abh-workflow-skill`：Codex 傻瓜式 skill 封装
+- `plan-056-readme-zero-python-skill-onboarding`：零基础用户 README 和小白 skill 入口
+- `plan-057-codex-repo-toggle`：Codex 仓库级 ABH toggle
+- `plan-058-verification-sandbox-and-storage-hardening`：验证沙箱与存储硬化
+- `plan-060-signal-quality-hardening`：信号质量硬化（stale severity 重分类 + memory triage）
+- `plan-061-drift-detection-depth`：漂移检测深度提升（terminology drift）
+- `plan-062-agent-ux-phase-a`：Phase A — 零摩擦 Agent UX（smart defaults + plan run/finish）
+- `plan-063-agent-ux-phase-b`：Phase B — 全局感知仪表板 + memory 注入 `abh next`
+- `plan-064-agent-ux-phase-c`：Phase C — Agent-to-Agent 审计协议
+- `plan-065-memory-active-injection`：`plan status` 自动注入相关 memory
+- `plan-066-audit-protocol-v2`：自包含审计包
+- `plan-067-plan-complete`：`abh plan complete` 端到端意图执行
+
+Blocked/Deferred：
+- `plan-054-multi-repo-sharing`：缺少多仓库 R-flow 实现证据，blocked/deferred
+- `plan-043-plan-reference-set`：deferred
+
+Roadmap queue 剩余待 materialize：
+- `stage7.team-policy-and-release-automation`
+
+### 未来方向
+
+- 补齐 multi-repo sharing 的 R-flow 实现证据后重新 materialize
+- 团队策略配置与发布自动化
+- 从关键词漂移检测升级到更高质量的证据提取
+- 扩展 Git hook 集成到团队策略和更多 profile
+- 为验证记录增加更细粒度执行证据，与 closure evidence 形成完整可追溯链路

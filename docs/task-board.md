@@ -2,9 +2,9 @@
 
 ## 当前阶段
 
-阶段 7：团队可用与生态集成（Doing）；当前焦点：`plan-057-codex-repo-toggle`；下一队列：`stage7.team-policy-and-release-automation`
+阶段 7：团队可用与生态集成（部分完成）；全部 67 个 plan 已关闭；roadmap queue 剩余 `stage7.team-policy-and-release-automation` 待 materialize
 
-Current focus: `plan-057-codex-repo-toggle`; next queue: `stage7.team-policy-and-release-automation`
+Current: all 67 plans closed; next queue: `stage7.team-policy-and-release-automation`
 
 ## 状态说明
 
@@ -647,3 +647,21 @@ Current focus: `plan-057-codex-repo-toggle`; next queue: `stage7.team-policy-and
 | S49-005 | 同步 CI recipe、README、roadmap、task-board 和 codebase map | Done | `docs/recipes/ci.md`, `README.md`, `docs/development-roadmap.md`, `docs/task-board.md`, `docs/context/codebase-map.md` |
 | S49-006 | plan-053 验证、独立审计和关闭 | Done | `.abh/verifications/ver-f07a468169c6.json`, `docs/audits/audit-053-ci-templates.md`, `docs/plans/plan-053-ci-templates.md` |
 | S49-007 | 关闭后同步下一步焦点 | Done | `stage7.multi-repo-sharing`, `docs/development-roadmap.md`, `docs/task-board.md` |
+
+## 阶段 7 后续计划（plan-054 ~ plan-067）
+
+| ID | 计划 | 状态 | 关键产出 |
+| --- | --- | --- | --- |
+| plan-054 | Multi Repo Sharing | Blocked | 缺少 R-flow 实现证据，blocked/deferred |
+| plan-055 | ABH Workflow Skill | Done | `skills/abh-workflow` Codex skill |
+| plan-056 | README Zero-Python Skill Onboarding | Done | README 零基础使用说明 |
+| plan-057 | Codex Repo Toggle | Done | `abh codex on/off --write --confirm` |
+| plan-058 | Verification Sandbox and Storage Hardening | Done | 验证沙箱隔离 + storage 硬化 |
+| plan-060 | Signal Quality Hardening | Done | stale severity 重分类 + memory triage |
+| plan-061 | Drift Detection Depth | Done | terminology drift 检测 + verify run 集成 |
+| plan-062 | Phase A: Zero-Friction Agent UX | Done | smart defaults + `plan run`/`plan finish` |
+| plan-063 | Phase B: Dashboard + Memory Injection | Done | `abh next` 全局感知 + memory 注入 |
+| plan-064 | Phase C: Agent-to-Agent Audit | Done | Agent-to-Agent 审计协议 |
+| plan-065 | Memory Active Injection | Done | `plan status` 自动注入相关 memory |
+| plan-066 | Audit Protocol v2 | Done | 自包含审计包 |
+| plan-067 | Plan Complete | Done | `abh plan complete` 端到端意图执行 |

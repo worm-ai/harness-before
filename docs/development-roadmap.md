@@ -244,29 +244,17 @@
 
 ## 4. 当前执行焦点
 
-Sprint 25 已完成 `plan-029-attractor-registry`。`plan-028-agent-first-command-contract` 已关闭，Agent-First Command Contract 已从协议约定落到共享代码契约；active attractor 已从 Markdown 约定升级为 CLI 可管理、MCP 可读取、ready plan 可校验的一等 ABH 对象。
+全部 67 个 plan 已关闭。最近关闭的 trilogy：`plan-065-memory-active-injection`（`plan status` 自动注入相关 memory）、`plan-066-audit-protocol-v2`（自包含审计包）、`plan-067-plan-complete`（`abh plan complete` 端到端意图执行）。
 
-`plan-015-controlled-mcp-write-tools` 已关闭。阶段 2 Agent Protocol Foundation 已完整完成：核心只读命令具备显式 JSON 输出和结构化错误格式，MCP stdio Server 同时提供只读工具和受控写工具，写工具必须显式 `confirm=true` 并复用现有 ABH 门禁。
+在此之前关闭的 Agent UX 优化 trilogy：`plan-062-agent-ux-phase-a`（零摩擦 Agent UX — smart defaults + `plan run/finish`）、`plan-063-agent-ux-phase-b`（全局感知仪表板 + memory 注入 `abh next`）、`plan-064-agent-ux-phase-c`（Agent-to-Agent 审计协议）。
 
-最近关闭计划：`plan-049-commitment-phase-state`。这一切片从 queue key `stage6.commitment-phase-state` materialize 而来，已经为 plan 增加 stable state、active change pressure、target stable state、conversion proof 和 residual pressure 的可选结构，并保持 legacy plan 可读。
-
-最近关闭计划：`plan-050-audit-semantic-conservation`。这一切片从 queue key `stage6.audit-semantic-conservation` materialize 而来，已经把 semantic conservation 和 J-flow/R-flow review 明确纳入 audit bundle、audit Markdown、audit template、audits README 和 quality signal vocabulary，并通过独立审计关闭。
-
-最近关闭计划：`plan-051-owner-doc-stable-commitments`。这一切片从 queue key `stage6.owner-doc-stable-commitments` materialize 而来，已经让关键 owner docs、attractor 模板和 `abh init` seed 文档显式区分 Stable Commitments、Allowed Variation、Drift / Leakage Signals 和 Correction Path，并补上了 Stable-Commitments Consultation guidance 供 plan scoping、semantic conservation audit、health or drift review 和 owner-doc conflict resolution 使用。
-
-当前进行焦点：`plan-057-codex-repo-toggle` 正在进行中，目标是为 Codex 桌面版补齐仓库级 ABH toggle，通过受管 `.codex/config.toml` 注入 `skills/abh-workflow` 与 `onboarding/next/doctor/roadmap` 初始检查，不实现临时 CLI profile 或多 agent toggle。`plan-039-quality-signal-model` 已关闭并定义 Stage 6 的质量信号模型；`plan-040-drift-quality` 已关闭并把 drift finding 升级为包含 severity、confidence、matched span、source excerpt 和 evidence path 的产品质量信号；`plan-041-memory-index` 已关闭并把 memory 升级为可按 tags、status、plan/audit/drift 关系和 supersession 复用的质量知识；`plan-042-project-health-report` 已关闭并交付 `abh report health --json` 语义压力报告。`plan-043-plan-reference-set` 已重新排期为 blocked/deferred，不再阻塞 stage6 架构硬化队列；`plan-044`、`plan-045`、`plan-046`、`plan-047`、`plan-048`、`plan-049`、`plan-050`、`plan-051`、`plan-052` 和 `plan-053` 已关闭；Stage 7 的 `stage7.multi-repo-sharing` 已 materialize 为 `plan-054-multi-repo-sharing`，但独立审计确认其只有计划定义和通用验证、缺少多仓库共享 R-flow 实现证据，因此当前状态为 blocked/deferred。`plan-055-abh-workflow-skill` 已关闭，交付范围仅为把现有 ABH CLI 编排成傻瓜式 Codex skill，不实现 Stage 7 multi-repo sharing。
+阶段 7 已关闭 plan-053（CI templates）、plan-055（abh-workflow-skill）、plan-056（README zero-python onboarding）、plan-057（codex repo toggle）、plan-058（verification sandbox and storage hardening）。plan-054（multi-repo-sharing）因缺少 R-flow 实现证据 blocked/deferred。roadmap queue 剩余 `stage7.team-policy-and-release-automation` 待 materialize。
 
 当前阶段状态：
 
-- 已完成：`plan-012-agent-protocol-foundation`、`plan-013-json-output-and-errors`。
-- 已完成：`plan-014-readonly-mcp-server`。
-- 已完成：`plan-015-controlled-mcp-write-tools`。
-- 阶段 2 判定：完成。JSON contract、结构化错误、只读 MCP 和受控 MCP 写工具均已通过 verification 与独立审计。
-- 当前里程碑：v0.3 Verify Runner 阶段功能队列已交付；`plan-016-verify-runner`、`plan-017-plan-update`、`plan-018-core-module-split`、`plan-019-verification-environment-metadata`、`plan-020-stage-3-functional-plan`、`plan-021-verification-trust-and-stale-detection`、`plan-022-verification-failure-classification`、`plan-023-atomic-abh-writes` 和 `plan-024-memory-drift-routing-module-split` 已完成。
-- 当前阶段：阶段 3 验证执行器已经具备 v0.3 所需能力，`plan-025-stage-3-finalization` 已留下收尾验证、独立审计和阶段 4 启动证据。
-- 当前阶段 3 判定：完成。v0.3 Verify Runner 里程碑已关闭。
-- 已完成 release-prep：`plan-026-v0-3-release-prep` 已将版本元数据、release notes、验证证据和 tag readiness 对齐到 v0.3.0。
-- 下一阶段焦点：阶段 4 Agent-First 吸引子入口层已从 `plan-027-stage-4-attractor-entry-plan` 启动并完成；`plan-028-agent-first-command-contract`、`plan-029-attractor-registry`、`plan-030-roadmap-queue-and-plan-numbering`、`plan-031-truth-precedence-and-age-docs`、`plan-032-abh-init-active-attractor`、`plan-033-agent-contract-setup`、`plan-034-git-hooks-guardrails`、`plan-035-abh-next-and-onboarding-check` 和 `plan-036-quickstart-recipes-and-distribution` 已完成。Stage 5 已通过 `plan-037-audit-prompt-bundle` 和 `plan-038-independent-audit-gate` 完成；Stage 6 已关闭 quality-signal、drift-quality、memory-index、project-health-report、command-contract-runtime-registry、repository-write-transaction-boundary、schema-validation/migration、verification-runner-trust-policy、test-suite-domain-split、commitment-phase-state、audit-semantic-conservation、owner-doc-stable-commitments 和 post-close freshness semantics；Stage 7 已关闭 `plan-053-ci-templates`，`plan-054-multi-repo-sharing` 因缺少功能实现与 exit criteria 覆盖证据而 blocked/deferred；`plan-055-abh-workflow-skill` 已关闭，`plan-057-codex-repo-toggle` 为当前 open plan。
+- 阶段 1-6：全部完成并关闭。
+- 阶段 7：部分完成。CI templates、workflow skill、codex repo toggle、verification sandbox 已关闭。multi-repo-sharing blocked/deferred。team-policy-and-release-automation 待 materialize。
+- 最近里程碑：Agent-First Trilogy（plan-065/066/067）— memory 主动注入 + 审计协议 v2 + 端到端 plan complete，将 Agent UX 从"逐个命令"升级为"意图级执行"。
 
 ## 5. 长期阶段线
 
